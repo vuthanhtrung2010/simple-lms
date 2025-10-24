@@ -37,7 +37,7 @@ async function fetchUser(session: AuthSession, db: D1Database): Promise<User | u
 		return safeUser;
 	} catch (err) {
 		console.error('Failed to fetch user data:', err);
-		throw new Error('Fetch user data failed:', { cause: err });
+		// throw new Error('Fetch user data failed:', { cause: err });
 	}
 }
 
