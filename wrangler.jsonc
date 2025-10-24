@@ -1,0 +1,25 @@
+{
+	"name": "small-lms",
+	"main": ".svelte-kit/cloudflare/_worker.js",
+	"assets": {
+		"directory": ".svelte-kit/cloudflare/assets",
+		"binding": "ASSETS"
+	},
+	"compatibility_date": "2025-10-23",
+	"compatibility_flags": ["nodejs_compat"],
+	"d1_databases": [
+		{
+			"binding": "DB",
+			"database_name": "small-lms",
+			"database_id": "f0108085-afcf-431e-b908-743fee588261",
+			"migrations_dir": "drizzle"
+		}
+	],
+	"observability": {
+		"logs": {
+			"enabled": true,
+			"head_sampling_rate": 1,
+			"invocation_logs": true
+		}
+	}
+}
