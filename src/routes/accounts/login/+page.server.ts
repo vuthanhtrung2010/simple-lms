@@ -76,7 +76,11 @@ export const actions: Actions = {
 				});
 			}
 
-			// Create session & set cookies
+			// Create session & set cookies & update last login
+			await locals.db.update(users)
+				.set({ lastLoginAt: Date.now() })
+				.where(eq(users.id, existingUser.id));
+
 			const newSession = await locals.db
 				.insert(sessions)
 				.values({

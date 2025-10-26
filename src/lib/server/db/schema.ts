@@ -1,4 +1,6 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, real, primaryKey, index } from 'drizzle-orm/sqlite-core';
+
+// ==================== USER & AUTH ====================
 
 export const users = sqliteTable('users', {
 	id: text('id')
@@ -8,7 +10,8 @@ export const users = sqliteTable('users', {
 	fullname: text('fullname'),
 	email: text('email').notNull().unique(),
 	passwordHash: text('password_hash').notNull(),
-	permissions: integer('permissions').notNull().default(0),
+	permissions: integer('permissions').notNull().default(0), // Bitwise permissions
+	bio: text('bio'),
 	createdAt: integer('created_at')
 		.notNull()
 		.$defaultFn(() => Date.now()),
@@ -16,7 +19,8 @@ export const users = sqliteTable('users', {
 		.notNull()
 		.$defaultFn(() => Date.now())
 		.$onUpdate(() => Date.now()),
-	dob: text('date_of_birth')
+	dob: text('date_of_birth'),
+	lastLoginAt: integer('last_login_at')
 });
 
 export const sessions = sqliteTable('sessions', {
@@ -32,4 +36,290 @@ export const sessions = sqliteTable('sessions', {
 	expiresAt: integer('expires_at')
 		.notNull()
 		.$defaultFn(() => Date.now() + 7 * 24 * 60 * 60 * 1000) // Default to 7 days
+});
+
+// ==================== COURSE MANAGEMENT ====================
+
+export const courses = sqliteTable('courses', {
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	title: text('title').notNull(),
+	description: text('description').notNull(),
+	thumbnailUrl: text('thumbnail_url'),
+	instructorId: text('instructor_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	isPublished: integer('is_published', { mode: 'boolean' }).notNull().default(false),
+	// difficulty: text('difficulty'), // 'beginner', 'intermediate', 'advanced'
+	createdAt: integer('created_at')
+		.notNull()
+		.$defaultFn(() => Date.now()),
+	updatedAt: integer('updated_at')
+		.notNull()
+		.$defaultFn(() => Date.now())
+		.$onUpdate(() => Date.now())
+});
+
+export const enrollments = sqliteTable(
+	'enrollments',
+	{
+		id: text('id')
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		userId: text('user_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		courseId: text('course_id')
+			.notNull()
+			.references(() => courses.id, { onDelete: 'cascade' }),
+		role: text('role').notNull().default('student'), // 'student', 'teacher', 'supervisor'
+		progress: real('progress').notNull().default(0), // Percentage 0-100
+		enrolledAt: integer('enrolled_at')
+			.notNull()
+			.$defaultFn(() => Date.now()),
+		completedAt: integer('completed_at')
+	},
+	(table) => [index('enrollment_user_course_idx').on(table.userId, table.courseId)]
+);
+
+// ==================== CATEGORIES & TYPES ====================
+
+export const categories = sqliteTable('categories', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	name: text('name').notNull().unique(),
+});
+
+export const types = sqliteTable('types', {
+	id: integer('id').primaryKey({ autoIncrement: true }),
+	name: text('name').notNull().unique(),
+});
+
+// ==================== PROBLEMS/ASSIGNMENTS ====================
+
+export const problems = sqliteTable('problems', {
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	title: text('title').notNull(),
+	description: text('description').notNull(),
+	instructions: text('instructions'), // Detailed instructions
+	media: text('media', { mode: 'json' }), // JSON array: [{ url: string, type?: string }]
+	maxPoints: real('max_points').notNull().default(0),
+	timeLimit: integer('time_limit'), // Time limit in minutes (null = no limit)
+	attemptsAllowed: integer('attempts_allowed').default(-1), // null/-1/0 = unlimited
+	showAnswers: text('show_answers').notNull().default('after_submission'), // 'never', 'after_submission', 'after_due', 'always'
+	shuffleQuestions: integer('shuffle_questions', { mode: 'boolean' }).notNull().default(false),
+	splitScreen: integer('split_screen', { mode: 'boolean' }).notNull().default(false), // Split screen view, show text_only questions on left side, real questions on right side
+	createdBy: text('created_by')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	categoryId: integer('category_id')
+		.notNull()
+		.references(() => categories.id, { onDelete: 'restrict' }), // Must have a category, prevent deletion if in use
+	createdAt: integer('created_at')
+		.notNull()
+		.$defaultFn(() => Date.now()),
+	updatedAt: integer('updated_at')
+		.notNull()
+		.$defaultFn(() => Date.now())
+		.$onUpdate(() => Date.now())
+});
+
+// Junction table: Link problems to types (many-to-many)
+export const problemTypes = sqliteTable(
+	'problem_types',
+	{
+		problemId: text('problem_id')
+			.notNull()
+			.references(() => problems.id, { onDelete: 'cascade' }),
+		typeId: integer('type_id')
+			.notNull()
+			.references(() => types.id, { onDelete: 'restrict' }), // Prevent deletion if in use
+		assignedAt: integer('assigned_at')
+			.notNull()
+			.$defaultFn(() => Date.now())
+	},
+	(table) => [
+		primaryKey({ columns: [table.problemId, table.typeId] }),
+		index('problem_types_problem_idx').on(table.problemId),
+		index('problem_types_type_idx').on(table.typeId)
+	]
+);
+
+// Junction table: Link problems to courses (many-to-many)
+export const courseProblems = sqliteTable(
+	'course_problems',
+	{
+		courseId: text('course_id')
+			.notNull()
+			.references(() => courses.id, { onDelete: 'cascade' }),
+		problemId: text('problem_id')
+			.notNull()
+			.references(() => problems.id, { onDelete: 'cascade' }),
+		orderIndex: integer('order_index').notNull().default(0)
+	},
+	(table) => [
+		primaryKey({ columns: [table.courseId, table.problemId] }),
+		index('course_problems_course_idx').on(table.courseId)
+	]
+);
+
+// ==================== QUESTIONS ====================
+
+/**
+ * Question Types (Supported):
+ * - single_choice: Single correct answer from multiple options
+ * - multiple_choice: Multiple correct answers from options
+ * - true_false: True or False question
+ * - short_answer: Short text answer (auto-graded with exact match or keywords)
+ * - fill_blank: Fill in the blank(s) in text
+ * - matching: IELTS-style matching - select A/B/C/D for each item
+ * - numeric: Numeric answer with tolerance
+ * - text_only: Informational text (0 points)
+ * 
+ * Not yet supported: essay, file_upload
+ */
+export const questions = sqliteTable(
+	'questions',
+	{
+		id: text('id')
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		problemId: text('problem_id')
+			.notNull()
+			.references(() => problems.id, { onDelete: 'cascade' }),
+		questionType: text('question_type').notNull(), // See types above
+		questionText: text('question_text').notNull(), // Supports markdown & LaTeX
+		explanation: text('explanation'), // Explanation shown after answering
+		points: real('points').notNull().default(0), // Points for this question
+		orderIndex: integer('order_index').notNull(), // Order within the problem
+		isRequired: integer('is_required', { mode: 'boolean' }).notNull().default(true),
+
+		// Configuration JSON for question-specific settings, options & correct answers
+		// For single/multiple choice: { options: [{ id, text, isCorrect, feedback?, partialCredit?, media? }] }
+		// For true_false: { options: [{ id, text: "True/False", isCorrect, feedback? }] }
+		// For matching: { items: [{ text, correctAnswer }], choices: ["A. Option", "B. Option"] }
+		// For fill_blank: { blanks: [{ index, answers: ["answer1"], caseSensitive? }] }
+		// For numeric: { answer, tolerance?, unit? }
+		// For short_answer: { answers: ["correct"], caseSensitive?, isRegex? }
+		// For essay: { minWords?, maxWords?, rubric?: [{ criterion, points }] }
+		// For file_upload: { allowedFileTypes?: [".pdf"], maxFileSize?, maxFiles? }
+		config: text('config', { mode: 'json' }), // JSON
+
+		media: text('media', { mode: 'json' }), // JSON array: [{ url: string, type?: string }]
+
+		createdAt: integer('created_at')
+			.notNull()
+			.$defaultFn(() => Date.now()),
+		updatedAt: integer('updated_at')
+			.notNull()
+			.$defaultFn(() => Date.now())
+			.$onUpdate(() => Date.now())
+	},
+	(table) => [index('question_problem_order_idx').on(table.problemId, table.orderIndex)]
+);
+
+// ==================== SUBMISSIONS & ATTEMPTS ====================
+
+export const submissions = sqliteTable(
+	'submissions',
+	{
+		id: text('id')
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		userId: text('user_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		problemId: text('problem_id')
+			.notNull()
+			.references(() => problems.id, { onDelete: 'cascade' }),
+		attemptNumber: integer('attempt_number').notNull().default(1),
+		status: text('status').notNull().default('in_progress'), // 'in_progress', 'submitted', 'graded', 'returned'
+		score: real('score').notNull().default(0),
+		maxScore: real('max_score').notNull(),
+		scorePercentage: real('score_percentage').notNull().default(0),
+
+		startedAt: integer('started_at')
+			.notNull()
+			.$defaultFn(() => Date.now()),
+		submittedAt: integer('submitted_at'),
+		gradedAt: integer('graded_at'),
+
+		timeSpent: integer('time_spent'), // Time spent in seconds
+
+		// Grading
+		autoGraded: integer('auto_graded', { mode: 'boolean' }).notNull().default(true),
+		gradedBy: text('graded_by').references(() => users.id, { onDelete: 'set null' }), // Instructor who graded
+		feedback: text('feedback'), // Overall feedback from instructor
+
+		// Flags
+		isLate: integer('is_late', { mode: 'boolean' }).notNull().default(false),
+		isFlagged: integer('is_flagged', { mode: 'boolean' }).notNull().default(false), // For review
+		flagReason: text('flag_reason')
+	},
+	(table) => [
+		index('submission_user_problem_idx').on(table.userId, table.problemId),
+		index('submission_status_idx').on(table.status)
+	]
+);
+
+// ==================== QUESTION ANSWERS ====================
+
+/**
+ * Student answers to individual questions within a submission
+ */
+export const questionAnswers = sqliteTable(
+	'question_answers',
+	{
+		id: text('id')
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		submissionId: text('submission_id')
+			.notNull()
+			.references(() => submissions.id, { onDelete: 'cascade' }),
+		questionId: text('question_id')
+			.notNull()
+			.references(() => questions.id, { onDelete: 'cascade' }),
+
+		answerData: text('answer_data', { mode: 'json' }), // JSON with student's answer
+
+		// Grading
+		isCorrect: integer('is_correct', { mode: 'boolean' }),
+		pointsEarned: real('points_earned').notNull().default(0),
+		pointsPossible: real('points_possible').notNull(),
+
+		autoGraded: integer('auto_graded', { mode: 'boolean' }).notNull().default(true),
+		feedback: text('feedback'), // Feedback for this specific answer
+
+		answeredAt: integer('answered_at')
+			.notNull()
+			.$defaultFn(() => Date.now())
+	},
+	(table) => [index('answer_submission_question_idx').on(table.submissionId, table.questionId)]
+);
+
+// ==================== ANNOUNCEMENTS ====================
+
+export const announcements = sqliteTable('announcements', {
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	courseId: text('course_id')
+		.notNull()
+		.references(() => courses.id, { onDelete: 'cascade' }),
+	authorId: text('author_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	title: text('title').notNull(),
+	content: text('content').notNull(),
+	isPinned: integer('is_pinned', { mode: 'boolean' }).notNull().default(false),
+	publishedAt: integer('published_at'),
+	createdAt: integer('created_at')
+		.notNull()
+		.$defaultFn(() => Date.now()),
+	updatedAt: integer('updated_at')
+		.notNull()
+		.$defaultFn(() => Date.now())
+		.$onUpdate(() => Date.now())
 });
