@@ -72,11 +72,11 @@ export function createAuthStore(initial?: Partial<AuthState>): AuthContextValue 
 			const response = await fetch('/api/auth/session', { credentials: 'include' });
 			if (response.ok) {
 				const data = (await response.json()) as {
-					user?: User;
+					user?: Omit<User, 'perms'> & { perms: string };
 					sessionToken?: string;
 				};
 				internal.set({
-					user: data.user ?? null,
+					user: data.user ? { ...data.user, perms: BigInt(data.user.perms) } : null,
 					sessionToken: data.sessionToken ?? null,
 					isLoading: false
 				});
