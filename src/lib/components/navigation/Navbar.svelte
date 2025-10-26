@@ -292,7 +292,7 @@
 									<NavigationMenu.Link>
 										{#snippet child()}
 											<a
-												href="https://github.com/vuthanhtrung/simple-lms"
+												href="https://github.com/vuthanhtrung2010/simple-lms"
 												target="_blank"
 												rel="noopener noreferrer"
 												class="flex h-full w-full flex-col justify-between gap-2 rounded-md p-6 transition-colors hover:bg-accent hover:text-accent-foreground"
