@@ -274,12 +274,12 @@
 										{#snippet child()}
 											<a
 												href="/about"
-												class="from-muted/50 to-muted flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b p-6 no-underline outline-none focus:shadow-md"
+												class="flex h-full w-full flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none select-none focus:shadow-md"
 											>
-												<div class="mb-2 mt-4 text-lg font-semibold">
+												<div class="mt-4 mb-2 text-lg font-semibold">
 													{m['navigation.about.title']({})}
 												</div>
-												<p class="text-muted-foreground text-sm leading-tight">
+												<p class="text-sm leading-tight text-muted-foreground">
 													{m['navigation.about.description']({})}
 												</p>
 											</a>
@@ -295,15 +295,15 @@
 												href="https://github.com/vuthanhtrung2010/simple-lms"
 												target="_blank"
 												rel="noopener noreferrer"
-												class="hover:bg-accent hover:text-accent-foreground flex h-full w-full flex-col justify-between gap-2 rounded-md p-6 transition-colors"
+												class="flex h-full w-full flex-col justify-between gap-2 rounded-md p-6 transition-colors hover:bg-accent hover:text-accent-foreground"
 											>
 												<div class="flex items-start gap-2">
 													<span class="mt-1 shrink-0">
 														<FontAwesomeIcon icon={faGithub} class="h-4 w-4" />
 													</span>
 													<div>
-														<div class="text-sm font-medium leading-none">Github</div>
-														<p class="text-muted-foreground mt-1 text-xs leading-snug">
+														<div class="text-sm leading-none font-medium">Github</div>
+														<p class="mt-1 text-xs leading-snug text-muted-foreground">
 															{m['navigation.github.description']({})}
 														</p>
 													</div>
@@ -319,17 +319,17 @@
 										{#snippet child()}
 											<a
 												href="/status"
-												class="hover:bg-accent hover:text-accent-foreground flex h-full w-full flex-col justify-between gap-2 rounded-md p-6 transition-colors"
+												class="flex h-full w-full flex-col justify-between gap-2 rounded-md p-6 transition-colors hover:bg-accent hover:text-accent-foreground"
 											>
 												<div class="flex items-start gap-2">
 													<span class="mt-1 shrink-0">
 														<ActivityIcon class="h-4 w-4" />
 													</span>
 													<div>
-														<div class="text-sm font-medium leading-none">
+														<div class="text-sm leading-none font-medium">
 															{m['navigation.status']({})}
 														</div>
-														<p class="text-muted-foreground mt-1 text-xs leading-snug">
+														<p class="mt-1 text-xs leading-snug text-muted-foreground">
 															{m['navigation.statusPage.description']({})}
 														</p>
 													</div>
@@ -361,7 +361,7 @@
 				<span class="text-xs font-light text-zinc-500">{m['navigation.or']({})}</span>
 				<a
 					href="/accounts/signup"
-					class="whitespace-nowrap rounded-md bg-zinc-100 px-2 py-2 text-xs font-medium text-zinc-900 transition-colors hover:bg-zinc-200 sm:px-3 sm:text-sm lg:px-4"
+					class="rounded-md bg-zinc-100 px-2 py-2 text-xs font-medium whitespace-nowrap text-zinc-900 transition-colors hover:bg-zinc-200 sm:px-3 sm:text-sm lg:px-4"
 				>
 					{m['navigation.signup']({})}
 				</a>
@@ -370,7 +370,7 @@
 				<DropdownMenu bind:open={isDropdownOpen}>
 					<DropdownMenuTrigger>
 						<div
-							class="flex items-center gap-2 rounded-md bg-transparent p-2 text-zinc-100 outline-none transition-colors hover:bg-zinc-800 focus:ring-0 focus:ring-offset-0"
+							class="flex items-center gap-2 rounded-md bg-transparent p-2 text-zinc-100 transition-colors outline-none hover:bg-zinc-800 focus:ring-0 focus:ring-offset-0"
 						>
 							<div class="flex items-center gap-2">
 								{#if currentUser.email}

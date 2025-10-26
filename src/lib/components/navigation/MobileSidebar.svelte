@@ -44,7 +44,7 @@
 			titleKey: 'submissions',
 			url: '/submissions',
 			icon: faFileLines
-		},
+		}
 	];
 
 	// About section items
@@ -132,7 +132,7 @@
 										e.preventDefault();
 										handleNavigation(item.url);
 									}}
-									class="hover:bg-accent hover:text-accent-foreground flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all"
+									class="flex items-center gap-3 rounded-lg px-3 py-2 text-sm transition-all hover:bg-accent hover:text-accent-foreground"
 								>
 									<FontAwesomeIcon icon={item.icon} class="h-4 w-4" />
 									{getNavMessage(item.titleKey)({})}
@@ -147,7 +147,7 @@
 							<CollapsibleTrigger>
 								<Button
 									variant="ghost"
-									class="hover:bg-accent w-full justify-between px-3 py-2 text-sm font-semibold tracking-tight"
+									class="w-full justify-between px-3 py-2 text-sm font-semibold tracking-tight hover:bg-accent"
 								>
 									<span>{m['navigation.mobileMenu.about']({})}</span>
 									<FontAwesomeIcon
@@ -164,7 +164,7 @@
 											e.preventDefault();
 											handleNavigation(item.url);
 										}}
-										class="hover:bg-accent hover:text-accent-foreground flex items-start gap-3 rounded-lg px-6 py-2 text-sm transition-all"
+										class="flex items-start gap-3 rounded-lg px-6 py-2 text-sm transition-all hover:bg-accent hover:text-accent-foreground"
 										target={item.url.startsWith('http') ? '_blank' : undefined}
 										rel={item.url.startsWith('http') ? 'noopener noreferrer' : undefined}
 									>
@@ -173,7 +173,7 @@
 										</span>
 										<div>
 											<div class="font-medium">{getNavMessage(item.titleKey)({})}</div>
-											<div class="text-muted-foreground text-xs">
+											<div class="text-xs text-muted-foreground">
 												{getNavMessage(item.descriptionKey)({})}
 											</div>
 										</div>

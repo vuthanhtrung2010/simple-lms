@@ -41,7 +41,7 @@ async function fetchUser(session: AuthSession, db: D1Database): Promise<User | u
 			email: user.email,
 			fullname: user.fullname,
 			username: user.username,
-			perms: BigInt(user.permissions),
+			perms: BigInt(user.permissions)
 		};
 	} catch (err) {
 		console.error('Failed to fetch user data:', err);

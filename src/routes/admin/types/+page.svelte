@@ -158,7 +158,9 @@
 			<input type="hidden" name="id" value={updateId} />
 			<Dialog.Header>
 				<Dialog.Title>Update Type</Dialog.Title>
-				<Dialog.Description>Make changes to the type. Click save when you're done.</Dialog.Description>
+				<Dialog.Description
+					>Make changes to the type. Click save when you're done.</Dialog.Description
+				>
 			</Dialog.Header>
 			<div class="grid gap-4 py-4">
 				<div class="grid grid-cols-4 items-center gap-4">

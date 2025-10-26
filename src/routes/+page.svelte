@@ -89,14 +89,14 @@
 				<h1 class="animated-gradient-text mb-6 text-5xl font-bold md:text-6xl">
 					AI-Powered Exercise Generation
 				</h1>
-				<p class="text-muted-foreground mx-auto mb-8 max-w-3xl text-xl md:text-2xl">
+				<p class="mx-auto mb-8 max-w-3xl text-xl text-muted-foreground md:text-2xl">
 					Transform your teaching with intelligent quiz and exercise generation. Save time, reduce
 					workload, and deliver high-quality practice materials.
 				</p>
 				<div class="flex flex-wrap justify-center gap-4">
 					<a
 						href="/problems"
-						class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center rounded-lg px-6 py-3 font-semibold transition-colors"
+						class="inline-flex items-center rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
 					>
 						Browse Problems
 					</a>
@@ -109,7 +109,7 @@
 	<div class="container mx-auto max-w-6xl px-4 py-16">
 		<div class="mb-12 text-center">
 			<h2 class="mb-4 text-3xl font-bold md:text-4xl">Why Choose Our Platform?</h2>
-			<p class="text-muted-foreground mx-auto max-w-2xl text-lg">
+			<p class="mx-auto max-w-2xl text-lg text-muted-foreground">
 				Built for educators, optimized for learning, powered by AI
 			</p>
 		</div>
@@ -117,17 +117,17 @@
 		<div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
 			{#each features as feature}
 				<div
-					class="border-border bg-card relative rounded-lg border p-6 transition-shadow hover:shadow-lg"
+					class="relative rounded-lg border border-border bg-card p-6 transition-shadow hover:shadow-lg"
 				>
 					{#if feature.badge}
 						<span
-							class="bg-primary/10 text-primary absolute right-4 top-4 rounded-full px-3 py-1 text-xs font-semibold"
+							class="absolute top-4 right-4 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary"
 						>
 							{feature.badge}
 						</span>
 					{/if}
 					<div class="mb-4">
-						<svelte:component this={feature.icon} class="text-primary h-12 w-12" />
+						<svelte:component this={feature.icon} class="h-12 w-12 text-primary" />
 					</div>
 					<h3 class="mb-2 text-xl font-semibold">{feature.title}</h3>
 					<p class="text-muted-foreground">{feature.description}</p>
@@ -137,15 +137,15 @@
 	</div>
 
 	<!-- CTA Section -->
-	<div class="bg-primary/5 border-border border-y">
+	<div class="border-y border-border bg-primary/5">
 		<div class="container mx-auto max-w-4xl px-4 py-16 text-center">
 			<h2 class="mb-4 text-3xl font-bold md:text-4xl">Ready to Get Started?</h2>
-			<p class="text-muted-foreground mb-8 text-lg">
+			<p class="mb-8 text-lg text-muted-foreground">
 				Join us in revolutionizing education with AI-powered exercise generation
 			</p>
 			<a
 				href="/problems"
-				class="bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center rounded-lg px-8 py-4 text-lg font-semibold transition-colors"
+				class="inline-flex items-center rounded-lg bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
 			>
 				Explore Problems Now
 			</a>

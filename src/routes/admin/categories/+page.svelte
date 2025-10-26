@@ -66,7 +66,8 @@
 				>
 					<Dialog.Header>
 						<Dialog.Title>Create Category</Dialog.Title>
-						<Dialog.Description>Add a new category. Click save when you're done.</Dialog.Description>
+						<Dialog.Description>Add a new category. Click save when you're done.</Dialog.Description
+						>
 					</Dialog.Header>
 					<div class="grid gap-4 py-4">
 						<div class="grid grid-cols-4 items-center gap-4">
@@ -160,7 +161,9 @@
 			<input type="hidden" name="id" value={updateId} />
 			<Dialog.Header>
 				<Dialog.Title>Update Category</Dialog.Title>
-				<Dialog.Description>Make changes to the category. Click save when you're done.</Dialog.Description>
+				<Dialog.Description
+					>Make changes to the category. Click save when you're done.</Dialog.Description
+				>
 			</Dialog.Header>
 			<div class="grid gap-4 py-4">
 				<div class="grid grid-cols-4 items-center gap-4">

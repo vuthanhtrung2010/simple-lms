@@ -53,7 +53,7 @@ export const courses = sqliteTable('courses', {
 	isPublished: integer('is_published', { mode: 'boolean' }).notNull().default(false),
 	// Extended thing (from Mr. HDP requested for movitvation)
 	showDebt: integer('show_debt', { mode: 'boolean' }).notNull().default(false),
-	quote: text('quote').default("Thi đua là yêu nước, yêu nước phải thi đua"),
+	quote: text('quote').default('Thi đua là yêu nước, yêu nước phải thi đua'),
 	quoteAuthor: text('quote_author').default('Bác Hồ'),
 	// difficulty: text('difficulty'), // 'beginner', 'intermediate', 'advanced'
 	createdAt: integer('created_at')
@@ -91,12 +91,12 @@ export const enrollments = sqliteTable(
 
 export const categories = sqliteTable('categories', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
-	name: text('name').notNull().unique(),
+	name: text('name').notNull().unique()
 });
 
 export const types = sqliteTable('types', {
 	id: integer('id').primaryKey({ autoIncrement: true }),
-	name: text('name').notNull().unique(),
+	name: text('name').notNull().unique()
 });
 
 // ==================== PROBLEMS/ASSIGNMENTS ====================
@@ -181,7 +181,7 @@ export const courseProblems = sqliteTable(
  * - matching: IELTS-style matching - select A/B/C/D for each item
  * - numeric: Numeric answer with tolerance
  * - text_only: Informational text (0 points)
- * 
+ *
  * Not yet supported: essay, file_upload
  */
 export const questions = sqliteTable(

@@ -64,20 +64,20 @@ export async function getAuthSession(cookies: Cookies): Promise<AuthSession | nu
 		const session = JSON.parse(raw) as AuthSession;
 		if (Date.now() > session.sessionExpires) {
 			await clearAuthSession(cookies);
-			console.log("Auth session expired");
+			console.log('Auth session expired');
 			return null;
 		}
 		return session;
 	} catch (error) {
 		await clearAuthSession(cookies);
-		console.log("Failed to parse auth session cookie:", error);
+		console.log('Failed to parse auth session cookie:', error);
 		return null;
 	}
 }
 
 export async function clearAuthSession(cookies: Cookies): Promise<void> {
 	cookies.delete(COOKIE_NAME, { path: '/' });
-	console.log("Cleared auth session cookie");
+	console.log('Cleared auth session cookie');
 }
 
 export async function requireAuth(event: { cookies: Cookies }): Promise<AuthSession> {
@@ -91,7 +91,10 @@ export async function getUser(cookies: Cookies): Promise<User | null> {
 	return session?.user ?? null;
 }
 
-export async function deleteBackendSession(sessionToken: string | null | undefined, db: D1Database) {
+export async function deleteBackendSession(
+	sessionToken: string | null | undefined,
+	db: D1Database
+) {
 	if (!sessionToken) return;
 	try {
 		const verified = verify(sessionToken);
