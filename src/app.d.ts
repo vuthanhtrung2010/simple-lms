@@ -1,4 +1,5 @@
 import { D1Database } from './types.ts';
+import type { User, AuthSession } from "./lib/server/auth.ts";
 
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
