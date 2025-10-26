@@ -67,10 +67,7 @@
 	"signupPage.form.emailPlaceholder": "ten@example.com",
 	"signupPage.form.firstName": "Tên",
 	"signupPage.form.lastName": "Họ",
-	"signupPage.form.noLanguageFound": "Không tìm thấy ngôn ngữ.",
 	"signupPage.form.password": "Mật khẩu",
-	"signupPage.form.preferredLanguage": "Ngôn ngữ lập trình ưa thích",
-	"signupPage.form.selectLanguage": "Chọn ngôn ngữ...",
 	"signupPage.form.signingUp": "Đang tạo tài khoản...",
 	"signupPage.form.signupButton": "Đăng ký",
 	"signupPage.form.username": "Tên người dùng",
@@ -85,5 +82,13 @@
 	"signupPage.validation.passwordMismatch": "Mật khẩu không khớp",
 	"signupPage.validation.usernameInvalid": "Tên người dùng chỉ có thể chứa chữ cái, số và dấu gạch dưới",
 	"signupPage.validation.usernameMaxLength": "Tên người dùng phải có tối đa 20 ký tự",
-	"signupPage.validation.usernameMinLength": "Tên người dùng phải có ít nhất 3 ký tự"
+	"signupPage.validation.usernameMinLength": "Tên người dùng phải có ít nhất 3 ký tự",
+	"adminSidebar.title": "Bảng điều khiển quản trị",
+	"adminSidebar.logout": "Đăng xuất",
+	"adminSidebar.sidebarName": "Quản lý",
+	"adminSidebar.sections.problems": "Kho bài",
+	"adminSidebar.sections.users": "Người dùng",
+	"adminSidebar.sections.courses": "Khóa học",
+	"adminPage.title": "Bảng điều khiển quản trị",
+	"adminPage.description": "Đây là trang quản trị của {sitename}."
 }

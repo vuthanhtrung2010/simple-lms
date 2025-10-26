@@ -82,5 +82,13 @@
 	"signupPage.validation.passwordMismatch": "Passwords do not match",
 	"signupPage.validation.usernameInvalid": "Username can only contain letters, numbers, and underscores",
 	"signupPage.validation.usernameMaxLength": "Username must be at most 20 characters long",
-	"signupPage.validation.usernameMinLength": "Username must be at least 3 characters long"
+	"signupPage.validation.usernameMinLength": "Username must be at least 3 characters long",
+	"adminSidebar.title": "Admin dashboard",
+	"adminSidebar.logout": "Logout",
+	"adminSidebar.sidebarName": "Admin",
+	"adminSidebar.sections.problems": "Problems",
+	"adminSidebar.sections.users": "Users",
+	"adminSidebar.sections.courses": "Courses",
+	"adminPage.title": "Admin dashboard",
+	"adminPage.description": "This is the admin page of {sitename}."
 }

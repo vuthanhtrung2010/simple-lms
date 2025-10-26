@@ -274,12 +274,12 @@
 										{#snippet child()}
 											<a
 												href="/about"
-												class="flex h-full w-full flex-col justify-end rounded-md bg-gradient-to-b from-muted/50 to-muted p-6 no-underline outline-none select-none focus:shadow-md"
+												class="from-muted/50 to-muted flex h-full w-full select-none flex-col justify-end rounded-md bg-gradient-to-b p-6 no-underline outline-none focus:shadow-md"
 											>
-												<div class="mt-4 mb-2 text-lg font-semibold">
+												<div class="mb-2 mt-4 text-lg font-semibold">
 													{m['navigation.about.title']({})}
 												</div>
-												<p class="text-sm leading-tight text-muted-foreground">
+												<p class="text-muted-foreground text-sm leading-tight">
 													{m['navigation.about.description']({})}
 												</p>
 											</a>
@@ -295,17 +295,15 @@
 												href="https://github.com/vuthanhtrung2010/simple-lms"
 												target="_blank"
 												rel="noopener noreferrer"
-												class="flex h-full w-full flex-col justify-between gap-2 rounded-md p-6 transition-colors hover:bg-accent hover:text-accent-foreground"
+												class="hover:bg-accent hover:text-accent-foreground flex h-full w-full flex-col justify-between gap-2 rounded-md p-6 transition-colors"
 											>
 												<div class="flex items-start gap-2">
 													<span class="mt-1 shrink-0">
 														<FontAwesomeIcon icon={faGithub} class="h-4 w-4" />
 													</span>
 													<div>
-														<div class="text-sm leading-none font-medium">
-															Github
-														</div>
-														<p class="mt-1 text-xs leading-snug text-muted-foreground">
+														<div class="text-sm font-medium leading-none">Github</div>
+														<p class="text-muted-foreground mt-1 text-xs leading-snug">
 															{m['navigation.github.description']({})}
 														</p>
 													</div>
@@ -321,17 +319,17 @@
 										{#snippet child()}
 											<a
 												href="/status"
-												class="flex h-full w-full flex-col justify-between gap-2 rounded-md p-6 transition-colors hover:bg-accent hover:text-accent-foreground"
+												class="hover:bg-accent hover:text-accent-foreground flex h-full w-full flex-col justify-between gap-2 rounded-md p-6 transition-colors"
 											>
 												<div class="flex items-start gap-2">
 													<span class="mt-1 shrink-0">
 														<ActivityIcon class="h-4 w-4" />
 													</span>
 													<div>
-														<div class="text-sm leading-none font-medium">
+														<div class="text-sm font-medium leading-none">
 															{m['navigation.status']({})}
 														</div>
-														<p class="mt-1 text-xs leading-snug text-muted-foreground">
+														<p class="text-muted-foreground mt-1 text-xs leading-snug">
 															{m['navigation.statusPage.description']({})}
 														</p>
 													</div>
@@ -363,7 +361,7 @@
 				<span class="text-xs font-light text-zinc-500">{m['navigation.or']({})}</span>
 				<a
 					href="/accounts/signup"
-					class="rounded-md bg-zinc-100 px-2 py-2 text-xs font-medium whitespace-nowrap text-zinc-900 transition-colors hover:bg-zinc-200 sm:px-3 sm:text-sm lg:px-4"
+					class="whitespace-nowrap rounded-md bg-zinc-100 px-2 py-2 text-xs font-medium text-zinc-900 transition-colors hover:bg-zinc-200 sm:px-3 sm:text-sm lg:px-4"
 				>
 					{m['navigation.signup']({})}
 				</a>
@@ -372,7 +370,7 @@
 				<DropdownMenu bind:open={isDropdownOpen}>
 					<DropdownMenuTrigger>
 						<div
-							class="flex items-center gap-2 rounded-md bg-transparent p-2 text-zinc-100 transition-colors outline-none hover:bg-zinc-800 focus:ring-0 focus:ring-offset-0"
+							class="flex items-center gap-2 rounded-md bg-transparent p-2 text-zinc-100 outline-none transition-colors hover:bg-zinc-800 focus:ring-0 focus:ring-offset-0"
 						>
 							<div class="flex items-center gap-2">
 								{#if currentUser.email}
@@ -404,7 +402,7 @@
 								{m['navigation.profile']({})}
 							</a>
 						</DropdownMenuItem>
-						{#if currentUser?.perms && hasPermission(currentUser.perms, UserPermissions.ADMINISTRATOR)}
+						{#if currentUser?.perms && hasPermission(currentUser.perms, UserPermissions.VIEW_MANAGEMENT_PAGE)}
 							<DropdownMenuItem>
 								<a href="/admin" class="flex w-full items-center gap-2">
 									<Cog class="h-4 w-4" />
