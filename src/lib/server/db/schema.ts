@@ -10,7 +10,7 @@ export const users = sqliteTable('users', {
 	fullname: text('fullname'),
 	email: text('email').notNull().unique(),
 	passwordHash: text('password_hash').notNull(),
-	permissions: integer('permissions').notNull().default(0), // Bitwise permissions
+	permissions: text('permissions').notNull().default('0'), // Bitwise permissions stored as string
 	bio: text('bio'),
 	createdAt: integer('created_at')
 		.notNull()
