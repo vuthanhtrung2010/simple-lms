@@ -89,6 +89,8 @@
 	"adminSidebar.sections.problems": "Kho bài",
 	"adminSidebar.sections.users": "Người dùng",
 	"adminSidebar.sections.courses": "Khóa học",
+	"adminSidebar.sections.categories": "Danh mục",
+	"adminSidebar.sections.types": "Loại",
 	"adminPage.title": "Bảng điều khiển quản trị",
 	"adminPage.description": "Đây là trang quản trị của {sitename}."
 }

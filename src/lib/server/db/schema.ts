@@ -51,6 +51,10 @@ export const courses = sqliteTable('courses', {
 		.notNull()
 		.references(() => users.id, { onDelete: 'cascade' }),
 	isPublished: integer('is_published', { mode: 'boolean' }).notNull().default(false),
+	// Extended thing (from Mr. HDP requested for movitvation)
+	showDebt: integer('show_debt', { mode: 'boolean' }).notNull().default(false),
+	quote: text('quote').default("Thi đua là yêu nước, yêu nước phải thi đua"),
+	quoteAuthor: text('quote_author').default('Bác Hồ'),
 	// difficulty: text('difficulty'), // 'beginner', 'intermediate', 'advanced'
 	createdAt: integer('created_at')
 		.notNull()

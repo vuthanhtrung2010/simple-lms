@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import {
-		ChevronDown,
-		Folder,
-		Gavel,
-		LogOut,
-		Users
-	} from '@lucide/svelte';
+	import { ChevronDown, Folder, FileText, LogOut, Users, Type } from '@lucide/svelte';
 
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
@@ -43,33 +37,53 @@
 		{
 			title: m['adminSidebar.sections.problems'](),
 			url: '/admin/problems',
-			icon: Gavel,
+			icon: FileText,
 			permissions: [
 				UserPermissions.CREATE_PROBLEM,
 				UserPermissions.EDIT_PROBLEM,
 				UserPermissions.DELETE_PROBLEM
 			]
 		},
-        {
-            title: m['adminSidebar.sections.courses'](),
-            url: '/admin/courses',
-            icon: Folder,
-            permissions: [
-                UserPermissions.CREATE_COURSE,
-                UserPermissions.EDIT_COURSE,
-                UserPermissions.DELETE_COURSE
-            ]
-        },
-        {
-            title: m['adminSidebar.sections.users'](),
-            url: '/admin/users',
-            icon: Users,
-            permissions: [
-                UserPermissions.CREATE_USER,
-                UserPermissions.EDIT_USER,
-                UserPermissions.DELETE_USER
-            ]
-        }
+		{
+			title: m['adminSidebar.sections.categories'](),
+			url: '/admin/categories',
+			icon: Folder,
+			permissions: [
+				UserPermissions.CREATE_PROBLEM,
+				UserPermissions.EDIT_PROBLEM,
+				UserPermissions.DELETE_PROBLEM
+			]
+		},
+		{
+			title: m['adminSidebar.sections.types'](),
+			url: '/admin/types',
+			icon: Type,
+			permissions: [
+				UserPermissions.CREATE_PROBLEM,
+				UserPermissions.EDIT_PROBLEM,
+				UserPermissions.DELETE_PROBLEM
+			]
+		},
+		{
+			title: m['adminSidebar.sections.courses'](),
+			url: '/admin/courses',
+			icon: Folder,
+			permissions: [
+				UserPermissions.CREATE_COURSE,
+				UserPermissions.EDIT_COURSE,
+				UserPermissions.DELETE_COURSE
+			]
+		},
+		{
+			title: m['adminSidebar.sections.users'](),
+			url: '/admin/users',
+			icon: Users,
+			permissions: [
+				UserPermissions.CREATE_USER,
+				UserPermissions.EDIT_USER,
+				UserPermissions.DELETE_USER
+			]
+		}
 	];
 
 	const displayName = $derived(() => user?.fullname || user?.username || 'User');

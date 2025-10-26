@@ -89,6 +89,8 @@
 	"adminSidebar.sections.problems": "Problems",
 	"adminSidebar.sections.users": "Users",
 	"adminSidebar.sections.courses": "Courses",
+	"adminSidebar.sections.categories": "Categories",
+	"adminSidebar.sections.types": "Types",
 	"adminPage.title": "Admin dashboard",
 	"adminPage.description": "This is the admin page of {sitename}."
 }
