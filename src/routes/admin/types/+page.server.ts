@@ -2,6 +2,7 @@ import type { PageServerLoad, Actions } from './$types.js';
 import { types } from '$lib/server/db/schema.js';
 import { eq } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
+import { hasPermission, UserPermissions } from '$lib/permissions.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const allTypes = await locals.db.select().from(types).all();
@@ -12,6 +13,16 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 export const actions = {
 	create: async ({ locals, request }) => {
+		if (!locals.user?.perms)
+			return fail(403, { error: 'You do not have permission to perform this action.' });
+
+		const hasPerm =
+			hasPermission(locals.user.perms, UserPermissions.CREATE_PROBLEM) ||
+			hasPermission(locals.user.perms, UserPermissions.EDIT_PROBLEM) ||
+			hasPermission(locals.user.perms, UserPermissions.DELETE_PROBLEM);
+
+		if (!hasPerm) return fail(403, { error: 'You do not have permission to perform this action.' });
+
 		const data = await request.formData();
 		const name = data.get('name') as string;
 
@@ -29,6 +40,16 @@ export const actions = {
 	},
 
 	update: async ({ locals, request }) => {
+		if (!locals.user?.perms)
+			return fail(403, { error: 'You do not have permission to perform this action.' });
+
+		const hasPerm =
+			hasPermission(locals.user.perms, UserPermissions.CREATE_PROBLEM) ||
+			hasPermission(locals.user.perms, UserPermissions.EDIT_PROBLEM) ||
+			hasPermission(locals.user.perms, UserPermissions.DELETE_PROBLEM);
+
+		if (!hasPerm) return fail(403, { error: 'You do not have permission to perform this action.' });
+
 		const data = await request.formData();
 		const id = data.get('id');
 		const name = data.get('name') as string;
@@ -50,6 +71,16 @@ export const actions = {
 	},
 
 	delete: async ({ locals, request }) => {
+		if (!locals.user?.perms)
+			return fail(403, { error: 'You do not have permission to perform this action.' });
+
+		const hasPerm =
+			hasPermission(locals.user.perms, UserPermissions.CREATE_PROBLEM) ||
+			hasPermission(locals.user.perms, UserPermissions.EDIT_PROBLEM) ||
+			hasPermission(locals.user.perms, UserPermissions.DELETE_PROBLEM);
+
+		if (!hasPerm) return fail(403, { error: 'You do not have permission to perform this action.' });
+
 		const data = await request.formData();
 		const id = data.get('id');
 

@@ -1,4 +1,5 @@
 import { sqliteTable, text, integer, real, primaryKey, index } from 'drizzle-orm/sqlite-core';
+import cuid from 'cuid';
 
 // ==================== USER & AUTH ====================
 
@@ -43,7 +44,7 @@ export const sessions = sqliteTable('sessions', {
 export const courses = sqliteTable('courses', {
 	id: text('id')
 		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
+		.$defaultFn(() => cuid()),
 	title: text('title').notNull(),
 	description: text('description').notNull(),
 	thumbnailUrl: text('thumbnail_url'),
