@@ -1,41 +1,48 @@
 {
-	"version": "7",
-	"dialect": "sqlite",
-	"entries": [
-		{
-			"idx": 0,
-			"version": "6",
-			"when": 1761226214515,
-			"tag": "0000_uneven_gorilla_man",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "6",
-			"when": 1761232630115,
-			"tag": "0001_heavy_iceman",
-			"breakpoints": true
-		},
-		{
-			"idx": 2,
-			"version": "6",
-			"when": 1761453507200,
-			"tag": "0002_kind_revanche",
-			"breakpoints": true
-		},
-		{
-			"idx": 3,
-			"version": "6",
-			"when": 1761474097735,
-			"tag": "0003_serious_king_cobra",
-			"breakpoints": true
-		},
-		{
-			"idx": 4,
-			"version": "6",
-			"when": 1761485397221,
-			"tag": "0004_magenta_king_bedlam",
-			"breakpoints": true
-		}
-	]
+  "version": "7",
+  "dialect": "sqlite",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "6",
+      "when": 1761226214515,
+      "tag": "0000_uneven_gorilla_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1761232630115,
+      "tag": "0001_heavy_iceman",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1761453507200,
+      "tag": "0002_kind_revanche",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1761474097735,
+      "tag": "0003_serious_king_cobra",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1761485397221,
+      "tag": "0004_magenta_king_bedlam",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1761556064774,
+      "tag": "0005_first_luckman",
+      "breakpoints": true
+    }
+  ]
 }

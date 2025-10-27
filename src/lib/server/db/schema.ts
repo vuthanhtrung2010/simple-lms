@@ -1,4 +1,12 @@
-import { sqliteTable, text, integer, real, primaryKey, index } from 'drizzle-orm/sqlite-core';
+import {
+	sqliteTable,
+	text,
+	integer,
+	real,
+	primaryKey,
+	index,
+	uniqueIndex
+} from 'drizzle-orm/sqlite-core';
 import cuid from 'cuid';
 
 // ==================== USER & AUTH ====================
@@ -79,13 +87,12 @@ export const enrollments = sqliteTable(
 			.notNull()
 			.references(() => courses.id, { onDelete: 'cascade' }),
 		role: text('role').notNull().default('student'), // 'student', 'teacher', 'supervisor'
-		progress: real('progress').notNull().default(0), // Percentage 0-100
 		enrolledAt: integer('enrolled_at')
 			.notNull()
 			.$defaultFn(() => Date.now()),
 		completedAt: integer('completed_at')
 	},
-	(table) => [index('enrollment_user_course_idx').on(table.userId, table.courseId)]
+	(table) => [uniqueIndex('enrollment_user_course_idx').on(table.userId, table.courseId)]
 );
 
 // ==================== CATEGORIES & TYPES ====================
@@ -264,7 +271,11 @@ export const submissions = sqliteTable(
 		flagReason: text('flag_reason')
 	},
 	(table) => [
-		index('submission_user_problem_idx').on(table.userId, table.problemId),
+		uniqueIndex('submission_user_problem_attempt_idx').on(
+			table.userId,
+			table.problemId,
+			table.attemptNumber
+		),
 		index('submission_status_idx').on(table.status)
 	]
 );
@@ -301,7 +312,49 @@ export const questionAnswers = sqliteTable(
 			.notNull()
 			.$defaultFn(() => Date.now())
 	},
-	(table) => [index('answer_submission_question_idx').on(table.submissionId, table.questionId)]
+	(table) => [
+		uniqueIndex('answer_submission_question_idx').on(table.submissionId, table.questionId)
+	]
+);
+
+// ==================== TYPE RATINGS ====================
+
+/**
+ * Tracks user ratings for each type within a course enrollment
+ * Similar to TopicRating in Prisma but named typeRatings to match the types system
+ */
+export const typeRatings = sqliteTable(
+	'type_ratings',
+	{
+		id: text('id')
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		userId: text('user_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		courseId: text('course_id')
+			.notNull()
+			.references(() => courses.id, { onDelete: 'cascade' }),
+		typeId: integer('type_id')
+			.notNull()
+			.references(() => types.id, { onDelete: 'cascade' }),
+		rating: real('rating').notNull().default(1500), // ELO-style rating
+		submissionCount: integer('submission_count').notNull().default(0),
+		createdAt: integer('created_at')
+			.notNull()
+			.$defaultFn(() => Date.now()),
+		updatedAt: integer('updated_at')
+			.notNull()
+			.$defaultFn(() => Date.now())
+			.$onUpdate(() => Date.now())
+	},
+	(table) => [
+		// Unique combination of user, course, and type
+		uniqueIndex('type_rating_unique_idx').on(table.userId, table.courseId, table.typeId),
+		index('type_rating_user_idx').on(table.userId),
+		index('type_rating_course_idx').on(table.courseId),
+		index('type_rating_type_idx').on(table.typeId)
+	]
 );
 
 // ==================== ANNOUNCEMENTS ====================
