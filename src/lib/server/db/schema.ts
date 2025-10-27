@@ -123,6 +123,7 @@ export const problems = sqliteTable('problems', {
 	showAnswers: text('show_answers').notNull().default('after_submission'), // 'never', 'after_submission', 'after_due', 'always'
 	shuffleQuestions: integer('shuffle_questions', { mode: 'boolean' }).notNull().default(false),
 	splitScreen: integer('split_screen', { mode: 'boolean' }).notNull().default(false), // Split screen view, show text_only questions on left side, real questions on right side
+	rating: real('rating').notNull().default(1500), // ELO-style rating
 	createdBy: text('created_by')
 		.notNull()
 		.references(() => users.id, { onDelete: 'cascade' }),
@@ -359,25 +360,22 @@ export const typeRatings = sqliteTable(
 
 // ==================== ANNOUNCEMENTS ====================
 
-export const announcements = sqliteTable('announcements', {
-	id: text('id')
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	courseId: text('course_id')
-		.notNull()
-		.references(() => courses.id, { onDelete: 'cascade' }),
-	authorId: text('author_id')
-		.notNull()
-		.references(() => users.id, { onDelete: 'cascade' }),
-	title: text('title').notNull(),
-	content: text('content').notNull(),
-	isPinned: integer('is_pinned', { mode: 'boolean' }).notNull().default(false),
-	publishedAt: integer('published_at'),
-	createdAt: integer('created_at')
-		.notNull()
-		.$defaultFn(() => Date.now()),
-	updatedAt: integer('updated_at')
-		.notNull()
-		.$defaultFn(() => Date.now())
-		.$onUpdate(() => Date.now())
-});
+export const announcements = sqliteTable(
+	'announcements',
+	{
+		id: integer('id').primaryKey({ autoIncrement: true }),
+		courseId: text('course_id')
+			.notNull()
+			.references(() => courses.id, { onDelete: 'cascade' }),
+		title: text('title').notNull(),
+		content: text('content').notNull().default(''),
+		createdAt: integer('created_at')
+			.notNull()
+			.$defaultFn(() => Date.now()),
+		updatedAt: integer('updated_at')
+			.notNull()
+			.$defaultFn(() => Date.now())
+			.$onUpdate(() => Date.now())
+	},
+	(table) => [index('announcements_course_idx').on(table.courseId)]
+);

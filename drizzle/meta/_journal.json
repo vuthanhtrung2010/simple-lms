@@ -43,6 +43,13 @@
       "when": 1761556064774,
       "tag": "0005_first_luckman",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1761557454635,
+      "tag": "0006_certain_lady_bullseye",
+      "breakpoints": true
     }
   ]
 }
