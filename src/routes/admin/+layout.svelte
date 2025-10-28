@@ -1,5 +1,6 @@
 <script lang="ts">
-	const { children, data } = $props<{ children: () => unknown; data: App.PageData }>();
+	import type { LayoutProps } from "./$types.js";
+	const { children, data }: LayoutProps = $props();
 </script>
 
 {@render children?.()}

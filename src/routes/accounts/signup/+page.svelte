@@ -22,8 +22,9 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { goto } from '$app/navigation';
+	import type { PageProps } from './$types.js';
 
-	let { form }: { form: any } = $props();
+	let { form }: PageProps = $props();
 
 	const theme = useTheme();
 

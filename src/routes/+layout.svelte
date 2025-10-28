@@ -2,6 +2,7 @@
 	import '../app.css';
 	import '@fortawesome/fontawesome-svg-core/styles.css';
 	import { config } from '@fortawesome/fontawesome-svg-core';
+	import type { LayoutProps } from "./$types.js";
 
 	config.autoAddCss = false; // Tell Font Awesome to skip adding the CSS automatically since it's being imported above
 	import { beforeNavigate, afterNavigate } from '$app/navigation';
@@ -26,7 +27,7 @@
 		loading = false;
 	});
 
-	let { children, data } = $props<{ children: () => Snippet[]; data: App.PageData }>();
+	let { children, data }: LayoutProps = $props();
 </script>
 
 <SvelteTheme defaultTheme="system">

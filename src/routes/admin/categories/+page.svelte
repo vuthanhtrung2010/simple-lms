@@ -6,8 +6,9 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import * as Table from '$lib/components/ui/table/index.js';
 	import { enhance } from '$app/forms';
+	import type { PageProps } from './$types.js';
 
-	let { data } = $props();
+	let { data }: PageProps = $props();
 
 	// Create dialog state
 	let createDialogOpen = $state(false);

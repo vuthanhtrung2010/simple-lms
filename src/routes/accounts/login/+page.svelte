@@ -21,8 +21,9 @@
 	import { Label } from '$lib/components/ui/label/index.js';
 	import MagicCard from '$lib/components/magicui/MagicCard.svelte';
 	import { goto } from '$app/navigation';
+	import type { PageProps } from './$types.js';
 
-	let { form }: { form: { error: string } } = $props();
+	let { form }: PageProps = $props();
 
 	const theme = useTheme();
 
@@ -88,7 +89,7 @@
 								class="flex items-center gap-2 rounded border border-red-400 bg-red-100 px-4 py-2 text-red-700"
 							>
 								<AlertCircle size={16} />
-								<span>{error || form.error}</span>
+								<span>{error || form?.error}</span>
 							</div>
 						{/if}
 						<div class="grid gap-2">

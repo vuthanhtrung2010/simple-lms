@@ -10,3 +10,6 @@ bun.lockb
 
 # Migrations file
 drizzle/
+
+# Workers type file
+worker-configuration.d.ts
