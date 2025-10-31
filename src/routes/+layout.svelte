@@ -15,7 +15,6 @@
 	import Loading from '$lib/components/loading.svelte';
 	import { TooltipProvider } from '$lib/components/ui/tooltip/index.js';
 	import AdminSidebar from '$lib/components/navigation/AdminSidebar.svelte';
-	import type { Snippet } from 'svelte';
 
 	let loading = $state(false);
 

@@ -69,6 +69,17 @@ const handleDB: Handle = async ({ event, resolve }) => {
 	return response;
 };
 
+const handleR2: Handle = async ({ event, resolve }) => {
+	if (event.platform?.env.R2) {
+		event.locals.r2 = event.platform.env.R2;
+	} else {
+		throw new Error('R2 binding "R2" is not found in the environment.');
+	}
+
+	const response = await resolve(event);
+	return response;
+};
+
 const handleAuth: Handle = async ({ event, resolve }) => {
 	const session = await getAuthSession(event.cookies);
 	if (session) {
@@ -94,4 +105,4 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle: Handle = sequence(handleParaglide, handleDB, handleAuth);
+export const handle: Handle = sequence(handleParaglide, handleDB, handleR2, handleAuth);

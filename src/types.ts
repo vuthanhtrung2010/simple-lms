@@ -13,7 +13,7 @@ export type QuestionType =
 	| 'numeric';
 
 export type SupportedExtension = 'jpg' | 'jpeg' | 'png' | 'gif' | 'mp4' | 'mp3' | 'wav' | 'pdf';
-export type MediaUrl = `${string}.${SupportedExtension}`;
+export type MediaUrl = `${string}.${SupportedExtension}` | `https://${string}` | `http://${string}`;
 
 export interface SingleChoiceConfig {
 	options: {

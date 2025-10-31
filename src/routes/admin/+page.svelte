@@ -3,7 +3,5 @@
 	import { Config } from '$lib/config.js';
 </script>
 
-<div class="p-6">
-	<h1 class="mb-4 text-3xl font-bold">{m['adminPage.title']()}</h1>
-	<p class="text-lg">{m['adminPage.description']({ sitename: Config.sitename })}</p>
-</div>
+<h1 class="mb-4 text-3xl font-bold">{m['adminPage.title']()}</h1>
+<p class="text-lg">{m['adminPage.description']({ sitename: Config.sitename })}</p>

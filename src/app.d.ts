@@ -11,6 +11,7 @@ declare global {
 			session: AuthSession | null;
 			user: User | null;
 			sessionToken: string | null;
+			r2: R2Bucket | null;
 		}
 		interface PageData {
 			session: AuthSession | null;

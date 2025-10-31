@@ -14,7 +14,7 @@ import cuid from 'cuid';
 export const users = sqliteTable('users', {
 	id: text('id')
 		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
+		.$defaultFn(() => cuid()),
 	username: text('username').notNull().unique(),
 	fullname: text('fullname'),
 	email: text('email').notNull().unique(),
@@ -56,9 +56,6 @@ export const courses = sqliteTable('courses', {
 	title: text('title').notNull(),
 	description: text('description').notNull(),
 	thumbnailUrl: text('thumbnail_url'),
-	instructorId: text('instructor_id')
-		.notNull()
-		.references(() => users.id, { onDelete: 'cascade' }),
 	isPublished: integer('is_published', { mode: 'boolean' }).notNull().default(false),
 	// Extended thing (from Mr. HDP requested for movitvation)
 	showDebt: integer('show_debt', { mode: 'boolean' }).notNull().default(false),
@@ -110,15 +107,13 @@ export const types = sqliteTable('types', {
 // ==================== PROBLEMS/ASSIGNMENTS ====================
 
 export const problems = sqliteTable('problems', {
-	id: text('id')
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
+	id: integer('id').primaryKey({ autoIncrement: true }),
 	title: text('title').notNull(),
 	description: text('description').notNull(),
 	instructions: text('instructions'), // Detailed instructions
-	media: text('media', { mode: 'json' }), // JSON array: [{ url: string, type?: string }]
+	media: text('media', { mode: 'json' }), // JSON array
 	maxPoints: real('max_points').notNull().default(0),
-	timeLimit: integer('time_limit'), // Time limit in minutes (null = no limit)
+	timeLimit: integer('time_limit'), // Time limit in minutes (null/0/-1 = no limit)
 	attemptsAllowed: integer('attempts_allowed').default(-1), // null/-1/0 = unlimited
 	showAnswers: text('show_answers').notNull().default('after_submission'), // 'never', 'after_submission', 'after_due', 'always'
 	shuffleQuestions: integer('shuffle_questions', { mode: 'boolean' }).notNull().default(false),
@@ -379,3 +374,26 @@ export const announcements = sqliteTable(
 	},
 	(table) => [index('announcements_course_idx').on(table.courseId)]
 );
+
+// API KEY
+export const apiKeys = sqliteTable('api_keys', {
+	id: text('id')
+		.primaryKey()
+		.$defaultFn(() => crypto.randomUUID()),
+	userId: text('user_id')
+		.notNull()
+		.references(() => users.id, { onDelete: 'cascade' }),
+	name: text('name').notNull(),
+	key: text('key').notNull().unique(),
+	createdAt: integer('created_at')
+		.notNull()
+		.$defaultFn(() => Date.now()),
+	updatedAt: integer('updated_at')
+		.notNull()
+		.$defaultFn(() => Date.now())
+		.$onUpdate(() => Date.now()),
+	expiresAt: integer('expires_at')
+		.notNull()
+		.$defaultFn(() => Date.now())
+		.$onUpdate(() => Date.now())
+});

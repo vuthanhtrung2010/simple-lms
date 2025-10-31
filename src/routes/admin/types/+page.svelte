@@ -40,103 +40,101 @@
 	}
 </script>
 
-<div class="p-6">
-	<div class="mb-6 flex items-center justify-between">
-		<h1 class="text-3xl font-bold">Types</h1>
+<div class="mb-6 flex items-center justify-between">
+	<h1 class="text-3xl font-bold">Types</h1>
 
-		<!-- Create Type Dialog -->
-		<Dialog.Root bind:open={createDialogOpen}>
-			<Dialog.Trigger class={buttonVariants({ variant: 'default' })}>Create Type</Dialog.Trigger>
-			<Dialog.Content class="sm:max-w-[425px]">
-				<form
-					method="POST"
-					action="?/create"
-					use:enhance={() => {
-						createLoading = true;
-						return async ({ result, update }) => {
-							createLoading = false;
-							if (result.type === 'success') {
-								createDialogOpen = false;
-								createName = '';
-							}
-							await update();
-						};
-					}}
-				>
-					<Dialog.Header>
-						<Dialog.Title>Create Type</Dialog.Title>
-						<Dialog.Description>Add a new type. Click save when you're done.</Dialog.Description>
-					</Dialog.Header>
-					<div class="grid gap-4 py-4">
-						<div class="grid grid-cols-4 items-center gap-4">
-							<Label for="create-name" class="text-right">Name</Label>
-							<Input
-								id="create-name"
-								name="name"
-								bind:value={createName}
-								class="col-span-3"
-								required
-								disabled={createLoading}
-							/>
-						</div>
+	<!-- Create Type Dialog -->
+	<Dialog.Root bind:open={createDialogOpen}>
+		<Dialog.Trigger class={buttonVariants({ variant: 'default' })}>Create Type</Dialog.Trigger>
+		<Dialog.Content class="sm:max-w-[425px]">
+			<form
+				method="POST"
+				action="?/create"
+				use:enhance={() => {
+					createLoading = true;
+					return async ({ result, update }) => {
+						createLoading = false;
+						if (result.type === 'success') {
+							createDialogOpen = false;
+							createName = '';
+						}
+						await update();
+					};
+				}}
+			>
+				<Dialog.Header>
+					<Dialog.Title>Create Type</Dialog.Title>
+					<Dialog.Description>Add a new type. Click save when you're done.</Dialog.Description>
+				</Dialog.Header>
+				<div class="grid gap-4 py-4">
+					<div class="grid grid-cols-4 items-center gap-4">
+						<Label for="create-name" class="text-right">Name</Label>
+						<Input
+							id="create-name"
+							name="name"
+							bind:value={createName}
+							class="col-span-3"
+							required
+							disabled={createLoading}
+						/>
 					</div>
-					<Dialog.Footer>
-						<Button type="submit" disabled={createLoading}>
-							{createLoading ? 'Creating...' : 'Create'}
-						</Button>
-					</Dialog.Footer>
-				</form>
-			</Dialog.Content>
-		</Dialog.Root>
-	</div>
+				</div>
+				<Dialog.Footer>
+					<Button type="submit" disabled={createLoading}>
+						{createLoading ? 'Creating...' : 'Create'}
+					</Button>
+				</Dialog.Footer>
+			</form>
+		</Dialog.Content>
+	</Dialog.Root>
+</div>
 
-	<!-- Types Table -->
-	<div class="rounded-md border">
-		<Table.Root>
-			<Table.Header>
+<!-- Types Table -->
+<div class="rounded-md border">
+	<Table.Root>
+		<Table.Header>
+			<Table.Row>
+				<Table.Head class="w-[100px]">ID</Table.Head>
+				<Table.Head>Name</Table.Head>
+				<Table.Head class="text-right">Actions</Table.Head>
+			</Table.Row>
+		</Table.Header>
+		<Table.Body>
+			{#each data.types as type}
 				<Table.Row>
-					<Table.Head class="w-[100px]">ID</Table.Head>
-					<Table.Head>Name</Table.Head>
-					<Table.Head class="text-right">Actions</Table.Head>
-				</Table.Row>
-			</Table.Header>
-			<Table.Body>
-				{#each data.types as type}
-					<Table.Row>
-						<Table.Cell class="font-medium">{type.id}</Table.Cell>
-						<Table.Cell>{type.name}</Table.Cell>
-						<Table.Cell class="text-right">
-							<div class="flex justify-end gap-2">
-								<!-- Update Button -->
-								<Button
-									variant="outline"
-									size="sm"
-									onclick={() => openUpdateDialog(type.id, type.name)}
-								>
-									Update
-								</Button>
+					<Table.Cell class="font-medium">{type.id}</Table.Cell>
+					<Table.Cell>{type.name}</Table.Cell>
+					<Table.Cell class="text-right">
+						<div class="flex justify-end gap-2">
+							<!-- Update Button -->
+							<Button
+								variant="outline"
+								size="sm"
+								onclick={() => openUpdateDialog(type.id, type.name)}
+							>
+								Update
+							</Button>
 
-								<!-- Delete Button -->
-								<Button
-									variant="destructive"
-									size="sm"
-									onclick={() => openDeleteDialog(type.id, type.name)}
-								>
-									Delete
-								</Button>
-							</div>
-						</Table.Cell>
-					</Table.Row>
-				{:else}
-					<Table.Row>
-						<Table.Cell colspan={3} class="text-center text-muted-foreground">
-							No types found. Create one to get started!
-						</Table.Cell>
-					</Table.Row>
-				{/each}
-			</Table.Body>
-		</Table.Root>
-	</div>
+							<!-- Delete Button -->
+							<Button
+								variant="destructive"
+								size="sm"
+								onclick={() => openDeleteDialog(type.id, type.name)}
+							>
+								Delete
+							</Button>
+						</div>
+					</Table.Cell>
+				</Table.Row>
+			{:else}
+				<Table.Row>
+					<Table.Cell colspan={3} class="text-center text-muted-foreground">
+						No types found. Create one to get started!
+					</Table.Cell>
+				</Table.Row>
+			{/each}
+		</Table.Body>
+	</Table.Root>
 </div>
 
 <!-- Update Dialog -->

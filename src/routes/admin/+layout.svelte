@@ -1,6 +1,8 @@
 <script lang="ts">
-	import type { LayoutProps } from "./$types.js";
-	const { children, data }: LayoutProps = $props();
+	import type { LayoutProps } from './$types.js';
+	const { children }: LayoutProps = $props();
 </script>
 
-{@render children?.()}
+<div class="p-6">
+	{@render children?.()}
+</div>

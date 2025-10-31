@@ -50,6 +50,13 @@
       "when": 1761557454635,
       "tag": "0006_certain_lady_bullseye",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1761631062512,
+      "tag": "0007_smooth_tana_nile",
+      "breakpoints": true
     }
   ]
 }
