@@ -112,7 +112,6 @@ export const problems = sqliteTable('problems', {
 	description: text('description').notNull(),
 	instructions: text('instructions'), // Detailed instructions
 	media: text('media', { mode: 'json' }), // JSON array
-	maxPoints: real('max_points').notNull().default(0),
 	timeLimit: integer('time_limit'), // Time limit in minutes (null/0/-1 = no limit)
 	attemptsAllowed: integer('attempts_allowed').default(-1), // null/-1/0 = unlimited
 	showAnswers: text('show_answers').notNull().default('after_submission'), // 'never', 'after_submission', 'after_due', 'always'
