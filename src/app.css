@@ -2,6 +2,8 @@
 
 @import 'tw-animate-css';
 
+@import 'katex/dist/katex.min.css';
+
 @custom-variant dark (&:is(.dark *));
 
 :root {
@@ -278,4 +280,47 @@ hr {
 	@apply -mt-1 mb-6 border-t border-gray-300;
 }
 
+/* Codeblocks */
+h3 code {
+  font-size: 1.125rem; /* !text-lg */
+}
+
+pre {
+  padding-left: 0;
+  padding-right: 0;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+}
+
+pre [data-line] {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+code {
+  font-size: 0.875rem; /* text-sm */
+  line-height: 1.75; /* loose */
+}
+
+pre > code {
+  counter-reset: line;
+}
+
+pre code[data-theme],
+pre code[data-theme] span {
+  color: var(--shiki-light);
+  background-color: var(--shiki-light-bg);
+}
+
+@media (prefers-color-scheme: dark) {
+  pre code[data-theme],
+  pre code[data-theme] span {
+    color: var(--shiki-dark);
+    background-color: var(--shiki-dark-bg);
+  }
+}
+
 @import './styles/rating.css';
+@import './styles/wikijs-backport.css';

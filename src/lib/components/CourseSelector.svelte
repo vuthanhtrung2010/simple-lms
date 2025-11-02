@@ -4,7 +4,6 @@
 	import * as Popover from '$lib/components/ui/popover/index.js';
 	import { Button } from '$lib/components/ui/button/index.js';
 	import { cn } from '$lib/utils.js';
-	import { m } from '$lib/paraglide/messages.js';
 
 	type Course = {
 		id: string;
