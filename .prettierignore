@@ -13,3 +13,7 @@ drizzle/
 
 # Workers type file
 worker-configuration.d.ts
+
+# Ignore types file, it is being auto generated after build and that's annyoing
+# Frfr
+types.d.ts
