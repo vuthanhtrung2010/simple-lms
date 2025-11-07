@@ -195,16 +195,3 @@ export async function processMarkdownToHtml(
 		return '<p>Failed to render markdown</p>';
 	}
 }
-
-/**
- * Process markdown text to HTML with default settings optimized for problem descriptions
- * @param markdown - The markdown text to process
- * @returns Promise that resolves to the processed HTML string
- */
-export async function processMarkdownForProblem(markdown: string): Promise<string> {
-	return processMarkdownToHtml(markdown, {
-		includeCopyButton: true,
-		keepCodeBackground: true,
-		defaultCodeLang: 'text'
-	});
-}
