@@ -10,7 +10,8 @@ function getLastExtension(filename: string): string | undefined {
 function buildHeaders(obj: R2ObjectBody | R2Object, key: string) {
 	const headers = new Headers();
 	const ext = getLastExtension(key);
-	const contentType = obj.httpMetadata?.contentType ?? (ext ? getMimeType(ext) : 'application/octet-stream');
+	const contentType =
+		obj.httpMetadata?.contentType ?? (ext ? getMimeType(ext) : 'application/octet-stream');
 	headers.set('Content-Type', contentType);
 	if (obj.httpMetadata?.cacheControl) headers.set('Cache-Control', obj.httpMetadata.cacheControl);
 	if (obj.etag) headers.set('ETag', obj.etag);

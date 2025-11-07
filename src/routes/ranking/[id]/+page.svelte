@@ -182,35 +182,35 @@
 		<!-- Mobile: Quote at top -->
 		{#if courseQuote}
 			<div
-				class="from-primary/10 via-primary/5 to-background border-primary/20 relative mb-6 overflow-hidden rounded-xl border-2 bg-gradient-to-br shadow-lg lg:hidden"
+				class="relative mb-6 overflow-hidden rounded-xl border-2 border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-background shadow-lg lg:hidden"
 			>
 				<div
-					class="bg-primary/5 absolute right-0 top-0 h-32 w-32 -translate-y-16 translate-x-16 rounded-full"
+					class="absolute top-0 right-0 h-32 w-32 translate-x-16 -translate-y-16 rounded-full bg-primary/5"
 				></div>
 				<div
-					class="bg-primary/5 absolute bottom-0 left-0 h-24 w-24 -translate-x-12 translate-y-12 rounded-full"
+					class="absolute bottom-0 left-0 h-24 w-24 -translate-x-12 translate-y-12 rounded-full bg-primary/5"
 				></div>
 
 				<div class="relative p-6">
 					<div class="flex items-start gap-4">
 						<div class="flex-shrink-0">
-							<div class="bg-primary/20 flex h-12 w-12 items-center justify-center rounded-full">
-								<FontAwesomeIcon icon={faQuoteLeft} class="text-primary text-xl" />
+							<div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/20">
+								<FontAwesomeIcon icon={faQuoteLeft} class="text-xl text-primary" />
 							</div>
 						</div>
 
 						<div class="flex-1 pt-1">
 							<blockquote
-								class="text-foreground/90 mb-3 text-lg font-medium italic leading-relaxed"
+								class="mb-3 text-lg leading-relaxed font-medium text-foreground/90 italic"
 							>
 								"{courseQuote}"
 							</blockquote>
 							{#if quoteAuthor}
 								<div class="flex justify-end">
 									<cite
-										class="text-primary flex items-center gap-2 text-sm font-semibold not-italic"
+										class="flex items-center gap-2 text-sm font-semibold text-primary not-italic"
 									>
-										<span class="bg-primary/50 inline-block h-0.5 w-8 rounded-full"></span>
+										<span class="inline-block h-0.5 w-8 rounded-full bg-primary/50"></span>
 										{quoteAuthor}
 									</cite>
 								</div>
@@ -218,7 +218,7 @@
 						</div>
 					</div>
 
-					<div class="from-primary to-primary/50 mt-4 h-1 w-20 rounded-full bg-gradient-to-r"></div>
+					<div class="mt-4 h-1 w-20 rounded-full bg-gradient-to-r from-primary to-primary/50"></div>
 				</div>
 			</div>
 		{/if}
@@ -290,7 +290,7 @@
 									<tr>
 										<td
 											colspan={showDebt ? 5 : 4}
-											class="text-muted-foreground h-24 px-4 text-center"
+											class="h-24 px-4 text-center text-muted-foreground"
 										>
 											<div class="flex items-center justify-center">
 												<Loading />
@@ -301,24 +301,24 @@
 									<tr>
 										<td
 											colspan={showDebt ? 5 : 4}
-											class="text-muted-foreground h-24 px-4 text-center"
+											class="h-24 px-4 text-center text-muted-foreground"
 										>
 											<span>No users available.</span>
 										</td>
 									</tr>
 								{:else}
 									{#each currentUsers as user, index}
-										<tr class="hover:bg-muted/50 border-b transition-colors">
-											<td class="border-border border-r p-4 text-center align-middle">
+										<tr class="border-b transition-colors hover:bg-muted/50">
+											<td class="border-r border-border p-4 text-center align-middle">
 												<span class="text-lg font-bold">#{startIndex + index + 1}</span>
 											</td>
-											<td class="border-border border-r p-4 text-center align-middle">
+											<td class="border-r border-border p-4 text-center align-middle">
 												<RatingDisplay rating={Math.round(user.rating)} showIcon={true} />
 											</td>
-											<td class="border-border border-r p-4 align-middle">
+											<td class="border-r border-border p-4 align-middle">
 												<a
 													href="/user/{user.id}"
-													class="text-primary font-medium hover:underline"
+													class="font-medium text-primary hover:underline"
 													title={getRatingTitle(Math.round(user.rating))}
 												>
 													<UsernameDisplay username={user.name} rating={Math.round(user.rating)} />
@@ -410,7 +410,7 @@
 					</div>
 				</div>
 				{#if currentUsers.length > 0}
-					<div class="text-muted-foreground mt-6 text-sm">
+					<div class="mt-6 text-sm text-muted-foreground">
 						<p>Click on a name to view their profile and detailed statistics.</p>
 					</div>
 				{/if}
@@ -421,34 +421,34 @@
 				<!-- Quote Box -->
 				{#if courseQuote}
 					<div
-						class="from-primary/10 via-primary/5 to-background border-primary/20 relative overflow-hidden rounded-xl border-2 bg-gradient-to-br shadow-lg"
+						class="relative overflow-hidden rounded-xl border-2 border-primary/20 bg-gradient-to-br from-primary/10 via-primary/5 to-background shadow-lg"
 					>
 						<div
-							class="bg-primary/5 absolute right-0 top-0 h-24 w-24 -translate-y-12 translate-x-12 rounded-full"
+							class="absolute top-0 right-0 h-24 w-24 translate-x-12 -translate-y-12 rounded-full bg-primary/5"
 						></div>
 
 						<div class="relative p-4">
 							<div class="flex items-start gap-3">
 								<div class="flex-shrink-0">
 									<div
-										class="bg-primary/20 flex h-10 w-10 items-center justify-center rounded-full"
+										class="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20"
 									>
-										<FontAwesomeIcon icon={faQuoteLeft} class="text-primary text-lg" />
+										<FontAwesomeIcon icon={faQuoteLeft} class="text-lg text-primary" />
 									</div>
 								</div>
 
 								<div class="flex-1 pt-1">
 									<blockquote
-										class="text-foreground/90 mb-2 text-base font-medium italic leading-relaxed"
+										class="mb-2 text-base leading-relaxed font-medium text-foreground/90 italic"
 									>
 										"{courseQuote}"
 									</blockquote>
 									{#if quoteAuthor}
 										<div class="flex justify-end">
 											<cite
-												class="text-primary flex items-center gap-2 text-xs font-semibold not-italic"
+												class="flex items-center gap-2 text-xs font-semibold text-primary not-italic"
 											>
-												<span class="bg-primary/50 inline-block h-0.5 w-6 rounded-full"></span>
+												<span class="inline-block h-0.5 w-6 rounded-full bg-primary/50"></span>
 												{quoteAuthor}
 											</cite>
 										</div>
@@ -460,23 +460,23 @@
 				{/if}
 
 				<!-- Announcements -->
-				<div class="border-border bg-card overflow-hidden rounded-xl border-2 shadow-lg">
-					<div class="bg-primary/10 border-border border-b px-4 py-3">
+				<div class="overflow-hidden rounded-xl border-2 border-border bg-card shadow-lg">
+					<div class="border-b border-border bg-primary/10 px-4 py-3">
 						<h3 class="flex items-center gap-2 text-lg font-bold">📢 Announcements</h3>
 					</div>
 					<div class="p-4">
 						{#if !data.announcements || data.announcements.length === 0}
-							<p class="text-muted-foreground py-8 text-center text-sm">No announcements yet</p>
+							<p class="py-8 text-center text-sm text-muted-foreground">No announcements yet</p>
 						{:else}
 							<div class="mb-4">
 								<h4 class="mb-2 text-base font-semibold">
 									{data.announcements[currentAnnouncementIndex].title}
 								</h4>
-								<div class="text-muted-foreground prose prose-sm max-w-none text-sm">
+								<div class="prose prose-sm max-w-none text-sm text-muted-foreground">
 									{@html data.announcements[currentAnnouncementIndex].processedContent ||
 										'No content'}
 								</div>
-								<div class="text-muted-foreground mt-2 text-xs">
+								<div class="mt-2 text-xs text-muted-foreground">
 									{new Date(
 										data.announcements[currentAnnouncementIndex].createdAt
 									).toLocaleDateString()}
@@ -484,11 +484,11 @@
 							</div>
 
 							{#if data.announcements.length > 1}
-								<div class="border-border flex items-center justify-between border-t pt-3">
+								<div class="flex items-center justify-between border-t border-border pt-3">
 									<Button variant="outline" size="sm" onclick={previousAnnouncement}>
 										Previous
 									</Button>
-									<span class="text-muted-foreground text-xs">
+									<span class="text-xs text-muted-foreground">
 										{currentAnnouncementIndex + 1} / {data.announcements.length}
 									</span>
 									<Button variant="outline" size="sm" onclick={nextAnnouncement}>Next</Button>
@@ -499,35 +499,35 @@
 				</div>
 
 				<!-- Recent Submissions -->
-				<div class="border-border bg-card overflow-hidden rounded-xl border-2 shadow-lg">
-					<div class="bg-primary/10 border-border border-b px-4 py-3">
+				<div class="overflow-hidden rounded-xl border-2 border-border bg-card shadow-lg">
+					<div class="border-b border-border bg-primary/10 px-4 py-3">
 						<h3 class="flex items-center gap-2 text-lg font-bold">🔥 Recent Submissions</h3>
 					</div>
 					<div class="p-4">
 						{#if !data.recentSubmissions || data.recentSubmissions.length === 0}
-							<p class="text-muted-foreground py-8 text-center text-sm">No recent submissions</p>
+							<p class="py-8 text-center text-sm text-muted-foreground">No recent submissions</p>
 						{:else}
 							<div class="space-y-3">
 								{#each data.recentSubmissions as submission, index}
 									<div
-										class="bg-muted/50 hover:bg-muted flex items-start gap-3 rounded-lg p-3 transition-colors"
+										class="flex items-start gap-3 rounded-lg bg-muted/50 p-3 transition-colors hover:bg-muted"
 									>
 										<div
-											class="bg-primary/20 text-primary flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold"
+											class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary"
 										>
 											{index + 1}
 										</div>
 										<div class="min-w-0 flex-1">
 											<a
 												href="/user/{submission.userId}"
-												class="hover:text-primary block truncate text-sm font-medium transition-colors"
+												class="block truncate text-sm font-medium transition-colors hover:text-primary"
 											>
 												{submission.userName}
 											</a>
-											<p class="text-muted-foreground truncate text-xs">
+											<p class="truncate text-xs text-muted-foreground">
 												{submission.quizName}
 											</p>
-											<p class="text-muted-foreground text-xs">
+											<p class="text-xs text-muted-foreground">
 												{new Date(submission.submittedAt ?? 0).toLocaleString()}
 											</p>
 										</div>
@@ -541,22 +541,22 @@
 		</div>
 
 		<!-- Mobile: Announcements -->
-		<div class="border-border bg-card mt-6 overflow-hidden rounded-xl border-2 shadow-lg lg:hidden">
-			<div class="bg-primary/10 border-border border-b px-4 py-3">
+		<div class="mt-6 overflow-hidden rounded-xl border-2 border-border bg-card shadow-lg lg:hidden">
+			<div class="border-b border-border bg-primary/10 px-4 py-3">
 				<h3 class="flex items-center gap-2 text-lg font-bold">📢 Announcements</h3>
 			</div>
 			<div class="p-4">
 				{#if !data.announcements || data.announcements.length === 0}
-					<p class="text-muted-foreground py-8 text-center text-sm">No announcements yet</p>
+					<p class="py-8 text-center text-sm text-muted-foreground">No announcements yet</p>
 				{:else}
 					<div class="mb-4">
 						<h4 class="mb-2 text-base font-semibold">
 							{data.announcements[currentAnnouncementIndex].title}
 						</h4>
-						<div class="text-muted-foreground prose prose-sm max-w-none text-sm">
+						<div class="prose prose-sm max-w-none text-sm text-muted-foreground">
 							{@html data.announcements[currentAnnouncementIndex].processedContent || 'No content'}
 						</div>
-						<div class="text-muted-foreground mt-2 text-xs">
+						<div class="mt-2 text-xs text-muted-foreground">
 							{new Date(
 								data.announcements[currentAnnouncementIndex].createdAt
 							).toLocaleDateString()}
@@ -564,9 +564,9 @@
 					</div>
 
 					{#if data.announcements.length > 1}
-						<div class="border-border flex items-center justify-between border-t pt-3">
+						<div class="flex items-center justify-between border-t border-border pt-3">
 							<Button variant="outline" size="sm" onclick={previousAnnouncement}>Previous</Button>
-							<span class="text-muted-foreground text-xs">
+							<span class="text-xs text-muted-foreground">
 								{currentAnnouncementIndex + 1} / {data.announcements.length}
 							</span>
 							<Button variant="outline" size="sm" onclick={nextAnnouncement}>Next</Button>
@@ -577,35 +577,35 @@
 		</div>
 
 		<!-- Mobile: Recent Submissions -->
-		<div class="border-border bg-card mt-6 overflow-hidden rounded-xl border-2 shadow-lg lg:hidden">
-			<div class="bg-primary/10 border-border border-b px-4 py-3">
+		<div class="mt-6 overflow-hidden rounded-xl border-2 border-border bg-card shadow-lg lg:hidden">
+			<div class="border-b border-border bg-primary/10 px-4 py-3">
 				<h3 class="flex items-center gap-2 text-lg font-bold">🔥 Recent Submissions</h3>
 			</div>
 			<div class="p-4">
 				{#if !data.recentSubmissions || data.recentSubmissions.length === 0}
-					<p class="text-muted-foreground py-8 text-center text-sm">No recent submissions</p>
+					<p class="py-8 text-center text-sm text-muted-foreground">No recent submissions</p>
 				{:else}
 					<div class="space-y-3">
 						{#each data.recentSubmissions as submission, index}
 							<div
-								class="bg-muted/50 hover:bg-muted flex items-start gap-3 rounded-lg p-3 transition-colors"
+								class="flex items-start gap-3 rounded-lg bg-muted/50 p-3 transition-colors hover:bg-muted"
 							>
 								<div
-									class="bg-primary/20 text-primary flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full text-xs font-bold"
+									class="flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full bg-primary/20 text-xs font-bold text-primary"
 								>
 									{index + 1}
 								</div>
 								<div class="min-w-0 flex-1">
 									<a
 										href="/user/{submission.userId}"
-										class="hover:text-primary block truncate text-sm font-medium transition-colors"
+										class="block truncate text-sm font-medium transition-colors hover:text-primary"
 									>
 										{submission.userName}
 									</a>
-									<p class="text-muted-foreground truncate text-xs">
+									<p class="truncate text-xs text-muted-foreground">
 										{submission.quizName}
 									</p>
-									<p class="text-muted-foreground text-xs">
+									<p class="text-xs text-muted-foreground">
 										{new Date(submission.submittedAt ?? 0).toLocaleString()}
 									</p>
 								</div>

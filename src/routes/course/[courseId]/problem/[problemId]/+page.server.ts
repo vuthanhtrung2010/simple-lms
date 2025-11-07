@@ -1,7 +1,15 @@
 import type { PageServerLoad } from './$types.js';
 import { error } from '@sveltejs/kit';
 import { and, eq } from 'drizzle-orm';
-import { courses, courseProblems, problems, categories, problemTypes, types, enrollments } from '$lib/server/db/schema.js';
+import {
+	courses,
+	courseProblems,
+	problems,
+	categories,
+	problemTypes,
+	types,
+	enrollments
+} from '$lib/server/db/schema.js';
 import { processMarkdownToHtml } from '$lib/markdown-processor.js';
 
 export const load: PageServerLoad = async ({ params, locals }) => {

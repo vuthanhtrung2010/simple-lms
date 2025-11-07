@@ -38,9 +38,11 @@
 	<title>{data.problem?.title ?? 'Problem'}</title>
 </svelte:head>
 
-<main class="mx-auto max-w-4xl px-4 py-8 space-y-6">
+<main class="mx-auto max-w-4xl space-y-6 px-4 py-8">
 	<!-- Problem meta -->
-	<section class="rounded-lg border bg-card/60 p-4 text-sm text-muted-foreground flex flex-wrap gap-4">
+	<section
+		class="flex flex-wrap gap-4 rounded-lg border bg-card/60 p-4 text-sm text-muted-foreground"
+	>
 		<div>
 			<span class="font-semibold text-foreground">Category:</span>
 			<span>{data.problem?.categoryName ?? 'N/A'}</span>
@@ -78,8 +80,9 @@
 	</section>
 
 	<!-- Description -->
-	<article class="prose prose-neutral max-w-none dark:prose-invert">
-		{@html data.problem?.descriptionHtml ?? '<p class="text-muted-foreground">No description available.</p>'}
+	<article class="prose prose-neutral dark:prose-invert max-w-none">
+		{@html data.problem?.descriptionHtml ??
+			'<p class="text-muted-foreground">No description available.</p>'}
 	</article>
 
 	<!-- Take Quiz Button -->

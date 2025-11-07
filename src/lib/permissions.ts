@@ -53,9 +53,17 @@ export const PermissionLabels: Record<string, string> = {
 };
 
 // Categories for organizing permissions in UI
-export const PermissionCategories: { key: string; label: string; items: (keyof typeof UserPermissions)[] }[] = [
+export const PermissionCategories: {
+	key: string;
+	label: string;
+	items: (keyof typeof UserPermissions)[];
+}[] = [
 	{ key: 'management', label: 'Management', items: ['VIEW_MANAGEMENT_PAGE'] },
-	{ key: 'problems', label: 'Problems', items: ['CREATE_PROBLEM', 'EDIT_PROBLEM', 'DELETE_PROBLEM'] },
+	{
+		key: 'problems',
+		label: 'Problems',
+		items: ['CREATE_PROBLEM', 'EDIT_PROBLEM', 'DELETE_PROBLEM']
+	},
 	{ key: 'courses', label: 'Courses', items: ['CREATE_COURSE', 'EDIT_COURSE', 'DELETE_COURSE'] },
 	{ key: 'users', label: 'Users', items: ['CREATE_USER', 'EDIT_USER', 'DELETE_USER'] },
 	{ key: 'admin', label: 'Administrator', items: ['ADMINISTRATOR'] }
@@ -65,7 +73,10 @@ export const PermissionCategories: { key: string; label: string; items: (keyof t
 export function getHighestPermissionIndex(userPermissions: bigint): number {
 	for (let i = PermissionOrder.length - 1; i >= 0; i--) {
 		const key = PermissionOrder[i];
-		if ((userPermissions & UserPermissions[key as keyof typeof UserPermissions]) === UserPermissions[key as keyof typeof UserPermissions]) {
+		if (
+			(userPermissions & UserPermissions[key as keyof typeof UserPermissions]) ===
+			UserPermissions[key as keyof typeof UserPermissions]
+		) {
 			return i;
 		}
 	}

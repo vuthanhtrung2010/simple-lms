@@ -136,33 +136,33 @@
 			<Button onclick={openCreate}>Create User</Button>
 		{/if}
 	</div>
-	<div class="border-border bg-card overflow-x-auto rounded-lg border">
-		<table class="divide-border min-w-full divide-y">
+	<div class="overflow-x-auto rounded-lg border border-border bg-card">
+		<table class="min-w-full divide-y divide-border">
 			<thead class="bg-muted">
 				<tr>
 					<th
-						class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider"
+						class="px-4 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>Username</th
 					>
 					<th
-						class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider"
+						class="px-4 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>Email</th
 					>
 					<th
-						class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider"
+						class="px-4 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>Full Name</th
 					>
 					<th
-						class="text-muted-foreground px-4 py-3 text-left text-xs font-medium uppercase tracking-wider"
+						class="px-4 py-3 text-left text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>Permissions</th
 					>
 					<th
-						class="text-muted-foreground px-4 py-3 text-center text-xs font-medium uppercase tracking-wider"
+						class="px-4 py-3 text-center text-xs font-medium tracking-wider text-muted-foreground uppercase"
 						>Actions</th
 					>
 				</tr>
 			</thead>
-			<tbody class="divide-border divide-y">
+			<tbody class="divide-y divide-border">
 				{#each users as user}
 					<tr>
 						<td class="px-4 py-2 font-mono">{user.username}</td>
@@ -172,7 +172,7 @@
 							<div class="flex flex-wrap gap-1">
 								{#each PermissionOrder as perm}
 									{#if ((user.perms ?? 0n) & UserPermissions[perm as keyof typeof UserPermissions]) === UserPermissions[perm as keyof typeof UserPermissions]}
-										<span class="bg-primary/10 text-primary rounded px-2 py-0.5 text-xs"
+										<span class="rounded bg-primary/10 px-2 py-0.5 text-xs text-primary"
 											>{PermissionLabels[perm]}</span
 										>
 									{/if}

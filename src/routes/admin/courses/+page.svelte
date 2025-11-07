@@ -1,29 +1,27 @@
 <script lang="ts">
-import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
-import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
-import * as Table from '$lib/components/ui/table/index.js';
-import { enhance } from '$app/forms';
-import type { PageProps } from './$types.js';
+	import * as AlertDialog from '$lib/components/ui/alert-dialog/index.js';
+	import { Button, buttonVariants } from '$lib/components/ui/button/index.js';
+	import * as Table from '$lib/components/ui/table/index.js';
+	import { enhance } from '$app/forms';
+	import type { PageProps } from './$types.js';
 
-let { data }: PageProps = $props();
+	let { data }: PageProps = $props();
 
-let deleteDialogOpen = $state(false);
-let deleteId = $state<string | null>(null);
-let deleteTitle = $state('');
-let deleteLoading = $state(false);
+	let deleteDialogOpen = $state(false);
+	let deleteId = $state<string | null>(null);
+	let deleteTitle = $state('');
+	let deleteLoading = $state(false);
 
-function openDeleteDialog(id: string, title: string) {
-	deleteId = id;
-	deleteTitle = title;
-	deleteDialogOpen = true;
-}
+	function openDeleteDialog(id: string, title: string) {
+		deleteId = id;
+		deleteTitle = title;
+		deleteDialogOpen = true;
+	}
 </script>
 
 <div class="mb-6 flex items-center justify-between">
 	<h1 class="text-3xl font-bold">Courses</h1>
-	<a href="/admin/courses/create" class={buttonVariants({ variant: 'default' })}>
-		Create Course
-	</a>
+	<a href="/admin/courses/create" class={buttonVariants({ variant: 'default' })}> Create Course </a>
 </div>
 
 <div class="rounded-md border">
@@ -42,16 +40,19 @@ function openDeleteDialog(id: string, title: string) {
 					<Table.Cell>{course.title}</Table.Cell>
 					<Table.Cell class="text-right">
 						<div class="flex justify-end gap-2">
-											<a href={`/admin/courses/update/${course.id}`} class={buttonVariants({ variant: 'secondary', size: 'sm' })}>
-												Update
-											</a>
-											<Button
-												variant="destructive"
-												size="sm"
-												onclick={() => openDeleteDialog(course.id, course.title)}
-											>
-												Delete
-											</Button>
+							<a
+								href={`/admin/courses/update/${course.id}`}
+								class={buttonVariants({ variant: 'secondary', size: 'sm' })}
+							>
+								Update
+							</a>
+							<Button
+								variant="destructive"
+								size="sm"
+								onclick={() => openDeleteDialog(course.id, course.title)}
+							>
+								Delete
+							</Button>
 						</div>
 					</Table.Cell>
 				</Table.Row>
@@ -86,7 +87,8 @@ function openDeleteDialog(id: string, title: string) {
 			<AlertDialog.Header>
 				<AlertDialog.Title>Are you absolutely sure?</AlertDialog.Title>
 				<AlertDialog.Description>
-					This will permanently delete the course "<strong>{deleteTitle}</strong>". This action cannot be undone.
+					This will permanently delete the course "<strong>{deleteTitle}</strong>". This action
+					cannot be undone.
 				</AlertDialog.Description>
 			</AlertDialog.Header>
 			<AlertDialog.Footer>

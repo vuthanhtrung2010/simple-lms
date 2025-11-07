@@ -21,8 +21,7 @@ export const actions = {
 			hasPermission(locals.user.perms, UserPermissions.EDIT_PROBLEM) ||
 			hasPermission(locals.user.perms, UserPermissions.DELETE_PROBLEM);
 
-		if (!hasPerm)
-			return fail(403, { error: 'You do not have permission to perform this action.' });
+		if (!hasPerm) return fail(403, { error: 'You do not have permission to perform this action.' });
 
 		const data = await request.formData();
 		const name = data.get('name') as string;
@@ -49,8 +48,7 @@ export const actions = {
 			hasPermission(locals.user.perms, UserPermissions.EDIT_PROBLEM) ||
 			hasPermission(locals.user.perms, UserPermissions.DELETE_PROBLEM);
 
-		if (!hasPerm)
-			return fail(403, { error: 'You do not have permission to perform this action.' });
+		if (!hasPerm) return fail(403, { error: 'You do not have permission to perform this action.' });
 
 		const data = await request.formData();
 		const id = data.get('id');
@@ -81,8 +79,7 @@ export const actions = {
 			hasPermission(locals.user.perms, UserPermissions.EDIT_PROBLEM) ||
 			hasPermission(locals.user.perms, UserPermissions.DELETE_PROBLEM);
 
-		if (!hasPerm)
-			return fail(403, { error: 'You do not have permission to perform this action.' });
+		if (!hasPerm) return fail(403, { error: 'You do not have permission to perform this action.' });
 
 		const data = await request.formData();
 		const id = data.get('id');

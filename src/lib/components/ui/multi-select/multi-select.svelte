@@ -643,7 +643,7 @@
 											}
 										}}
 										aria-label={`Remove ${option?.label} from selection`}
-										class="ml-1 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm hover:bg-white/20 focus:outline-none focus:ring-1 focus:ring-white/50"
+										class="ml-1 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm hover:bg-white/20 focus:ring-1 focus:ring-white/50 focus:outline-none"
 									>
 										<XCircle
 											class={cn('h-3 w-3', responsiveSettings.compactMode && 'h-2.5 w-2.5')}
@@ -707,18 +707,18 @@
 								}
 							}}
 							aria-label={`Clear all ${selectedValues.length} selected options`}
-							class="text-muted-foreground hover:text-foreground focus:ring-ring mx-2 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm focus:outline-none focus:ring-2 focus:ring-offset-1"
+							class="mx-2 flex h-4 w-4 cursor-pointer items-center justify-center rounded-sm text-muted-foreground hover:text-foreground focus:ring-2 focus:ring-ring focus:ring-offset-1 focus:outline-none"
 						>
 							<XIcon class="h-4 w-4" />
 						</div>
 						<Separator orientation="vertical" class="flex h-full min-h-6" />
-						<ChevronDown class="text-muted-foreground mx-2 h-4 cursor-pointer" aria-hidden="true" />
+						<ChevronDown class="mx-2 h-4 cursor-pointer text-muted-foreground" aria-hidden="true" />
 					</div>
 				</div>
 			{:else}
 				<div class="mx-auto flex w-full items-center justify-between">
-					<span class="text-muted-foreground mx-3 text-sm">{placeholder}</span>
-					<ChevronDown class="text-muted-foreground mx-2 h-4 cursor-pointer" />
+					<span class="mx-3 text-sm text-muted-foreground">{placeholder}</span>
+					<ChevronDown class="mx-2 h-4 cursor-pointer text-muted-foreground" />
 				</div>
 			{/if}
 		</Button>
@@ -780,7 +780,7 @@
 						>
 							<div
 								class={cn(
-									'border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border',
+									'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
 									selectedValues.length === getAllOptions().filter((opt) => !opt.disabled).length
 										? 'bg-primary text-primary-foreground'
 										: 'opacity-50 [&_svg]:invisible'
@@ -813,7 +813,7 @@
 								>
 									<div
 										class={cn(
-											'border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border',
+											'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
 											isSelected
 												? 'bg-primary text-primary-foreground'
 												: 'opacity-50 [&_svg]:invisible'
@@ -824,7 +824,7 @@
 									</div>
 									{#if option.icon}
 										{#key option.icon}
-											<option.icon class="text-muted-foreground mr-2 h-4 w-4" aria-hidden="true" />
+											<option.icon class="mr-2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
 										{/key}
 									{/if}
 									<span>{option.label}</span>
@@ -847,7 +847,7 @@
 							>
 								<div
 									class={cn(
-										'border-primary mr-2 flex h-4 w-4 items-center justify-center rounded-sm border',
+										'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
 										isSelected
 											? 'bg-primary text-primary-foreground'
 											: 'opacity-50 [&_svg]:invisible'
@@ -858,7 +858,7 @@
 								</div>
 								{#if option.icon}
 									{#key option.icon}
-										<option.icon class="text-muted-foreground mr-2 h-4 w-4" aria-hidden="true" />
+										<option.icon class="mr-2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
 									{/key}
 								{/if}
 								<span>{option.label}</span>
@@ -891,7 +891,7 @@
 	{#if animation > 0 && selectedValues.length > 0}
 		<WandSparkles
 			class={cn(
-				'bg-background text-foreground my-2 h-3 w-3 cursor-pointer',
+				'my-2 h-3 w-3 cursor-pointer bg-background text-foreground',
 				isAnimating ? '' : 'text-muted-foreground'
 			)}
 			onclick={() => (isAnimating = !isAnimating)}

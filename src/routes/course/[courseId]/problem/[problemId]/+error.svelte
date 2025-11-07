@@ -25,7 +25,7 @@
 
 {#if status === 410}
 	<main class="mx-auto max-w-4xl px-4 py-8">
-		<Alert class="border-destructive/30 bg-destructive/10 text-destructive mb-6">
+		<Alert class="mb-6 border-destructive/30 bg-destructive/10 text-destructive">
 			<FontAwesomeIcon icon={faExclamationCircle} class="h-4 w-4" />
 			<AlertDescription>
 				This problem has been marked as deleted or is no longer available.
@@ -39,15 +39,15 @@
 {:else if status === 403}
 	<div class="flex min-h-[60vh] items-center justify-center p-4">
 		<Card
-			class="from-background to-muted/50 w-full max-w-lg border-none bg-gradient-to-br p-0 shadow-none"
+			class="w-full max-w-lg border-none bg-gradient-to-br from-background to-muted/50 p-0 shadow-none"
 		>
 			<MagicCard gradientColor="#D9D9D955" class="p-0">
 				<CardHeader class="p-8 text-center">
 					<div class="mb-4 flex justify-center">
 						<div class="relative">
-							<OctagonMinus class="text-muted-foreground h-16 w-16" />
+							<OctagonMinus class="h-16 w-16 text-muted-foreground" />
 							<div
-								class="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500"
+								class="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500"
 							>
 								<span class="text-xs font-semibold text-white">!</span>
 							</div>
@@ -81,15 +81,15 @@
 {:else if status === 404}
 	<div class="flex min-h-[60vh] items-center justify-center p-4">
 		<Card
-			class="from-background to-muted/50 w-full max-w-lg border-none bg-gradient-to-br p-0 shadow-none"
+			class="w-full max-w-lg border-none bg-gradient-to-br from-background to-muted/50 p-0 shadow-none"
 		>
 			<MagicCard gradientColor="#D9D9D955" class="p-0">
 				<CardHeader class="p-8 text-center">
 					<div class="mb-4 flex justify-center">
 						<div class="relative">
-							<Ghost class="text-muted-foreground h-16 w-16" />
+							<Ghost class="h-16 w-16 text-muted-foreground" />
 							<div
-								class="absolute -right-1 -top-1 flex h-6 w-6 items-center justify-center rounded-full bg-yellow-500"
+								class="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-yellow-500"
 							>
 								<span class="text-xs font-semibold text-white">!</span>
 							</div>
@@ -121,10 +121,10 @@
 {:else}
 	<!-- Generic error -->
 	<div class="flex min-h-[60vh] items-center justify-center p-4">
-		<Card class="border-destructive/30 bg-destructive/5 w-full max-w-lg border">
+		<Card class="w-full max-w-lg border border-destructive/30 bg-destructive/5">
 			<CardHeader class="text-center">
 				<CardTitle class="text-xl font-semibold">Unexpected error</CardTitle>
-				<CardDescription class="text-muted-foreground mt-2 text-sm">
+				<CardDescription class="mt-2 text-sm text-muted-foreground">
 					Something went wrong while loading this problem.
 				</CardDescription>
 			</CardHeader>

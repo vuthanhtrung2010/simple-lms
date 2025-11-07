@@ -282,44 +282,44 @@ hr {
 
 /* Codeblocks */
 h3 code {
-  font-size: 1.125rem; /* !text-lg */
+	font-size: 1.125rem; /* !text-lg */
 }
 
 pre {
-  padding-left: 0;
-  padding-right: 0;
-  border-radius: 0.5rem;
-  overflow-x: auto;
-  padding-top: 1rem;
-  padding-bottom: 1rem;
+	padding-left: 0;
+	padding-right: 0;
+	border-radius: 0.5rem;
+	overflow-x: auto;
+	padding-top: 1rem;
+	padding-bottom: 1rem;
 }
 
 pre [data-line] {
-  padding-left: 1rem;
-  padding-right: 1rem;
+	padding-left: 1rem;
+	padding-right: 1rem;
 }
 
 code {
-  font-size: 0.875rem; /* text-sm */
-  line-height: 1.75; /* loose */
+	font-size: 0.875rem; /* text-sm */
+	line-height: 1.75; /* loose */
 }
 
 pre > code {
-  counter-reset: line;
+	counter-reset: line;
 }
 
 pre code[data-theme],
 pre code[data-theme] span {
-  color: var(--shiki-light);
-  background-color: var(--shiki-light-bg);
+	color: var(--shiki-light);
+	background-color: var(--shiki-light-bg);
 }
 
 @media (prefers-color-scheme: dark) {
-  pre code[data-theme],
-  pre code[data-theme] span {
-    color: var(--shiki-dark);
-    background-color: var(--shiki-dark-bg);
-  }
+	pre code[data-theme],
+	pre code[data-theme] span {
+		color: var(--shiki-dark);
+		background-color: var(--shiki-dark-bg);
+	}
 }
 
 @import './styles/rating.css';

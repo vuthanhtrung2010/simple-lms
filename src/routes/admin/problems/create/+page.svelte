@@ -125,7 +125,7 @@
 						{#each selectedTypes as typeId}
 							<input type="hidden" name="types" value={typeId} />
 						{/each}
-						<p class="text-muted-foreground text-sm">Select one or more types for this problem.</p>
+						<p class="text-sm text-muted-foreground">Select one or more types for this problem.</p>
 					</div>
 				</CardContent>
 			</Card>
@@ -147,7 +147,7 @@
 							min="-1"
 							disabled={loading}
 						/>
-						<p class="text-muted-foreground text-sm">
+						<p class="text-sm text-muted-foreground">
 							Set to -1 or 0 for unlimited attempts, or a positive number to limit attempts.
 						</p>
 					</div>
@@ -168,7 +168,7 @@
 								<Select.Item value="always" label="Always">Always</Select.Item>
 							</Select.Content>
 						</Select.Root>
-						<p class="text-muted-foreground text-sm">
+						<p class="text-sm text-muted-foreground">
 							Control when students can see correct answers.
 						</p>
 					</div>
@@ -187,7 +187,7 @@
 							<input type="hidden" name="splitScreen" value={splitScreen ? 'on' : 'off'} />
 							<Label for="splitScreen" class="cursor-pointer">Split Screen View</Label>
 						</div>
-						<p class="text-muted-foreground text-sm">
+						<p class="text-sm text-muted-foreground">
 							When enabled, text-only questions will appear on the left side, and interactive
 							questions on the right side.
 						</p>
@@ -204,7 +204,7 @@
 							min="0"
 							disabled={loading}
 						/>
-						<p class="text-muted-foreground text-sm">
+						<p class="text-sm text-muted-foreground">
 							Time limit in seconds. Set to 0 or leave empty for no time limit.
 						</p>
 					</div>
@@ -227,9 +227,9 @@
 							accept=".zip"
 							onchange={handleFileChange}
 							disabled={loading}
-							class="border-input bg-background ring-offset-background placeholder:text-muted-foreground focus-visible:ring-ring flex h-10 w-full rounded-md border px-3 py-2 text-sm file:border-0 file:bg-transparent file:text-sm file:font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+							class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-50"
 						/>
-						<p class="text-muted-foreground text-sm">
+						<p class="text-sm text-muted-foreground">
 							Upload a ZIP file containing questions.json and any referenced media files. Media
 							paths are specified within the JSON file and will be automatically uploaded to R2
 							object storage.

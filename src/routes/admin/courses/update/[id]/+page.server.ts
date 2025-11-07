@@ -82,15 +82,15 @@ export const actions = {
 				.where(eq(courses.id, id));
 			// Update problems: remove all, then add selected
 			await locals.db.delete(courseProblems).where(eq(courseProblems.courseId, id));
-					if (problemIds.length > 0) {
-						await locals.db.insert(courseProblems).values(
-							problemIds.map((pid, idx) => ({
-								courseId: id,
-								problemId: pid,
-								orderIndex: idx
-							}))
-						);
-					}
+			if (problemIds.length > 0) {
+				await locals.db.insert(courseProblems).values(
+					problemIds.map((pid, idx) => ({
+						courseId: id,
+						problemId: pid,
+						orderIndex: idx
+					}))
+				);
+			}
 			// Update enrollments: remove all, then add selected
 			await locals.db.delete(enrollments).where(eq(enrollments.courseId, id));
 			const enrollmentRows = [
