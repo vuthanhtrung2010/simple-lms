@@ -1,7 +1,7 @@
 import type { Actions, PageServerLoad } from './$types.js';
 import { users } from '$lib/server/db/schema.js';
 import { fail, redirect } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { UserPermissions, hasGreaterOrEqualPermissions, hasPermission } from '$lib/permissions.js';
 import { hashPassword } from '$lib/server/password.js';
 
@@ -108,7 +108,28 @@ export const actions: Actions = {
 		if (hasGreaterOrEqualPermissions(locals.user.perms, BigInt(target.permissions))) {
 			return fail(403, { error: 'Cannot delete user with greater or equal permissions' });
 		}
-		await locals.db.delete(users).where(eq(users.id, id));
+
+		// Soft delete strategy:
+		// - active users have deleted = 0
+		// - when deleting, set deleted to (max existing deleted for same username/email) + 1
+		//   so you can reuse username/email for new accounts and delete multiple generations.
+		const existing = await locals.db
+			.select({ deleted: users.deleted })
+			.from(users)
+			.where(
+				// same identity by username & email
+				and(eq(users.username, target.username), eq(users.email, target.email))
+			)
+			.all();
+		const maxDeleted = existing.reduce(
+			(max, u) => (u.deleted && u.deleted > max ? u.deleted : max),
+			0
+		);
+		await locals.db
+			.update(users)
+			.set({ deleted: maxDeleted + 1 })
+			.where(eq(users.id, id));
+
 		return { success: true };
 	}
 };

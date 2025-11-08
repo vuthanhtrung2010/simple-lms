@@ -1,0 +1,137 @@
+<script lang="ts">
+	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
+	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
+	import { faExclamationCircle } from '@fortawesome/free-solid-svg-icons';
+	import { OctagonMinus, RefreshCw, Home, Ghost, ArrowLeft } from '@lucide/svelte';
+	import { Alert, AlertDescription } from '$lib/components/ui/alert/index.js';
+	import Button from '$lib/components/ui/button/button.svelte';
+	import MagicCard from '$lib/components/magicui/MagicCard.svelte';
+	import {
+		Card,
+		CardContent,
+		CardDescription,
+		CardHeader,
+		CardTitle
+	} from '$lib/components/ui/card/index.js';
+
+	let status = $derived(page.status);
+	let courseId = $derived(page.params.courseId);
+	let problemId = $derived(page.params.problemId);
+
+	function reset() {
+		if (typeof window !== 'undefined') window.location.reload();
+	}
+</script>
+
+{#if status === 403}
+	<!-- Forbidden: not enrolled / no access -->
+	<div class="flex min-h-[60vh] items-center justify-center p-4">
+		<Card
+			class="w-full max-w-lg border-none bg-gradient-to-br from-background to-muted/50 p-0 shadow-none"
+		>
+			<MagicCard gradientColor="#D9D9D955" class="p-0">
+				<CardHeader class="p-8 text-center">
+					<div class="mb-4 flex justify-center">
+						<div class="relative">
+							<OctagonMinus class="h-16 w-16 text-muted-foreground" />
+							<div
+								class="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-red-500"
+							>
+								<span class="text-xs font-semibold text-white">!</span>
+							</div>
+						</div>
+					</div>
+					<CardTitle class="text-2xl font-semibold">You cannot take this quiz</CardTitle>
+					<CardDescription class="mt-2 text-lg">
+						You are not enrolled in this course or do not have permission to access this attempt.
+					</CardDescription>
+				</CardHeader>
+				<CardContent class="px-8 pb-8">
+					<div class="space-y-4 text-center">
+						<p class="text-muted-foreground">
+							Please contact your instructor or return to the course problems list.
+						</p>
+						<div class="flex flex-col gap-3 pt-4 sm:flex-row">
+							<Button onclick={reset} class="flex-1">
+								<RefreshCw class="mr-2 h-4 w-4" />
+								Try again
+							</Button>
+							<Button href={`/course/${courseId}`} variant="outline" class="flex-1">
+								<Home class="mr-2 h-4 w-4" />
+								Back to course
+							</Button>
+						</div>
+					</div>
+				</CardContent>
+			</MagicCard>
+		</Card>
+	</div>
+{:else if status === 404}
+	<!-- Not Found -->
+	<div class="flex min-h-[60vh] items-center justify-center p-4">
+		<Card
+			class="w-full max-w-lg border-none bg-gradient-to-br from-background to-muted/50 p-0 shadow-none"
+		>
+			<MagicCard gradientColor="#D9D9D955" class="p-0">
+				<CardHeader class="p-8 text-center">
+					<div class="mb-4 flex justify-center">
+						<div class="relative">
+							<Ghost class="h-16 w-16 text-muted-foreground" />
+							<div
+								class="absolute -top-1 -right-1 flex h-6 w-6 items-center justify-center rounded-full bg-yellow-500"
+							>
+								<span class="text-xs font-semibold text-white">!</span>
+							</div>
+						</div>
+					</div>
+					<CardTitle class="text-2xl font-semibold">Quiz not found</CardTitle>
+					<CardDescription class="mt-2 text-lg">
+						We could not find this problem attempt in course {courseId}.
+					</CardDescription>
+				</CardHeader>
+				<CardContent class="px-8 pb-8">
+					<div class="space-y-4 text-center">
+						<p class="text-muted-foreground">
+							It may have been removed or the URL is incorrect.
+						</p>
+						<div class="flex flex-col gap-3 pt-4 sm:flex-row">
+							<Button href={`/course/${courseId}`} class="flex-1">
+								<Home class="mr-2 h-4 w-4" />
+								Back to course
+							</Button>
+							<Button
+								variant="outline"
+								class="flex-1"
+								onclick={() => window.history.back()}
+							>
+								<ArrowLeft class="mr-2 h-4 w-4" />
+								Go back
+							</Button>
+						</div>
+					</div>
+				</CardContent>
+			</MagicCard>
+		</Card>
+	</div>
+{:else}
+	<!-- Generic error -->
+	<main class="mx-auto max-w-4xl px-4 py-8">
+		<Alert class="border-destructive/30 bg-destructive/10 text-destructive">
+			<FontAwesomeIcon icon={faExclamationCircle} class="h-4 w-4" />
+			<AlertDescription>
+				Something went wrong while loading this quiz. Please try again.
+			</AlertDescription>
+			<div class="mt-4 flex flex-col gap-3 sm:flex-row">
+				<Button onclick={reset} class="flex-1">
+					<RefreshCw class="mr-2 h-4 w-4" />
+					Retry
+				</Button>
+				<Button href={`/course/${courseId}`} variant="outline" class="flex-1">
+					<Home class="mr-2 h-4 w-4" />
+					Back to course
+				</Button>
+			</div>
+		</Alert>
+	</main>
+{/if}

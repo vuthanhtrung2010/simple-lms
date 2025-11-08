@@ -57,6 +57,13 @@
       "when": 1761631062512,
       "tag": "0007_smooth_tana_nile",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1762596232208,
+      "tag": "0008_last_paladin",
+      "breakpoints": true
     }
   ]
 }

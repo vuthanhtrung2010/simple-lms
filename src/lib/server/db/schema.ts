@@ -11,26 +11,36 @@ import cuid from 'cuid';
 
 // ==================== USER & AUTH ====================
 
-export const users = sqliteTable('users', {
-	id: text('id')
-		.primaryKey()
-		.$defaultFn(() => cuid()),
-	username: text('username').notNull().unique(),
-	fullname: text('fullname'),
-	email: text('email').notNull().unique(),
-	passwordHash: text('password_hash').notNull(),
-	permissions: text('permissions').notNull().default('0'), // Bitwise permissions stored as string
-	bio: text('bio'),
-	createdAt: integer('created_at')
-		.notNull()
-		.$defaultFn(() => Date.now()),
-	updatedAt: integer('updated_at')
-		.notNull()
-		.$defaultFn(() => Date.now())
-		.$onUpdate(() => Date.now()),
-	dob: text('date_of_birth'),
-	lastLoginAt: integer('last_login_at')
-});
+export const users = sqliteTable(
+	'users',
+	{
+		id: text('id')
+			.primaryKey()
+			.$defaultFn(() => cuid()),
+		username: text('username').notNull(),
+		fullname: text('fullname'),
+		email: text('email').notNull(),
+		passwordHash: text('password_hash').notNull(),
+		permissions: text('permissions').notNull().default('0'), // Bitwise permissions stored as string
+		bio: text('bio'),
+		createdAt: integer('created_at')
+			.notNull()
+			.$defaultFn(() => Date.now()),
+		updatedAt: integer('updated_at')
+			.notNull()
+			.$defaultFn(() => Date.now())
+			.$onUpdate(() => Date.now()),
+		dob: text('date_of_birth'),
+		lastLoginAt: integer('last_login_at'),
+		// 0 for active users, >0 for soft-deleted generations of the same username/email
+		deleted: integer('is_deleted').notNull().default(0)
+	},
+	(table) => [
+		// Enforce uniqueness per active/deleted state
+		uniqueIndex('users_username_deleted_unique').on(table.username, table.deleted),
+		uniqueIndex('users_email_deleted_unique').on(table.email, table.deleted)
+	]
+);
 
 export const sessions = sqliteTable('sessions', {
 	id: text('id')
@@ -87,7 +97,8 @@ export const enrollments = sqliteTable(
 		enrolledAt: integer('enrolled_at')
 			.notNull()
 			.$defaultFn(() => Date.now()),
-		completedAt: integer('completed_at')
+		completedAt: integer('completed_at'),
+		isDeleted: integer('is_deleted', { mode: 'boolean' }).notNull().default(false)
 	},
 	(table) => [uniqueIndex('enrollment_user_course_idx').on(table.userId, table.courseId)]
 );

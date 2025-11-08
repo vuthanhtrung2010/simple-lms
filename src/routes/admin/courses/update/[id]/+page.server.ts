@@ -1,6 +1,6 @@
 import type { Actions, PageServerLoad } from './$types.js';
 import { courses, problems, users, enrollments, courseProblems } from '$lib/server/db/schema.js';
-import { eq } from 'drizzle-orm';
+import { and, eq, inArray } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
 import { hasPermission, UserPermissions } from '$lib/permissions.js';
 
@@ -21,11 +21,9 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.all();
 	const problemsSelected = courseProblemsRows.map((cp) => cp.problemId);
 	// Get enrollments for this course
-	const enrollRows = await locals.db
-		.select()
-		.from(enrollments)
-		.where(eq(enrollments.courseId, id))
-		.all();
+	const enrollRows = (
+		await locals.db.select().from(enrollments).where(eq(enrollments.courseId, id)).all()
+	).filter((e) => !e.isDeleted);
 	const studentsSelected = enrollRows.filter((e) => e.role === 'student').map((e) => e.userId);
 	const teachersSelected = enrollRows.filter((e) => e.role === 'teacher').map((e) => e.userId);
 	const supervisorsSelected = enrollRows
@@ -80,7 +78,8 @@ export const actions = {
 					quoteAuthor
 				})
 				.where(eq(courses.id, id));
-			// Update problems: remove all, then add selected
+
+			// Update problems: hard-reset mapping (no soft-delete needed here)
 			await locals.db.delete(courseProblems).where(eq(courseProblems.courseId, id));
 			if (problemIds.length > 0) {
 				await locals.db.insert(courseProblems).values(
@@ -91,16 +90,67 @@ export const actions = {
 					}))
 				);
 			}
-			// Update enrollments: remove all, then add selected
-			await locals.db.delete(enrollments).where(eq(enrollments.courseId, id));
-			const enrollmentRows = [
-				...studentIds.map((uid) => ({ userId: uid, courseId: id, role: 'student' })),
-				...teacherIds.map((uid) => ({ userId: uid, courseId: id, role: 'teacher' })),
-				...supervisorIds.map((uid) => ({ userId: uid, courseId: id, role: 'supervisor' }))
-			];
-			if (enrollmentRows.length > 0) {
-				await locals.db.insert(enrollments).values(enrollmentRows);
+
+			// --- Enrollment soft-delete / restore logic ---
+			const selectedIds = new Set([...studentIds, ...teacherIds, ...supervisorIds]);
+
+			// 1) Fetch all existing enrollments for this course (active + deleted)
+			const existingEnrollments = await locals.db
+				.select()
+				.from(enrollments)
+				.where(eq(enrollments.courseId, id))
+				.all();
+
+			// 2) Soft-delete users no longer selected
+			for (const e of existingEnrollments) {
+				if (!selectedIds.has(e.userId) && !e.isDeleted) {
+					await locals.db
+						.update(enrollments)
+						.set({ isDeleted: true })
+						.where(eq(enrollments.id, e.id));
+				}
 			}
+
+			// Helper to upsert (reactivate or create) enrollment with role
+			async function upsertEnrollment(userId: string, role: 'student' | 'teacher' | 'supervisor') {
+				const existing = existingEnrollments.filter((e) => e.userId === userId);
+				const active = existing.find((e) => !e.isDeleted);
+				const deleted = existing.find((e) => e.isDeleted);
+
+				if (active) {
+					// Just update role if needed
+					if (active.role !== role) {
+						await locals.db.update(enrollments).set({ role }).where(eq(enrollments.id, active.id));
+					}
+					return;
+				}
+
+				if (deleted) {
+					// Reactivate soft-deleted enrollment with new role
+					await locals.db
+						.update(enrollments)
+						.set({ isDeleted: false, role })
+						.where(eq(enrollments.id, deleted.id));
+					return;
+				}
+
+				// No existing record: create new active enrollment
+				await locals.db
+					.insert(enrollments)
+					.values({ userId, courseId: id, role, isDeleted: false });
+			}
+
+			// 3) Apply upserts for all selected roles
+			for (const uid of studentIds) {
+				await upsertEnrollment(uid, 'student');
+			}
+			for (const uid of teacherIds) {
+				await upsertEnrollment(uid, 'teacher');
+			}
+			for (const uid of supervisorIds) {
+				await upsertEnrollment(uid, 'supervisor');
+			}
+
 			return {};
 		} catch (error) {
 			console.error('Failed to update course:', error);
