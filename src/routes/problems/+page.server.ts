@@ -21,7 +21,7 @@ export const load: PageServerLoad = async ({ locals, url }) => {
 		})
 		.from(schema.enrollments)
 		.innerJoin(schema.courses, eq(schema.enrollments.courseId, schema.courses.id))
-		.where(eq(schema.enrollments.userId, userId))
+		.where(and(eq(schema.enrollments.userId, userId), eq(schema.enrollments.isDeleted, false)))
 		.all();
 
 	if (enrollments.length === 0) {

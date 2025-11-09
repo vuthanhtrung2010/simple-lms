@@ -28,6 +28,7 @@ export const actions = {
 		const title = data.get('title') as string;
 		const isPublished = data.get('isPublished') === 'on';
 		const showDebt = data.get('showDebt') === 'on';
+		const enrollmentMode = (data.get('enrollmentMode') as string) || 'hidden';
 		const quote = data.get('quote') as string;
 		const quoteAuthor = data.get('quoteAuthor') as string;
 		const problemIds = data.getAll('problems') as string[];
@@ -56,6 +57,7 @@ export const actions = {
 					description: '',
 					isPublished,
 					showDebt,
+					enrollmentMode,
 					quote,
 					quoteAuthor
 				})

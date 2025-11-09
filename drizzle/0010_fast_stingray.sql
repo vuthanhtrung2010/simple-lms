@@ -1,0 +1,1 @@
+ALTER TABLE `courses` ADD `is_deleted` integer DEFAULT false NOT NULL;

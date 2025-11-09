@@ -26,7 +26,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const course = await db
 		.select({ id: courses.id, title: courses.title })
 		.from(courses)
-		.where(eq(courses.id, courseId))
+		.where(and(eq(courses.id, courseId), eq(courses.isDeleted, false)))
 		.get();
 
 	if (!course) {
@@ -37,7 +37,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const enrollment = await db
 		.select({ id: enrollments.id })
 		.from(enrollments)
-		.where(and(eq(enrollments.courseId, courseId), eq(enrollments.userId, locals.user.id!)))
+		.where(
+			and(
+				eq(enrollments.courseId, courseId),
+				eq(enrollments.userId, locals.user.id!),
+				eq(enrollments.isDeleted, false)
+			)
+		)
 		.get();
 
 	if (!enrollment) {

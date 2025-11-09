@@ -14,6 +14,7 @@
 	let title = $state(data.course.title);
 	let isPublished = $state(data.course.isPublished);
 	let showDebt = $state(data.course.showDebt);
+	let enrollmentMode = $state(data.course.enrollmentMode || 'hidden');
 	let quote = $state(data.course.quote || 'Thi đua là yêu nước, yêu nước phải thi đua');
 	let quoteAuthor = $state(data.course.quoteAuthor || 'Bác Hồ');
 	let selectedProblems: string[] = $state(data.problemsSelected.map(String));
@@ -76,6 +77,29 @@
 						<Checkbox id="showDebt" bind:checked={showDebt} disabled={loading} />
 						<input type="hidden" name="showDebt" value={showDebt ? 'on' : 'off'} />
 						<Label for="showDebt">Show Debt</Label>
+					</div>
+					<div class="space-y-2">
+						<Label for="enrollmentMode">Enrollment Mode</Label>
+						<select 
+							id="enrollmentMode" 
+							name="enrollmentMode" 
+							bind:value={enrollmentMode} 
+							disabled={loading}
+							class="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+						>
+							<option value="hidden">Hidden (Admin only)</option>
+							<option value="request">Request to Join</option>
+							<option value="free">Free (Anyone can join)</option>
+						</select>
+						<p class="text-muted-foreground text-xs">
+							{#if enrollmentMode === 'hidden'}
+								Only admins can add users. Course visible only to enrolled users and admins.
+							{:else if enrollmentMode === 'request'}
+								Users can request to join. Admins must approve. Course visible on courses page.
+							{:else}
+								Anyone can join as a student. Course visible on courses page.
+							{/if}
+						</p>
 					</div>
 					<div class="space-y-2">
 						<Label for="quote">Quote</Label>

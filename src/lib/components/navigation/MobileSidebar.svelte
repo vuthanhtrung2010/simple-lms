@@ -36,6 +36,11 @@
 			icon: faHouse
 		},
 		{
+			titleKey: 'courses',
+			url: '/courses',
+			icon: faFileLines
+		},
+		{
 			titleKey: 'problems',
 			url: '/problems',
 			icon: faCode

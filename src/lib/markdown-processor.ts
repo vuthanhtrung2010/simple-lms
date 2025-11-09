@@ -1,6 +1,5 @@
 import { transformerCopyButton } from '@rehype-pretty/transformers';
 import rehypeKatex from 'rehype-katex';
-import rehypePrettyCode from 'rehype-pretty-code';
 import rehypeRaw from 'rehype-raw';
 import rehypeStringify from 'rehype-stringify';
 import remarkGfm from 'remark-gfm';
@@ -180,11 +179,6 @@ export async function processMarkdownToHtml(
 			.use(remarkRehype, { allowDangerousHtml: true })
 			.use(rehypeRaw)
 			.use(rehypeCustomStyleAndHeaders)
-			.use(rehypePrettyCode, {
-				keepBackground: keepCodeBackground,
-				defaultLang: defaultCodeLang,
-				transformers
-			})
 			.use(rehypeKatex)
 			.use(rehypeStringify, { allowDangerousHtml: true })
 			.process(preprocessed);

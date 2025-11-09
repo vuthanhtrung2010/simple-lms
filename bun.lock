@@ -9,7 +9,7 @@
         "@fortawesome/svelte-fontawesome": "^0.2.4",
         "@lucide/svelte": "^0.544.0",
         "@rehype-pretty/transformers": "^0.13.2",
-        "bcryptjs": "^3.0.2",
+        "bcryptjs": "^3.0.3",
         "cuid": "^3.0.0",
         "dotenv": "^17.2.3",
         "dotenv-cli": "^10.0.0",
@@ -29,12 +29,12 @@
         "svelte-themes": "^2.0.10",
         "svelte-turnstile": "^0.11.0",
         "unified": "^11.0.5",
-        "vite": "^7.1.12",
+        "vite": "^7.2.2",
         "zod": "^4.1.12",
       },
       "devDependencies": {
         "@eslint/compat": "^1.4.1",
-        "@eslint/js": "^9.39.0",
+        "@eslint/js": "^9.39.1",
         "@inlang/paraglide-js": "^2.4.0",
         "@internationalized/date": "^3.10.0",
         "@sveltejs/adapter-cloudflare": "^7.2.4",
@@ -43,32 +43,33 @@
         "@sveltejs/vite-plugin-svelte": "^6.2.1",
         "@tailwindcss/forms": "^0.5.10",
         "@tailwindcss/typography": "^0.5.19",
-        "@tailwindcss/vite": "^4.1.16",
+        "@tailwindcss/vite": "^4.1.17",
         "@types/bun": "^1.3.1",
         "@types/jsonwebtoken": "^9.0.10",
         "@types/md5": "^2.3.6",
-        "@types/node": "^24.9.2",
+        "@types/node": "^24.10.0",
         "@types/uuid": "^11.0.0",
         "bits-ui": "^2.14.2",
         "clsx": "^2.1.1",
         "drizzle-kit": "^0.31.6",
-        "eslint": "^9.39.0",
+        "eslint": "^9.39.1",
         "eslint-config-prettier": "^10.1.8",
         "eslint-plugin-svelte": "^3.13.0",
         "globals": "^16.5.0",
+        "paneforge": "^1.0.2",
         "prettier": "^3.6.2",
         "prettier-plugin-svelte": "^3.4.0",
         "prettier-plugin-tailwindcss": "^0.6.14",
         "publint": "^0.3.15",
-        "svelte": "^5.43.2",
+        "svelte": "^5.43.4",
         "svelte-check": "^4.3.3",
         "tailwind-merge": "^3.3.1",
         "tailwind-variants": "^3.1.1",
-        "tailwindcss": "^4.1.16",
+        "tailwindcss": "^4.1.17",
         "tw-animate-css": "^1.4.0",
         "typescript": "^5.9.3",
-        "typescript-eslint": "^8.46.2",
-        "wrangler": "^4.45.3",
+        "typescript-eslint": "^8.46.3",
+        "wrangler": "^4.46.0",
       },
       "peerDependencies": {
         "svelte": "^5.0.0",
@@ -926,6 +927,8 @@
 
     "pako": ["pako@1.0.11", "", {}, "sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw=="],
 
+    "paneforge": ["paneforge@1.0.2", "", { "dependencies": { "runed": "^0.23.4", "svelte-toolbelt": "^0.9.2" }, "peerDependencies": { "svelte": "^5.29.0" } }, "sha512-KzmIXQH1wCfwZ4RsMohD/IUtEjVhteR+c+ulb/CHYJHX8SuDXoJmChtsc/Xs5Wl8NHS4L5Q7cxL8MG40gSU1bA=="],
+
     "parent-module": ["parent-module@1.0.1", "", { "dependencies": { "callsites": "^3.0.0" } }, "sha512-GQ2EWRpQV8/o+Aw8YqtfZZPfNRWZYkbidE9k5rpl/hC3vtHHBfGm2Ifi6qWV+coDGkrUKZAxE3Lot5kcsRlh+g=="],
 
     "parse-numeric-range": ["parse-numeric-range@1.3.0", "", {}, "sha512-twN+njEipszzlMJd4ONUYgSfZPDxgHhT9Ahed5uTigpQn90FggW4SA/AIPq/6a149fTbE9qBEcSwE3FAEp6wQQ=="],
@@ -1238,6 +1241,10 @@
 
     "miniflare/zod": ["zod@3.22.3", "", {}, "sha512-EjIevzuJRiRPbVH4mGc8nApb/lVLKVpmUhAaR5R5doKGfAnGJ6Gr3CViAVjP+4FWSxCsybeWQdcgCtbX+7oZug=="],
 
+    "paneforge/runed": ["runed@0.23.4", "", { "dependencies": { "esm-env": "^1.0.0" }, "peerDependencies": { "svelte": "^5.7.0" } }, "sha512-9q8oUiBYeXIDLWNK5DfCWlkL0EW3oGbk845VdKlPeia28l751VpfesaB/+7pI6rnbx1I6rqoZ2fZxptOJLxILA=="],
+
+    "paneforge/svelte-toolbelt": ["svelte-toolbelt@0.9.3", "", { "dependencies": { "clsx": "^2.1.1", "runed": "^0.29.0", "style-to-object": "^1.0.8" }, "peerDependencies": { "svelte": "^5.30.2" } }, "sha512-HCSWxCtVmv+c6g1ACb8LTwHVbDqLKJvHpo6J8TaqwUme2hj9ATJCpjCPNISR1OCq2Q4U1KT41if9ON0isINQZw=="],
+
     "popmotion/tslib": ["tslib@2.4.0", "", {}, "sha512-d6xOpEDfsi2CZVlPQzGeux8XMwLT9hssAsaPYExaQMuYskwb+x1x7J371tWlbBdWHroy99KnVB6qIkUbs5X3UQ=="],
 
     "readable-stream/safe-buffer": ["safe-buffer@5.1.2", "", {}, "sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g=="],
@@ -1297,6 +1304,8 @@
     "@esbuild-kit/core-utils/esbuild/@esbuild/win32-x64": ["@esbuild/win32-x64@0.18.20", "", { "os": "win32", "cpu": "x64" }, "sha512-kTdfRcSiDfQca/y9QIkng02avJ+NCaQvrMejlsB3RRv5sE9rRoeBPISaZpKxHELzRxZyLvNts1P27W3wV+8geQ=="],
 
     "@typescript-eslint/typescript-estree/minimatch/brace-expansion": ["brace-expansion@2.0.2", "", { "dependencies": { "balanced-match": "^1.0.0" } }, "sha512-Jt0vHyM+jmUBqojB7E1NIYadt0vI0Qxjxd2TErW94wDz+E2LAm5vKMXXwg6ZZBTHPuUlDgQHKXvjGBdfcF1ZDQ=="],
+
+    "paneforge/svelte-toolbelt/runed": ["runed@0.29.2", "", { "dependencies": { "esm-env": "^1.0.0" }, "peerDependencies": { "svelte": "^5.7.0" } }, "sha512-0cq6cA6sYGZwl/FvVqjx9YN+1xEBu9sDDyuWdDW1yWX7JF2wmvmVKfH+hVCZs+csW+P3ARH92MjI3H9QTagOQA=="],
 
     "wrangler/esbuild/@esbuild/aix-ppc64": ["@esbuild/aix-ppc64@0.25.4", "", { "os": "aix", "cpu": "ppc64" }, "sha512-1VCICWypeQKhVbE9oW/sJaAmjLxhVqacdkvPLEjwlttjfwENRSClS8EjBz0KzRyFSCPDIkuXW34Je/vk7zdB7Q=="],
 

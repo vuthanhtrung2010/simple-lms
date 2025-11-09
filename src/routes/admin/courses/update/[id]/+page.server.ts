@@ -1,6 +1,6 @@
 import type { Actions, PageServerLoad } from './$types.js';
 import { courses, problems, users, enrollments, courseProblems } from '$lib/server/db/schema.js';
-import { and, eq, inArray } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { fail } from '@sveltejs/kit';
 import { hasPermission, UserPermissions } from '$lib/permissions.js';
 
@@ -8,7 +8,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const id = params.id;
 	if (!id) throw fail(404, { error: 'Course not found' });
 	// Get course
-	const course = await locals.db.select().from(courses).where(eq(courses.id, id)).get();
+	const course = await locals.db
+		.select()
+		.from(courses)
+		.where(and(eq(courses.id, id), eq(courses.isDeleted, false)))
+		.get();
 	if (!course) throw fail(404, { error: 'Course not found' });
 	// Get all problems and users
 	const allProblems = await locals.db.select().from(problems).all();
@@ -21,9 +25,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.all();
 	const problemsSelected = courseProblemsRows.map((cp) => cp.problemId);
 	// Get enrollments for this course
-	const enrollRows = (
-		await locals.db.select().from(enrollments).where(eq(enrollments.courseId, id)).all()
-	).filter((e) => !e.isDeleted);
+	const enrollRows = await locals.db
+		.select()
+		.from(enrollments)
+		.where(and(eq(enrollments.courseId, id), eq(enrollments.isDeleted, false)))
+		.all();
 	const studentsSelected = enrollRows.filter((e) => e.role === 'student').map((e) => e.userId);
 	const teachersSelected = enrollRows.filter((e) => e.role === 'teacher').map((e) => e.userId);
 	const supervisorsSelected = enrollRows
@@ -52,6 +58,7 @@ export const actions = {
 		const showDebt = data.get('showDebt') === 'on';
 		const quote = data.get('quote') as string;
 		const quoteAuthor = data.get('quoteAuthor') as string;
+		const enrollmentMode = (data.get('enrollmentMode') as string) || 'hidden';
 		let problemIds = data.getAll('problems') as string[];
 		const studentIds = data.getAll('students') as string[];
 		const teacherIds = data.getAll('teachers') as string[];
@@ -75,7 +82,8 @@ export const actions = {
 					isPublished,
 					showDebt,
 					quote,
-					quoteAuthor
+					quoteAuthor,
+					enrollmentMode
 				})
 				.where(eq(courses.id, id));
 

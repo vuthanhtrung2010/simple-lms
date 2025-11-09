@@ -71,6 +71,8 @@ export const courses = sqliteTable('courses', {
 	showDebt: integer('show_debt', { mode: 'boolean' }).notNull().default(false),
 	quote: text('quote').default('Thi đua là yêu nước, yêu nước phải thi đua'),
 	quoteAuthor: text('quote_author').default('Bác Hồ'),
+	// Enrollment mode: 'hidden', 'request', 'free'
+	enrollmentMode: text('enrollment_mode').notNull().default('hidden'),
 	// difficulty: text('difficulty'), // 'beginner', 'intermediate', 'advanced'
 	createdAt: integer('created_at')
 		.notNull()
@@ -78,7 +80,8 @@ export const courses = sqliteTable('courses', {
 	updatedAt: integer('updated_at')
 		.notNull()
 		.$defaultFn(() => Date.now())
-		.$onUpdate(() => Date.now())
+		.$onUpdate(() => Date.now()),
+	isDeleted: integer('is_deleted', { mode: 'boolean' }).notNull().default(false)
 });
 
 export const enrollments = sqliteTable(
@@ -101,6 +104,33 @@ export const enrollments = sqliteTable(
 		isDeleted: integer('is_deleted', { mode: 'boolean' }).notNull().default(false)
 	},
 	(table) => [uniqueIndex('enrollment_user_course_idx').on(table.userId, table.courseId)]
+);
+
+// Enrollment requests for courses with 'request' mode
+export const enrollmentRequests = sqliteTable(
+	'enrollment_requests',
+	{
+		id: text('id')
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		userId: text('user_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		courseId: text('course_id')
+			.notNull()
+			.references(() => courses.id, { onDelete: 'cascade' }),
+		status: text('status').notNull().default('pending'), // 'pending', 'approved', 'rejected'
+		requestedAt: integer('requested_at')
+			.notNull()
+			.$defaultFn(() => Date.now()),
+		reviewedAt: integer('reviewed_at'),
+		reviewedBy: text('reviewed_by').references(() => users.id, { onDelete: 'set null' }),
+		message: text('message') // Optional message from user
+	},
+	(table) => [
+		uniqueIndex('enrollment_request_user_course_idx').on(table.userId, table.courseId),
+		index('enrollment_request_status_idx').on(table.status)
+	]
 );
 
 // ==================== CATEGORIES & TYPES ====================

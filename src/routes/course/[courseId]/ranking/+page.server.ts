@@ -14,7 +14,7 @@ import {
 import { processMarkdownToHtml } from '$lib/markdown-processor.js';
 
 export const load: PageServerLoad = async ({ params, locals }) => {
-	const { id: courseId } = params;
+	const { courseId } = params;
 
 	// Require authentication
 	if (!locals.user) throw redirect(302, '/login');
@@ -30,7 +30,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			quoteAuthor: courses.quoteAuthor
 		})
 		.from(courses)
-		.where(eq(courses.id, courseId))
+		.where(and(eq(courses.id, courseId), eq(courses.isDeleted, false)))
 		.get();
 
 	if (!courseRow) throw error(404, 'Course not found');
@@ -39,7 +39,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	const viewerEnrollment = await db
 		.select({ id: enrollments.id })
 		.from(enrollments)
-		.where(and(eq(enrollments.courseId, courseId), eq(enrollments.userId, locals.user.id!)))
+		.where(
+			and(
+				eq(enrollments.courseId, courseId),
+				eq(enrollments.userId, locals.user.id!),
+				eq(enrollments.isDeleted, false)
+			)
+		)
 		.get();
 	if (!viewerEnrollment) throw error(403, 'Forbidden');
 
@@ -52,7 +58,13 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		})
 		.from(enrollments)
 		.innerJoin(users, eq(users.id, enrollments.userId))
-		.where(and(eq(enrollments.courseId, courseId), eq(enrollments.role, 'student')))
+		.where(
+			and(
+				eq(enrollments.courseId, courseId),
+				eq(enrollments.role, 'student'),
+				eq(enrollments.isDeleted, false)
+			)
+		)
 		.all();
 
 	const userIds = studentRows.map((s) => s.userId);

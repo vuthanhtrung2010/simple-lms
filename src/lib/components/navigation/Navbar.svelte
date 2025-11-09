@@ -11,7 +11,7 @@
 
 	// Lucide icons
 	import { ChevronDown } from '@lucide/svelte';
-	import { FileText, Home, Code, Users, Trophy, Shield, ActivityIcon, Cog } from '@lucide/svelte';
+	import { FileText, Home, Code, Users, Trophy, Shield, ActivityIcon, Cog, BookOpen } from '@lucide/svelte';
 
 	// Font Awesome
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';
@@ -41,7 +41,8 @@
 		| typeof Trophy
 		| typeof ActivityIcon
 		| typeof Shield
-		| typeof ChevronDown;
+		| typeof ChevronDown
+		| typeof BookOpen;
 
 	let isDropdownOpen = $state(false);
 
@@ -226,6 +227,19 @@
 									href: '/',
 									icon: Home,
 									title: m['navigation.home']({})
+								})}
+							{/snippet}
+						</NavigationMenu.Link>
+					</NavigationMenu.Item>
+
+					<!-- Courses -->
+					<NavigationMenu.Item>
+						<NavigationMenu.Link>
+							{#snippet child()}
+								{@render NavLink({
+									href: '/courses',
+									icon: BookOpen,
+									title: m['navigation.courses']({})
 								})}
 							{/snippet}
 						</NavigationMenu.Link>
