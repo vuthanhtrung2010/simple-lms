@@ -5,7 +5,11 @@ import { fail } from '@sveltejs/kit';
 import { hasPermission, UserPermissions } from '$lib/permissions.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	const allCourses = await locals.db.select().from(courses).where(eq(courses.isDeleted, false)).all();
+	const allCourses = await locals.db
+		.select()
+		.from(courses)
+		.where(eq(courses.isDeleted, false))
+		.all();
 	return {
 		courses: allCourses
 	};
@@ -25,7 +29,10 @@ export const actions = {
 
 		try {
 			// Soft delete
-			await locals.db.update(courses).set({ isDeleted: true }).where(eq(courses.id, String(id)));
+			await locals.db
+				.update(courses)
+				.set({ isDeleted: true })
+				.where(eq(courses.id, String(id)));
 			return { success: true };
 		} catch (error) {
 			console.error('Failed to delete course:', error);

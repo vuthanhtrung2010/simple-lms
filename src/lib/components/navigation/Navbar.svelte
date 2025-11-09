@@ -11,7 +11,17 @@
 
 	// Lucide icons
 	import { ChevronDown } from '@lucide/svelte';
-	import { FileText, Home, Code, Users, Trophy, Shield, ActivityIcon, Cog, BookOpen } from '@lucide/svelte';
+	import {
+		FileText,
+		Home,
+		Code,
+		Users,
+		Trophy,
+		Shield,
+		ActivityIcon,
+		Cog,
+		BookOpen
+	} from '@lucide/svelte';
 
 	// Font Awesome
 	import { FontAwesomeIcon } from '@fortawesome/svelte-fontawesome';

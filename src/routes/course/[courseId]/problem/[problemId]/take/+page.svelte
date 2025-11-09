@@ -144,18 +144,18 @@
 		<input type="hidden" name="submissionId" value={data.submission.id} />
 
 		<!-- Fixed Header with Timer -->
-		<header class="bg-background border-b px-4 py-3">
+		<header class="border-b bg-background px-4 py-3">
 			<div class="flex items-center justify-between">
 				<div>
-					<h1 class="text-foreground text-xl font-semibold">{data.problem.title}</h1>
-					<p class="text-muted-foreground text-xs">
+					<h1 class="text-xl font-semibold text-foreground">{data.problem.title}</h1>
+					<p class="text-xs text-muted-foreground">
 						{data.course.title}
 					</p>
 				</div>
 				<div class="flex items-center gap-4 text-sm">
 					<div>
 						<span class="text-muted-foreground">Elapsed:</span>
-						<span class="text-foreground font-medium">{formatTime(elapsedSeconds)}</span>
+						<span class="font-medium text-foreground">{formatTime(elapsedSeconds)}</span>
 					</div>
 					{#if timeLeftSeconds !== null}
 						<div class:text-destructive={timeLeftSeconds < 60}>
@@ -182,7 +182,7 @@
 					<div class="h-full overflow-y-auto p-4">
 						<div class="space-y-4">
 							{#each data.textOnlyQuestions as q, i}
-								<Card.Root class="bg-card/70 border">
+								<Card.Root class="border bg-card/70">
 									<Card.Header class="pb-2">
 										<Card.Title class="text-base font-semibold">
 											Reference {i + 1}
@@ -205,13 +205,13 @@
 					<div class="h-full overflow-y-auto p-4">
 						<div class="space-y-4">
 							{#each data.interactiveQuestions as q, i}
-								<Card.Root class="bg-card/70 border">
+								<Card.Root class="border bg-card/70">
 									<Card.Header class="pb-2">
 										<div class="flex items-baseline justify-between gap-2">
 											<Card.Title class="text-base font-semibold">
 												Question {i + 1}
 												{#if q.points != null}
-													<span class="text-muted-foreground ml-2 text-xs font-normal">
+													<span class="ml-2 text-xs font-normal text-muted-foreground">
 														({q.points} pts)
 													</span>
 												{/if}
@@ -233,7 +233,7 @@
 											<div class="mt-3 space-y-2">
 												{#each q.config.options as opt, idx}
 													<label
-														class="hover:bg-accent flex cursor-pointer items-start gap-3 rounded-md border p-3 transition"
+														class="flex cursor-pointer items-start gap-3 rounded-md border p-3 transition hover:bg-accent"
 													>
 														<input
 															type="radio"
@@ -258,7 +258,7 @@
 											<div class="mt-3 space-y-2">
 												{#each q.config.options as opt, idx}
 													<label
-														class="hover:bg-accent flex cursor-pointer items-start gap-3 rounded-md border p-3 transition"
+														class="flex cursor-pointer items-start gap-3 rounded-md border p-3 transition hover:bg-accent"
 													>
 														<input
 															type="checkbox"
@@ -365,22 +365,22 @@
 
 		<!-- Header -->
 		<header class="mb-2 flex flex-col gap-2">
-			<h1 class="text-foreground text-3xl font-semibold tracking-tight">{data.problem.title}</h1>
-			<p class="text-muted-foreground text-sm">
-				In course <span class="text-foreground font-medium">{data.course.title}</span>
+			<h1 class="text-3xl font-semibold tracking-tight text-foreground">{data.problem.title}</h1>
+			<p class="text-sm text-muted-foreground">
+				In course <span class="font-medium text-foreground">{data.course.title}</span>
 			</p>
 		</header>
 
 		<!-- Timer Info -->
 		<section
-			class="bg-card/60 text-muted-foreground flex flex-wrap gap-4 rounded-lg border p-4 text-sm"
+			class="flex flex-wrap gap-4 rounded-lg border bg-card/60 p-4 text-sm text-muted-foreground"
 		>
 			<div>
-				<span class="text-foreground font-semibold">Started:</span>
+				<span class="font-semibold text-foreground">Started:</span>
 				<span>{formatDateTime(data.submission.startedAt)}</span>
 			</div>
 			<div>
-				<span class="text-foreground font-semibold">Elapsed:</span>
+				<span class="font-semibold text-foreground">Elapsed:</span>
 				<span>{formatTime(elapsedSeconds)}</span>
 			</div>
 			{#if timeLeftSeconds !== null}
@@ -404,13 +404,13 @@
 		<!-- Questions -->
 		<div class="space-y-4">
 			{#each questions as q, i}
-				<Card.Root class="bg-card/70 border">
+				<Card.Root class="border bg-card/70">
 					<Card.Header class="pb-2">
 						<div class="flex items-baseline justify-between gap-2">
 							<Card.Title class="text-base font-semibold">
 								Question {i + 1}
 								{#if q.points != null}
-									<span class="text-muted-foreground ml-2 text-xs font-normal">
+									<span class="ml-2 text-xs font-normal text-muted-foreground">
 										({q.points} pts)
 									</span>
 								{/if}
@@ -432,7 +432,7 @@
 							<div class="mt-3 space-y-2">
 								{#each q.config.options as opt, idx}
 									<label
-										class="hover:bg-accent flex cursor-pointer items-start gap-3 rounded-md border p-3 transition"
+										class="flex cursor-pointer items-start gap-3 rounded-md border p-3 transition hover:bg-accent"
 									>
 										<input
 											type="radio"
@@ -457,7 +457,7 @@
 							<div class="mt-3 space-y-2">
 								{#each q.config.options as opt, idx}
 									<label
-										class="hover:bg-accent flex cursor-pointer items-start gap-3 rounded-md border p-3 transition"
+										class="flex cursor-pointer items-start gap-3 rounded-md border p-3 transition hover:bg-accent"
 									>
 										<input
 											type="checkbox"

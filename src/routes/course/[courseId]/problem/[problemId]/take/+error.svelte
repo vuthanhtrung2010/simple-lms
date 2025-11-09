@@ -90,19 +90,13 @@
 				</CardHeader>
 				<CardContent class="px-8 pb-8">
 					<div class="space-y-4 text-center">
-						<p class="text-muted-foreground">
-							It may have been removed or the URL is incorrect.
-						</p>
+						<p class="text-muted-foreground">It may have been removed or the URL is incorrect.</p>
 						<div class="flex flex-col gap-3 pt-4 sm:flex-row">
 							<Button href={`/problems`} class="flex-1">
 								<Home class="mr-2 h-4 w-4" />
 								Back to problems
 							</Button>
-							<Button
-								variant="outline"
-								class="flex-1"
-								onclick={() => window.history.back()}
-							>
+							<Button variant="outline" class="flex-1" onclick={() => window.history.back()}>
 								<ArrowLeft class="mr-2 h-4 w-4" />
 								Go back
 							</Button>

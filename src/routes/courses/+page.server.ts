@@ -6,25 +6,25 @@ import { hasPermission, UserPermissions } from '$lib/permissions.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
 	const userId = locals.user?.id;
-	const isAdmin = locals.user?.perms && hasPermission(locals.user.perms, UserPermissions.EDIT_COURSE);
+	const isAdmin =
+		locals.user?.perms && hasPermission(locals.user.perms, UserPermissions.EDIT_COURSE);
 
 	// Get all courses
-	const allCourses = await locals.db.select().from(courses).where(eq(courses.isDeleted, false)).all();
+	const allCourses = await locals.db
+		.select()
+		.from(courses)
+		.where(eq(courses.isDeleted, false))
+		.all();
 
 	// Get user's enrollments if logged in
-	let userEnrollments: typeof enrollments.$inferSelect[] = [];
-	let userRequests: typeof enrollmentRequests.$inferSelect[] = [];
-	
+	let userEnrollments: (typeof enrollments.$inferSelect)[] = [];
+	let userRequests: (typeof enrollmentRequests.$inferSelect)[] = [];
+
 	if (userId) {
 		userEnrollments = await locals.db
 			.select()
 			.from(enrollments)
-			.where(
-				and(
-					eq(enrollments.userId, userId),
-					eq(enrollments.isDeleted, false)
-				)
-			)
+			.where(and(eq(enrollments.userId, userId), eq(enrollments.isDeleted, false)))
 			.all();
 
 		userRequests = await locals.db
@@ -34,13 +34,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 			.all();
 	}
 
-	const enrolledCourseIds = new Set(userEnrollments.map(e => e.courseId));
-	const requestedCourseIds = new Map(
-		userRequests.map(r => [r.courseId, r.status])
-	);
+	const enrolledCourseIds = new Set(userEnrollments.map((e) => e.courseId));
+	const requestedCourseIds = new Map(userRequests.map((r) => [r.courseId, r.status]));
 
 	// Filter courses based on enrollment mode and user status
-	const visibleCourses = allCourses.filter(course => {
+	const visibleCourses = allCourses.filter((course) => {
 		// Admin can see all courses
 		if (isAdmin) return true;
 

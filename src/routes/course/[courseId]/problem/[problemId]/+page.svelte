@@ -41,12 +41,12 @@
 <main class="mx-auto max-w-4xl space-y-6 px-4 py-8">
 	<!-- Title & Course -->
 	<header class="mb-2 flex flex-col gap-2">
-		<h1 class="text-foreground text-3xl font-semibold tracking-tight">
+		<h1 class="text-3xl font-semibold tracking-tight text-foreground">
 			{data.problem?.title}
 		</h1>
-		<p class="text-muted-foreground text-sm">
+		<p class="text-sm text-muted-foreground">
 			In course
-			<span class="text-foreground font-medium">{data.course.title}</span>
+			<span class="font-medium text-foreground">{data.course.title}</span>
 		</p>
 	</header>
 
@@ -54,40 +54,40 @@
 
 	<!-- Problem meta -->
 	<section
-		class="bg-card/60 text-muted-foreground flex flex-wrap gap-4 rounded-lg border p-4 text-sm"
+		class="flex flex-wrap gap-4 rounded-lg border bg-card/60 p-4 text-sm text-muted-foreground"
 	>
 		<div>
-			<span class="text-foreground font-semibold">Category:</span>
+			<span class="font-semibold text-foreground">Category:</span>
 			<span>{data.problem?.categoryName ?? 'N/A'}</span>
 		</div>
 		{#if data.problem?.types && data.problem.types.length > 0}
 			<div>
-				<span class="text-foreground font-semibold">Type:</span>
+				<span class="font-semibold text-foreground">Type:</span>
 				<span>{data.problem.types.join(', ')}</span>
 			</div>
 		{/if}
 		{#if data.problem?.timeLimit}
 			<div>
-				<span class="text-foreground font-semibold">Time limit:</span>
+				<span class="font-semibold text-foreground">Time limit:</span>
 				<span>{data.problem.timeLimit} min</span>
 			</div>
 		{/if}
 		{#if data.problem?.attemptsAllowed !== undefined && data.problem.attemptsAllowed !== -1}
 			<div>
-				<span class="text-foreground font-semibold">Attempts:</span>
+				<span class="font-semibold text-foreground">Attempts:</span>
 				<span>{data.problem.attemptsAllowed}</span>
 			</div>
 		{/if}
 		<div>
-			<span class="text-foreground font-semibold">Show answers:</span>
+			<span class="font-semibold text-foreground">Show answers:</span>
 			<span>{formatShowAnswers(data.problem?.showAnswers)}</span>
 		</div>
 		<div>
-			<span class="text-foreground font-semibold">Shuffle questions:</span>
+			<span class="font-semibold text-foreground">Shuffle questions:</span>
 			<span>{formatBoolean(data.problem?.shuffleQuestions)}</span>
 		</div>
 		<div>
-			<span class="text-foreground font-semibold">Split screen:</span>
+			<span class="font-semibold text-foreground">Split screen:</span>
 			<span>{formatBoolean(data.problem?.splitScreen)}</span>
 		</div>
 	</section>

@@ -100,8 +100,7 @@ function gradeMultipleChoice(
 	const selectedSet = new Set(selectedIndices);
 	const correctSet = new Set(correctIndices);
 	const isFullyCorrect =
-		selectedSet.size === correctSet.size &&
-		[...selectedSet].every((idx) => correctSet.has(idx));
+		selectedSet.size === correctSet.size && [...selectedSet].every((idx) => correctSet.has(idx));
 
 	if (isFullyCorrect) {
 		return {
@@ -340,10 +339,7 @@ function gradeNumeric(
 /**
  * Main grading function
  */
-export function gradeQuestion(
-	question: QuestionData,
-	answer: QuestionAnswer
-): GradeResult {
+export function gradeQuestion(question: QuestionData, answer: QuestionAnswer): GradeResult {
 	const points = question.points || 0;
 	const questionType = question.questionType;
 

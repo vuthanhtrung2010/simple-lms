@@ -8,11 +8,7 @@ import { hashPassword } from '$lib/server/password.js';
 export const load: PageServerLoad = async ({ locals, depends }) => {
 	depends('users');
 	if (!locals.user) throw redirect(302, '/accounts/login');
-	const allUsers = await locals.db
-		.select()
-		.from(users)
-		.where(eq(users.deleted, 0))
-		.all();
+	const allUsers = await locals.db.select().from(users).where(eq(users.deleted, 0)).all();
 	// Map permissions to perms for UI compatibility
 	const mappedUsers = allUsers.map((u) => ({
 		...u,

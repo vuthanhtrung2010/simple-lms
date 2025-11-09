@@ -162,7 +162,7 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 
 			// For choice-based questions, also append media for each option if any
 			let renderedConfig: any = parsedConfig ?? {};
-			
+
 			if (
 				(q.questionType === 'single_choice' ||
 					q.questionType === 'multiple_choice' ||
@@ -187,7 +187,11 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 			}
 
 			// For matching: append choices table as markdown
-			if (q.questionType === 'matching' && renderedConfig?.choices && Array.isArray(renderedConfig.choices)) {
+			if (
+				q.questionType === 'matching' &&
+				renderedConfig?.choices &&
+				Array.isArray(renderedConfig.choices)
+			) {
 				textWithMedia += '\n\n**Choices:**\n\n';
 				textWithMedia += '| Choice | Description |\n';
 				textWithMedia += '|--------|-------------|\n';
@@ -272,7 +276,7 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 	let descriptionHtml = '';
 	if (problem.description) {
 		let descWithMedia = problem.description;
-		
+
 		// Append media if present (>= 2 audios or any images)
 		if (problem.media && Array.isArray(problem.media) && problem.media.length > 0) {
 			const mediaArray = problem.media as unknown[];
@@ -299,7 +303,7 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 				}
 			}
 		}
-		
+
 		descriptionHtml = await processMarkdownToHtml(descWithMedia);
 	}
 
@@ -528,12 +532,7 @@ export const actions: Actions = {
 			const userSubmissionCount = await db
 				.select({ count: sql<number>`count(*)` })
 				.from(submissions)
-				.where(
-					and(
-						eq(submissions.userId, locals.user.id!),
-						eq(submissions.status, 'submitted')
-					)
-				)
+				.where(and(eq(submissions.userId, locals.user.id!), eq(submissions.status, 'submitted')))
 				.get();
 
 			// Get problem's total submission count
@@ -541,10 +540,7 @@ export const actions: Actions = {
 				.select({ count: sql<number>`count(*)` })
 				.from(submissions)
 				.where(
-					and(
-						eq(submissions.problemId, submission.problemId),
-						eq(submissions.status, 'submitted')
-					)
+					and(eq(submissions.problemId, submission.problemId), eq(submissions.status, 'submitted'))
 				)
 				.get();
 

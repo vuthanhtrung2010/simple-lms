@@ -45,17 +45,21 @@
 	};
 
 	const canViewContent = () => {
-		return data.isEnrolled || data.userEnrollment?.role === 'teacher' || data.userEnrollment?.role === 'supervisor';
+		return (
+			data.isEnrolled ||
+			data.userEnrollment?.role === 'teacher' ||
+			data.userEnrollment?.role === 'supervisor'
+		);
 	};
 </script>
 
-<div class="container mx-auto py-8 px-4">
+<div class="container mx-auto px-4 py-8">
 	<!-- Course Header -->
 	<div class="mb-8">
-		<div class="flex items-start justify-between gap-4 mb-4">
+		<div class="mb-4 flex items-start justify-between gap-4">
 			<div class="flex-grow">
-				<h1 class="text-4xl font-bold mb-2">{data.course.title}</h1>
-				<div class="flex items-center gap-3 flex-wrap">
+				<h1 class="mb-2 text-4xl font-bold">{data.course.title}</h1>
+				<div class="flex flex-wrap items-center gap-3">
 					{#if data.course.isPublished}
 						<Badge variant="outline" class="text-green-600">Published</Badge>
 					{:else}
@@ -64,34 +68,34 @@
 
 					{#if data.course.enrollmentMode === 'hidden'}
 						<Badge variant="secondary" class="flex items-center gap-1">
-							<Users class="w-3 h-3" />
+							<Users class="h-3 w-3" />
 							Hidden
 						</Badge>
 					{:else if data.course.enrollmentMode === 'request'}
 						<Badge variant="secondary" class="flex items-center gap-1">
-							<Send class="w-3 h-3" />
+							<Send class="h-3 w-3" />
 							Request to Join
 						</Badge>
 					{:else}
 						<Badge variant="secondary" class="flex items-center gap-1">
-							<Users class="w-3 h-3" />
+							<Users class="h-3 w-3" />
 							Free
 						</Badge>
 					{/if}
 
 					{#if getEnrollmentStatus() === 'enrolled'}
 						<Badge variant="default" class="flex items-center gap-1">
-							<CheckCircle class="w-3 h-3" />
+							<CheckCircle class="h-3 w-3" />
 							Enrolled
 						</Badge>
 					{:else if getEnrollmentStatus() === 'pending'}
 						<Badge variant="secondary" class="flex items-center gap-1">
-							<Clock class="w-3 h-3" />
+							<Clock class="h-3 w-3" />
 							Pending
 						</Badge>
 					{:else if getEnrollmentStatus() === 'rejected'}
 						<Badge variant="destructive" class="flex items-center gap-1">
-							<XCircle class="w-3 h-3" />
+							<XCircle class="h-3 w-3" />
 							Rejected
 						</Badge>
 					{/if}
@@ -101,52 +105,65 @@
 			<!-- Action Buttons -->
 			<div class="flex gap-2">
 				{#if getEnrollmentStatus() === 'enrolled'}
-					<form method="POST" action="?/leave" use:enhance={() => {
-						loadingAction = true;
-						return async ({ update }) => {
-							await update();
-							loadingAction = false;
-						};
-					}}>
+					<form
+						method="POST"
+						action="?/leave"
+						use:enhance={() => {
+							loadingAction = true;
+							return async ({ update }) => {
+								await update();
+								loadingAction = false;
+							};
+						}}
+					>
 						<Button type="submit" variant="destructive" disabled={loadingAction}>
-							<LogOut class="w-4 h-4 mr-2" />
+							<LogOut class="mr-2 h-4 w-4" />
 							Leave Course
 						</Button>
 					</form>
 				{:else if getEnrollmentStatus() === 'pending'}
-					<form method="POST" action="?/cancelRequest" use:enhance={() => {
-						loadingAction = true;
-						return async ({ update }) => {
-							await update();
-							loadingAction = false;
-						};
-					}}>
+					<form
+						method="POST"
+						action="?/cancelRequest"
+						use:enhance={() => {
+							loadingAction = true;
+							return async ({ update }) => {
+								await update();
+								loadingAction = false;
+							};
+						}}
+					>
 						<Button type="submit" variant="outline" disabled={loadingAction}>
-							<X class="w-4 h-4 mr-2" />
+							<X class="mr-2 h-4 w-4" />
 							Cancel Request
 						</Button>
 					</form>
 				{:else if getEnrollmentStatus() === 'rejected'}
 					{#if data.course.enrollmentMode === 'request'}
 						<Dialog bind:open={requestDialogOpen}>
-							<Button variant="outline" onclick={() => requestDialogOpen = true}>
-								<Send class="w-4 h-4 mr-2" />
+							<Button variant="outline" onclick={() => (requestDialogOpen = true)}>
+								<Send class="mr-2 h-4 w-4" />
 								Request Again
 							</Button>
 							<DialogContent class="sm:max-w-[425px]">
-								<form method="POST" action="?/join" use:enhance={() => {
-									loadingAction = true;
-									return async ({ update }) => {
-										await update();
-										loadingAction = false;
-										requestDialogOpen = false;
-										requestReason = '';
-									};
-								}}>
+								<form
+									method="POST"
+									action="?/join"
+									use:enhance={() => {
+										loadingAction = true;
+										return async ({ update }) => {
+											await update();
+											loadingAction = false;
+											requestDialogOpen = false;
+											requestReason = '';
+										};
+									}}
+								>
 									<DialogHeader>
 										<DialogTitle>Request to Join Course</DialogTitle>
 										<DialogDescription>
-											Tell us why you want to join "{data.course.title}". This will help the admin review your request.
+											Tell us why you want to join "{data.course.title}". This will help the admin
+											review your request.
 										</DialogDescription>
 									</DialogHeader>
 									<div class="grid gap-4 py-4">
@@ -162,7 +179,11 @@
 										</div>
 									</div>
 									<DialogFooter>
-										<Button type="button" variant="outline" onclick={() => requestDialogOpen = false}>
+										<Button
+											type="button"
+											variant="outline"
+											onclick={() => (requestDialogOpen = false)}
+										>
 											Cancel
 										</Button>
 										<Button type="submit" disabled={loadingAction}>
@@ -179,44 +200,51 @@
 					{/if}
 				{:else if data.course.enrollmentMode === 'free'}
 					{#if data.userId}
-						<form method="POST" action="?/join" use:enhance={() => {
-							loadingAction = true;
-							return async ({ update }) => {
-								await update();
-								loadingAction = false;
-							};
-						}}>
+						<form
+							method="POST"
+							action="?/join"
+							use:enhance={() => {
+								loadingAction = true;
+								return async ({ update }) => {
+									await update();
+									loadingAction = false;
+								};
+							}}
+						>
 							<Button type="submit" disabled={loadingAction}>
-								<Users class="w-4 h-4 mr-2" />
+								<Users class="mr-2 h-4 w-4" />
 								Join Course
 							</Button>
 						</form>
 					{:else}
-						<Button href="/login" variant="outline">
-							Login to Join
-						</Button>
+						<Button href="/login" variant="outline">Login to Join</Button>
 					{/if}
 				{:else if data.course.enrollmentMode === 'request'}
 					{#if data.userId}
 						<Dialog bind:open={requestDialogOpen}>
-							<Button variant="outline" onclick={() => requestDialogOpen = true}>
-								<Send class="w-4 h-4 mr-2" />
+							<Button variant="outline" onclick={() => (requestDialogOpen = true)}>
+								<Send class="mr-2 h-4 w-4" />
 								Request to Join
 							</Button>
 							<DialogContent class="sm:max-w-[425px]">
-								<form method="POST" action="?/join" use:enhance={() => {
-									loadingAction = true;
-									return async ({ update }) => {
-										await update();
-										loadingAction = false;
-										requestDialogOpen = false;
-										requestReason = '';
-									};
-								}}>
+								<form
+									method="POST"
+									action="?/join"
+									use:enhance={() => {
+										loadingAction = true;
+										return async ({ update }) => {
+											await update();
+											loadingAction = false;
+											requestDialogOpen = false;
+											requestReason = '';
+										};
+									}}
+								>
 									<DialogHeader>
 										<DialogTitle>Request to Join Course</DialogTitle>
 										<DialogDescription>
-											Tell us why you want to join "{data.course.title}". This will help the admin review your request.
+											Tell us why you want to join "{data.course.title}". This will help the admin
+											review your request.
 										</DialogDescription>
 									</DialogHeader>
 									<div class="grid gap-4 py-4">
@@ -232,7 +260,11 @@
 										</div>
 									</div>
 									<DialogFooter>
-										<Button type="button" variant="outline" onclick={() => requestDialogOpen = false}>
+										<Button
+											type="button"
+											variant="outline"
+											onclick={() => (requestDialogOpen = false)}
+										>
 											Cancel
 										</Button>
 										<Button type="submit" disabled={loadingAction}>
@@ -247,9 +279,7 @@
 							</DialogContent>
 						</Dialog>
 					{:else}
-						<Button href="/login" variant="outline">
-							Login to Request
-						</Button>
+						<Button href="/login" variant="outline">Login to Request</Button>
 					{/if}
 				{/if}
 			</div>
@@ -257,10 +287,10 @@
 
 		<!-- Quote -->
 		{#if data.course.quote}
-			<div class="border-l-4 border-primary pl-4 py-2 mb-4">
-				<p class="text-lg italic text-muted-foreground">{data.course.quote}</p>
+			<div class="mb-4 border-l-4 border-primary py-2 pl-4">
+				<p class="text-lg text-muted-foreground italic">{data.course.quote}</p>
 				{#if data.course.quoteAuthor}
-					<p class="text-sm text-muted-foreground mt-1">— {data.course.quoteAuthor}</p>
+					<p class="mt-1 text-sm text-muted-foreground">— {data.course.quoteAuthor}</p>
 				{/if}
 			</div>
 		{/if}
@@ -268,18 +298,18 @@
 
 	<!-- Tabs -->
 	<Tabs value="about" class="w-full">
-		<TabsList class="grid w-full grid-cols-3 lg:w-auto lg:inline-grid">
+		<TabsList class="grid w-full grid-cols-3 lg:inline-grid lg:w-auto">
 			<TabsTrigger value="about">
-				<BookOpen class="w-4 h-4 mr-2" />
+				<BookOpen class="mr-2 h-4 w-4" />
 				About
 			</TabsTrigger>
 			<TabsTrigger value="problems" onclick={() => goto(`/problems?course=${data.course.id}`)}>
-				<BookOpen class="w-4 h-4 mr-2" />
+				<BookOpen class="mr-2 h-4 w-4" />
 				Problems
 			</TabsTrigger>
 			{#if canViewContent()}
 				<TabsTrigger value="ranking" onclick={() => goto(`/course/${data.course.id}/ranking`)}>
-					<Trophy class="w-4 h-4 mr-2" />
+					<Trophy class="mr-2 h-4 w-4" />
 					Ranking
 				</TabsTrigger>
 			{/if}
