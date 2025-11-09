@@ -168,8 +168,7 @@
 			{@const result = getGradeResult(question.id)}
 			{@const userAnswer = getUserAnswer(question.id)}
 
-			{#if result}
-				<Card.Root class="bg-card/70 border">
+			<Card.Root class="bg-card/70 border">
 					<Card.Header class="pb-3">
 						<div class="flex items-start justify-between gap-4">
 							<div class="flex-1">
@@ -177,13 +176,13 @@
 									<Card.Title class="text-base font-semibold">
 										Question {i + 1}
 									</Card.Title>
-									{#if result.isCorrect}
+									{#if result?.isCorrect}
 										<CheckCircle2 class="text-green-600 dark:text-green-400 h-5 w-5" />
-									{:else if result.pointsEarned > 0}
+									{:else if result && result.pointsEarned > 0}
 										<AlertCircle class="text-yellow-600 dark:text-yellow-400 h-5 w-5" />
 									{:else if !isAnswered(userAnswer, question.questionType)}
 										<CircleDashed class="text-gray-400 dark:text-gray-500 h-5 w-5" />
-									{:else}
+									{:else if result}
 										<XCircle class="text-red-600 dark:text-red-400 h-5 w-5" />
 									{/if}
 								</div>
@@ -191,12 +190,14 @@
 									{question.questionText}
 								</p>
 							</div>
-							<div class="text-right">
-								<p class="text-foreground text-lg font-semibold">
-									{result.pointsEarned.toFixed(2)} / {result.pointsPossible}
-								</p>
-								<p class="text-muted-foreground text-xs">points</p>
-							</div>
+							{#if result}
+								<div class="text-right">
+									<p class="text-foreground text-lg font-semibold">
+										{result.pointsEarned.toFixed(2)} / {result.pointsPossible}
+									</p>
+									<p class="text-muted-foreground text-xs">points</p>
+								</div>
+							{/if}
 						</div>
 					</Card.Header>
 					<Card.Content class="space-y-3 pt-0">
@@ -265,7 +266,7 @@
 						{/if}
 
 						<!-- Feedback Box -->
-						{#if result.feedback || result.explanation}
+						{#if result && (result.feedback || result.explanation || question.questionType === 'text_only')}
 							{@const feedbackClass = result.isCorrect 
 								? 'bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800'
 								: result.pointsEarned > 0
@@ -276,17 +277,19 @@
 							<div
 								class="rounded-lg border p-3 {feedbackClass}"
 							>
-								<p class="text-sm font-medium">
-									{#if result.isCorrect}
-										✓ Correct!
-									{:else if result.pointsEarned > 0}
-										⚠ Partial Credit
-									{:else if !isAnswered(userAnswer, question.questionType)}
-										○ Unanswered
-									{:else}
-										✗ Incorrect
-									{/if}
-								</p>
+								{#if question.questionType !== 'text_only'}
+									<p class="text-sm font-medium">
+										{#if result.isCorrect}
+											✓ Correct!
+										{:else if result.pointsEarned > 0}
+											⚠ Partial Credit
+										{:else if !isAnswered(userAnswer, question.questionType)}
+											○ Unanswered
+										{:else}
+											✗ Incorrect
+										{/if}
+									</p>
+								{/if}
 								{#if result.feedback}
 									<p class="text-muted-foreground mt-1 text-sm">{result.feedback}</p>
 								{:else if result.explanation}
@@ -296,7 +299,7 @@
 						{/if}
 
 						<!-- Correct Answers Display -->
-						{#if data.problem.canShowAnswers && question.questionType !== 'text_only'}
+						{#if data.problem.canShowAnswers}
 							{@const correctAnswers = getCorrectAnswers(question)}
 							{#if correctAnswers.length > 0}
 								<div class="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
@@ -337,7 +340,7 @@
 						{/if}
 
 						<!-- Details for specific question types -->
-						{#if result.details}
+						{#if result && result.details}
 							<div class="bg-muted/50 rounded-lg p-3 text-sm">
 								{#if question.questionType === 'fill_blank' && result.details.blankResults}
 									<p class="font-medium">Blank Results:</p>
@@ -368,7 +371,6 @@
 						{/if}
 					</Card.Content>
 				</Card.Root>
-			{/if}
 		{/each}
 	</div>
 </main>
