@@ -43,6 +43,59 @@
 		// For single_choice, true_false - check if it's a valid number
 		return typeof answer === 'number';
 	}
+
+	function getOptionText(config: any, index: number): string {
+		if (!config?.options || !Array.isArray(config.options)) return `Option ${index + 1}`;
+		const option = config.options[index];
+		return option?.text || `Option ${index + 1}`;
+	}
+
+	function getCorrectAnswers(question: any): string[] {
+		const { questionType, config } = question;
+		const answers: string[] = [];
+
+		if (questionType === 'single_choice' || questionType === 'true_false') {
+			if (config?.options) {
+				const correctOption = config.options.find((opt: any) => opt.isCorrect);
+				if (correctOption) answers.push(correctOption.text);
+			}
+		} else if (questionType === 'multiple_choice') {
+			if (config?.options) {
+				config.options.forEach((opt: any) => {
+					if (opt.isCorrect) answers.push(opt.text);
+				});
+			}
+		} else if (questionType === 'fill_blank') {
+			if (config?.blanks) {
+				return config.blanks.map((blank: any) => {
+					const acceptedAnswers = blank.answers || [];
+					return `Blank ${blank.index}: ${acceptedAnswers.join(' or ')}`;
+				});
+			}
+		} else if (questionType === 'short_answer') {
+			if (config?.answers) {
+				return config.answers;
+			}
+		} else if (questionType === 'numeric') {
+			if (config?.answer !== undefined) {
+				const tolerance = config.tolerance || 0;
+				if (tolerance > 0) {
+					answers.push(`${config.answer} (±${tolerance})`);
+				} else {
+					answers.push(String(config.answer));
+				}
+				if (config.unit) answers[0] += ` ${config.unit}`;
+			}
+		} else if (questionType === 'matching') {
+			if (config?.items) {
+				return config.items.map((item: any) => 
+					`${item.text}: ${item.correctAnswer}`
+				);
+			}
+		}
+
+		return answers;
+	}
 </script>
 
 <svelte:head>
@@ -134,8 +187,8 @@
 										<XCircle class="text-red-600 dark:text-red-400 h-5 w-5" />
 									{/if}
 								</div>
-								<p class="text-muted-foreground mt-1 text-sm">
-									{question.questionText.slice(0, 100)}...
+								<p class="text-muted-foreground mt-2 text-sm whitespace-pre-wrap">
+									{question.questionText}
 								</p>
 							</div>
 							<div class="text-right">
@@ -154,15 +207,17 @@
 								<div class="text-sm">
 									{#if question.questionType === 'single_choice' || question.questionType === 'true_false'}
 										{#if typeof userAnswer === 'number'}
-											<p class="text-muted-foreground">Selected option: {userAnswer + 1}</p>
+											<p class="text-muted-foreground">{getOptionText(question.config, userAnswer)}</p>
 										{:else}
 											<p class="text-muted-foreground italic">No answer provided</p>
 										{/if}
 									{:else if question.questionType === 'multiple_choice'}
 										{#if Array.isArray(userAnswer) && userAnswer.length > 0}
-											<p class="text-muted-foreground">
-												Selected options: {userAnswer.map((idx) => idx + 1).join(', ')}
-											</p>
+											<ul class="text-muted-foreground list-disc list-inside space-y-1">
+												{#each userAnswer as idx}
+													<li>{getOptionText(question.config, idx)}</li>
+												{/each}
+											</ul>
 										{:else}
 											<p class="text-muted-foreground italic">No answers selected</p>
 										{/if}
@@ -180,12 +235,12 @@
 										{/if}
 									{:else if question.questionType === 'fill_blank'}
 										{#if typeof userAnswer === 'object'}
-											<div class="space-y-1">
+											<div class="space-y-2">
 												{#each Object.entries(userAnswer) as [index, value]}
-													<p class="text-muted-foreground">
-														<span class="font-medium">Blank {index}:</span>
-														<span class="font-mono ml-2">{value}</span>
-													</p>
+													<div>
+														<p class="font-medium text-foreground">Blank {index}:</p>
+														<p class="text-muted-foreground font-mono ml-3">{value}</p>
+													</div>
 												{/each}
 											</div>
 										{:else}
@@ -238,6 +293,47 @@
 									<p class="text-muted-foreground mt-1 text-sm">{result.explanation}</p>
 								{/if}
 							</div>
+						{/if}
+
+						<!-- Correct Answers Display -->
+						{#if data.problem.canShowAnswers && question.questionType !== 'text_only'}
+							{@const correctAnswers = getCorrectAnswers(question)}
+							{#if correctAnswers.length > 0}
+								<div class="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+									<p class="text-sm font-medium text-blue-900 dark:text-blue-100 mb-2">
+										Correct Answer{correctAnswers.length > 1 ? 's' : ''}:
+									</p>
+									{#if question.questionType === 'fill_blank'}
+										<div class="space-y-2">
+											{#each correctAnswers as answer}
+												{@const [blankLabel, acceptedAnswers] = answer.split(': ')}
+												<div>
+													<p class="text-sm font-medium text-blue-800 dark:text-blue-200">{blankLabel}:</p>
+													<ul class="ml-4 mt-1 space-y-0.5">
+														{#each acceptedAnswers.split(' or ') as acceptedAnswer}
+															<li class="text-sm text-blue-700 dark:text-blue-300 font-mono">• {acceptedAnswer}</li>
+														{/each}
+													</ul>
+												</div>
+											{/each}
+										</div>
+									{:else if question.questionType === 'matching'}
+										<ul class="space-y-1">
+											{#each correctAnswers as answer}
+												<li class="text-sm text-blue-700 dark:text-blue-300">• {answer}</li>
+											{/each}
+										</ul>
+									{:else if correctAnswers.length === 1}
+										<p class="text-sm text-blue-700 dark:text-blue-300">{correctAnswers[0]}</p>
+									{:else}
+										<ul class="space-y-1">
+											{#each correctAnswers as answer}
+												<li class="text-sm text-blue-700 dark:text-blue-300">• {answer}</li>
+											{/each}
+										</ul>
+									{/if}
+								</div>
+							{/if}
 						{/if}
 
 						<!-- Details for specific question types -->

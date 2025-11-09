@@ -200,7 +200,9 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 			questionType: q.questionType,
 			questionText: q.questionText,
 			orderIndex: q.orderIndex,
-			points: q.points
+			points: q.points,
+			config: q.config,
+			explanation: q.explanation
 		})),
 		userAnswers: parsedAnswers
 	};
