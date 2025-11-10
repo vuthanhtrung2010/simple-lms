@@ -136,5 +136,21 @@
 	"rankingPage.noSubmissionsMessage": "Hãy là người đầu tiên nộp bài!",
 	"rankingPage.submittedBy": "được nộp bởi",
 	"rankingPage.quizCompleted": "bài tập đã hoàn thành",
-	"rankingPage.showingResults": "Hiển thị {start}-{end} trong số {total} học sinh"
+	"rankingPage.showingResults": "Hiển thị {start}-{end} trong số {total} học sinh",
+	"userPage.heatmap.days.fri": "T6",
+	"userPage.heatmap.days.mon": "T2",
+	"userPage.heatmap.days.sat": "T7",
+	"userPage.heatmap.days.sun": "CN",
+	"userPage.heatmap.days.thu": "T5",
+	"userPage.heatmap.days.tue": "T3",
+	"userPage.heatmap.days.wed": "T4",
+	"userPage.heatmap.inLastYear": "trong năm qua",
+	"userPage.heatmap.inYear": "trong năm {year}",
+	"userPage.heatmap.legend.less": "Ít",
+	"userPage.heatmap.legend.more": "Nhiều",
+	"userPage.heatmap.pastYear": "năm qua",
+	"userPage.heatmap.submission": "bài nộp",
+	"userPage.heatmap.submissions": "bài nộp",
+	"userPage.heatmap.totalSubmission": "tổng số bài nộp",
+	"userPage.heatmap.totalSubmissions": "tổng số bài nộp"
 }

@@ -136,5 +136,21 @@
 	"rankingPage.noSubmissionsMessage": "Be the first to submit!",
 	"rankingPage.submittedBy": "submitted by",
 	"rankingPage.quizCompleted": "quiz completed",
-	"rankingPage.showingResults": "Showing {start}-{end} of {total} students"
+	"rankingPage.showingResults": "Showing {start}-{end} of {total} students",
+	"userPage.heatmap.days.fri": "Fri",
+	"userPage.heatmap.days.mon": "Mon",
+	"userPage.heatmap.days.sat": "Sat",
+	"userPage.heatmap.days.sun": "Sun",
+	"userPage.heatmap.days.thu": "Thu",
+	"userPage.heatmap.days.tue": "Tue",
+	"userPage.heatmap.days.wed": "Wed",
+	"userPage.heatmap.inLastYear": "in the last year",
+	"userPage.heatmap.inYear": "in {year}",
+	"userPage.heatmap.legend.less": "Less",
+	"userPage.heatmap.legend.more": "More",
+	"userPage.heatmap.pastYear": "past year",
+	"userPage.heatmap.submission": "submission",
+	"userPage.heatmap.submissions": "submissions",
+	"userPage.heatmap.totalSubmission": "total submission",
+	"userPage.heatmap.totalSubmissions": "total submissions"
 }

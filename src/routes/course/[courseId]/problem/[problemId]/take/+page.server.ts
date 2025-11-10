@@ -625,14 +625,14 @@ export const actions: Actions = {
 			}
 		}
 
-		// Update submission status
+		// Update submission status to graded (since it's auto-graded)
 		const now = Date.now();
 		const timeSpent = Math.floor((now - submission.startedAt) / 1000);
 
 		await db
 			.update(submissions)
 			.set({
-				status: 'submitted',
+				status: 'graded',
 				score: gradeResults.earnedPoints,
 				maxScore: gradeResults.totalPoints,
 				scorePercentage: gradeResults.percentage,

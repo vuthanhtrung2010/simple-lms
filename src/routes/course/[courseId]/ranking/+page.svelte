@@ -245,7 +245,9 @@
 									>
 										<div class="flex items-center justify-center gap-2">
 											Rating
-											<FontAwesomeIcon icon={getSortIcon('rating')} class="h-3 w-3" />
+											{#key `${sortField}-${sortOrder}`}
+												<FontAwesomeIcon icon={getSortIcon('rating')} class="h-3 w-3" />
+											{/key}
 										</div>
 									</th>
 									<th
@@ -256,7 +258,9 @@
 									>
 										<div class="flex items-center gap-2">
 											Name
-											<FontAwesomeIcon icon={getSortIcon('name')} class="h-3 w-3" />
+											{#key `${sortField}-${sortOrder}`}
+												<FontAwesomeIcon icon={getSortIcon('name')} class="h-3 w-3" />
+											{/key}
 										</div>
 									</th>
 									<th
@@ -267,7 +271,9 @@
 									>
 										<div class="flex items-center justify-center gap-2">
 											Quizzes
-											<FontAwesomeIcon icon={getSortIcon('quizzes')} class="h-3 w-3" />
+											{#key `${sortField}-${sortOrder}`}
+												<FontAwesomeIcon icon={getSortIcon('quizzes')} class="h-3 w-3" />
+											{/key}
 										</div>
 									</th>
 									{#if showDebt}
@@ -279,7 +285,9 @@
 										>
 											<div class="flex items-center justify-center gap-2">
 												Debt
-												<FontAwesomeIcon icon={getSortIcon('debt')} class="h-3 w-3" />
+												{#key `${sortField}-${sortOrder}`}
+													<FontAwesomeIcon icon={getSortIcon('debt')} class="h-3 w-3" />
+												{/key}
 											</div>
 										</th>
 									{/if}

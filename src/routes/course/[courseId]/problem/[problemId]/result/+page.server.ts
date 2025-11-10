@@ -11,6 +11,7 @@ import {
 	questionAnswers
 } from '$lib/server/db/schema.js';
 import { gradeSubmission } from '$lib/grader.js';
+import { hasPermission, UserPermissions } from '$lib/permissions.js';
 
 export const load: PageServerLoad = async ({ params, locals, url }) => {
 	const { courseId, problemId } = params;
@@ -34,21 +35,28 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 		error(404, 'Course not found');
 	}
 
-	// Ensure current user is enrolled
-	const enrollment = await db
-		.select({ id: enrollments.id })
-		.from(enrollments)
-		.where(
-			and(
-				eq(enrollments.courseId, courseId),
-				eq(enrollments.userId, locals.user.id!),
-				eq(enrollments.isDeleted, false)
-			)
-		)
-		.get();
+	// Check if user is admin
+	let isAdmin: boolean = false;
+	if (locals.user.perms)
+		isAdmin = hasPermission(locals.user.perms, UserPermissions.ADMINISTRATOR);
 
-	if (!enrollment) {
-		error(403, 'You are not enrolled in this course');
+	// Ensure current user is enrolled (skip check for admin)
+	if (!isAdmin) {
+		const enrollment = await db
+			.select({ id: enrollments.id })
+			.from(enrollments)
+			.where(
+				and(
+					eq(enrollments.courseId, courseId),
+					eq(enrollments.userId, locals.user.id!),
+					eq(enrollments.isDeleted, false)
+				)
+			)
+			.get();
+
+		if (!enrollment) {
+			error(403, 'You are not enrolled in this course');
+		}
 	}
 
 	// Ensure problem exists and is linked to course
@@ -82,9 +90,22 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 	}
 
 	// Find the submission
+	// Admin can view any submission, regular users can only view their own
+	const submissionWhere = isAdmin
+		? and(
+				eq(submissions.problemId, String(problem.id)),
+				eq(submissions.attemptNumber, attemptNumber)
+			)
+		: and(
+				eq(submissions.userId, locals.user.id!),
+				eq(submissions.problemId, String(problem.id)),
+				eq(submissions.attemptNumber, attemptNumber)
+			);
+
 	const submission = await db
 		.select({
 			id: submissions.id,
+			userId: submissions.userId,
 			attemptNumber: submissions.attemptNumber,
 			status: submissions.status,
 			startedAt: submissions.startedAt,
@@ -93,17 +114,16 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 			maxScore: submissions.maxScore
 		})
 		.from(submissions)
-		.where(
-			and(
-				eq(submissions.userId, locals.user.id!),
-				eq(submissions.problemId, String(problem.id)),
-				eq(submissions.attemptNumber, attemptNumber)
-			)
-		)
+		.where(submissionWhere)
 		.get();
 
 	if (!submission) {
 		error(404, 'Submission not found');
+	}
+
+	// Non-admin users can only view their own submissions
+	if (!isAdmin && submission.userId !== locals.user.id) {
+		error(403, 'You can only view your own submissions');
 	}
 
 	// Load questions with config
