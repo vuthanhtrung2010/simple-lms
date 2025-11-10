@@ -75,7 +75,7 @@ export const actions: Actions = {
 			});
 
 			// Generate reset URL
-			const resetUrl = `${url.origin}/accounts/reset-password/${resetToken}`;
+			const resetUrl = `${url.origin}/accounts/forgot-password/${resetToken}`;
 
 			// Send email
 			const emailResult = await sendPasswordResetEmail(email, resetUrl);
