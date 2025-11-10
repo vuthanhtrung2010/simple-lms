@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import { ChevronDown, Folder, FileText, LogOut, Users, Type } from '@lucide/svelte';
+	import { ChevronDown, Folder, FileText, LogOut, Users, Type, UserCheck } from '@lucide/svelte';
 
 	import * as Avatar from '$lib/components/ui/avatar/index.js';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb/index.js';
@@ -73,6 +73,12 @@
 				UserPermissions.EDIT_COURSE,
 				UserPermissions.DELETE_COURSE
 			]
+		},
+		{
+			title: 'Enrollment Requests',
+			url: '/admin/enrollment-requests',
+			icon: UserCheck,
+			permissions: [UserPermissions.EDIT_COURSE]
 		},
 		{
 			title: m['adminSidebar.sections.users'](),
@@ -195,7 +201,7 @@
 		<!-- Main Content with Header -->
 		<Sidebar.Inset>
 			<header
-				class="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12"
+				class="group-has-data-[collapsible=icon]/sidebar-wrapper:h-12 flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear"
 			>
 				<div class="flex items-center gap-2 px-4">
 					<Sidebar.Trigger class="-ml-1" />
