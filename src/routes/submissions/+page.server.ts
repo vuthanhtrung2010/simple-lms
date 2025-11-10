@@ -38,7 +38,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		.innerJoin(users, eq(submissions.userId, users.id))
 		.innerJoin(problems, eq(submissions.problemId, problems.id))
 		.innerJoin(courseProblems, eq(problems.id, courseProblems.problemId))
-		.where(eq(submissions.status, 'submitted'))
+		.where(eq(submissions.status, 'graded'))
 		.orderBy(desc(submissions.submittedAt))
 		.limit(1000);
 
