@@ -47,6 +47,6 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	return {
 		submissions: allSubmissions,
 		problemId,
-		userId,
+		userId
 	};
 };

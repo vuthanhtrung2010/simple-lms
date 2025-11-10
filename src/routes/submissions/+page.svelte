@@ -218,10 +218,7 @@
 											</a>
 										</td>
 										<td class="p-4">
-											<a
-												href={`/user/${submission.userId}`}
-												class="text-primary hover:underline"
-											>
+											<a href={`/user/${submission.userId}`} class="text-primary hover:underline">
 												{submission.userName || submission.userUsername}
 											</a>
 										</td>

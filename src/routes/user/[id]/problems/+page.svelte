@@ -123,7 +123,7 @@
 												{#each courseData.solved as problem}
 													<a
 														href={`/course/${courseId}/problem/${problem.id}`}
-														class="flex items-center justify-between rounded-lg border bg-green-50 dark:bg-green-950/20 p-3 hover:bg-green-100 dark:hover:bg-green-950/30 transition-colors"
+														class="flex items-center justify-between rounded-lg border bg-green-50 p-3 transition-colors hover:bg-green-100 dark:bg-green-950/20 dark:hover:bg-green-950/30"
 													>
 														<div class="flex items-center gap-3">
 															<Trophy class="h-4 w-4 text-green-600 dark:text-green-400" />
@@ -133,7 +133,9 @@
 															<Badge variant={getDifficultyBadgeVariant(problem.difficulty)}>
 																{problem.difficulty || 'N/A'}
 															</Badge>
-															<span class="text-sm font-semibold text-green-600 dark:text-green-400">
+															<span
+																class="text-sm font-semibold text-green-600 dark:text-green-400"
+															>
 																{problem.userScore} / {problem.maxScore}
 															</span>
 														</div>
@@ -152,7 +154,7 @@
 												{#each courseData.attempted as problem}
 													<a
 														href={`/course/${courseId}/problem/${problem.id}`}
-														class="flex items-center justify-between rounded-lg border bg-yellow-50 dark:bg-yellow-950/20 p-3 hover:bg-yellow-100 dark:hover:bg-yellow-950/30 transition-colors"
+														class="flex items-center justify-between rounded-lg border bg-yellow-50 p-3 transition-colors hover:bg-yellow-100 dark:bg-yellow-950/20 dark:hover:bg-yellow-950/30"
 													>
 														<div class="flex items-center gap-3">
 															<Target class="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
@@ -162,7 +164,9 @@
 															<Badge variant={getDifficultyBadgeVariant(problem.difficulty)}>
 																{problem.difficulty || 'N/A'}
 															</Badge>
-															<span class="text-sm font-semibold text-yellow-600 dark:text-yellow-400">
+															<span
+																class="text-sm font-semibold text-yellow-600 dark:text-yellow-400"
+															>
 																{problem.userScore} / {problem.maxScore}
 															</span>
 														</div>

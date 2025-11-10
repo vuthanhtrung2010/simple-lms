@@ -71,10 +71,7 @@
 			</div>
 
 			<div class="rounded-lg border bg-card p-4">
-				<a
-					href={`/submissions?user=${data.user.id}`}
-					class="block text-primary hover:underline"
-				>
+				<a href={`/submissions?user=${data.user.id}`} class="block text-primary hover:underline">
 					View all submissions
 				</a>
 			</div>
@@ -89,7 +86,7 @@
 					<h2 class="mb-2 text-xl font-semibold">Bio</h2>
 					<Card.Root>
 						<Card.Content class="pt-6">
-							<p class="text-foreground whitespace-pre-wrap">{data.user.bio}</p>
+							<p class="whitespace-pre-wrap text-foreground">{data.user.bio}</p>
 						</Card.Content>
 					</Card.Root>
 				</div>
@@ -104,10 +101,7 @@
 							<div class="space-y-2">
 								{#each data.enrollments as enrollment}
 									<div class="flex items-center justify-between">
-										<a
-											href={`/course/${enrollment.courseId}`}
-											class="text-primary hover:underline"
-										>
+										<a href={`/course/${enrollment.courseId}`} class="text-primary hover:underline">
 											{enrollment.courseName}
 										</a>
 										<Badge variant="outline">

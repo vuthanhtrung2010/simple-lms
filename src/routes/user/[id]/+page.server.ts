@@ -136,7 +136,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			fullname: user.fullname,
 			bio: user.bio,
 			createdAt: user.createdAt,
-            email: user.email
+			email: user.email
 		},
 		avgRating,
 		userRatings,

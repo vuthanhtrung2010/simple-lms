@@ -88,10 +88,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			.all();
 
 		// Create a map of problemId to best submission
-		const submissionMap = new Map<
-			string,
-			{ score: number; maxScore: number; status: string }
-		>();
+		const submissionMap = new Map<string, { score: number; maxScore: number; status: string }>();
 		for (const sub of userSubmissionsForCourse) {
 			const existing = submissionMap.get(sub.problemId);
 			if (
@@ -153,7 +150,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			id: user.id,
 			username: user.username,
 			fullname: user.fullname,
-            email: user.email,
+			email: user.email
 		},
 		problemsByCourse: Object.fromEntries(problemsByCourse),
 		stats: {

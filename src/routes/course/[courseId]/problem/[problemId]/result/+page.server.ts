@@ -37,8 +37,7 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 
 	// Check if user is admin
 	let isAdmin: boolean = false;
-	if (locals.user.perms)
-		isAdmin = hasPermission(locals.user.perms, UserPermissions.ADMINISTRATOR);
+	if (locals.user.perms) isAdmin = hasPermission(locals.user.perms, UserPermissions.ADMINISTRATOR);
 
 	// Ensure current user is enrolled (skip check for admin)
 	if (!isAdmin) {

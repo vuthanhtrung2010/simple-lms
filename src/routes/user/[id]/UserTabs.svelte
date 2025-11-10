@@ -33,7 +33,7 @@
 			<a
 				href={tab.href}
 				class={cn(
-					'inline-flex items-center border-b-2 px-4 py-2 font-medium text-sm',
+					'inline-flex items-center border-b-2 px-4 py-2 text-sm font-medium',
 					tab.active
 						? 'border-primary text-primary'
 						: 'border-transparent text-muted-foreground hover:border-muted-foreground hover:text-foreground'
