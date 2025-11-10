@@ -71,6 +71,7 @@
 			permissions: [
 				UserPermissions.CREATE_COURSE,
 				UserPermissions.EDIT_COURSE,
+				UserPermissions.EDIT_PERMITTED_COURSE,
 				UserPermissions.DELETE_COURSE
 			]
 		},
