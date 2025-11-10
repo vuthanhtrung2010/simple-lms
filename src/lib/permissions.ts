@@ -13,18 +13,20 @@ export const UserPermissions = {
 
 	// Courses
 	CREATE_COURSE: 1n << 5n,
-	EDIT_COURSE: 1n << 6n,
-	DELETE_COURSE: 1n << 7n,
+	EDIT_PERMITTED_COURSE: 1n << 6n,
+	EDIT_COURSE: 1n << 7n,
+	DELETE_COURSE: 1n << 8n,
 
 	// Users
-	CREATE_USER: 1n << 8n,
-	EDIT_USER: 1n << 9n,
-	DELETE_USER: 1n << 10n
+	CREATE_USER: 1n << 9n,
+	EDIT_USER: 1n << 10n,
+	DELETE_USER: 1n << 11n
 };
 
 // Permission order for comparison (higher index = higher privilege)
 export const PermissionOrder = [
 	'VIEW_MANAGEMENT_PAGE',
+	'EDIT_PERMITTED_COURSE',
 	'CREATE_PROBLEM',
 	'EDIT_PROBLEM',
 	'DELETE_PROBLEM',
@@ -45,6 +47,7 @@ export const PermissionLabels: Record<string, string> = {
 	EDIT_PROBLEM: 'Edit Problem',
 	DELETE_PROBLEM: 'Delete Problem',
 	CREATE_COURSE: 'Create Course',
+	EDIT_PERMITTED_COURSE: 'Edit Permitted Course (eg. Teacher of enrolled courses)',
 	EDIT_COURSE: 'Edit Course',
 	DELETE_COURSE: 'Delete Course',
 	CREATE_USER: 'Create User',
@@ -64,7 +67,11 @@ export const PermissionCategories: {
 		label: 'Problems',
 		items: ['CREATE_PROBLEM', 'EDIT_PROBLEM', 'DELETE_PROBLEM']
 	},
-	{ key: 'courses', label: 'Courses', items: ['CREATE_COURSE', 'EDIT_COURSE', 'DELETE_COURSE'] },
+	{
+		key: 'courses',
+		label: 'Courses',
+		items: ['CREATE_COURSE', 'EDIT_COURSE', 'DELETE_COURSE', 'EDIT_PERMITTED_COURSE']
+	},
 	{ key: 'users', label: 'Users', items: ['CREATE_USER', 'EDIT_USER', 'DELETE_USER'] },
 	{ key: 'admin', label: 'Administrator', items: ['ADMINISTRATOR'] }
 ];

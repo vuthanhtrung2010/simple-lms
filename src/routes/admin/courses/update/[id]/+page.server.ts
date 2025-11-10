@@ -7,6 +7,10 @@ import { hasPermission, UserPermissions } from '$lib/permissions.js';
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const id = params.id;
 	if (!id) throw fail(404, { error: 'Course not found' });
+	if (!locals.user?.id || !locals.user?.perms) {
+		throw fail(401, { error: 'Unauthorized' });
+	}
+
 	// Get course
 	const course = await locals.db
 		.select()
@@ -14,6 +18,35 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 		.where(and(eq(courses.id, id), eq(courses.isDeleted, false)))
 		.get();
 	if (!course) throw fail(404, { error: 'Course not found' });
+
+	// Check permission: if user has EDIT_PERMITTED_COURSE but not EDIT_COURSE, verify they're a teacher
+	const hasFullEditPerm = hasPermission(locals.user.perms, UserPermissions.EDIT_COURSE);
+	const hasPermittedEditPerm = hasPermission(
+		locals.user.perms,
+		UserPermissions.EDIT_PERMITTED_COURSE
+	);
+
+	if (!hasFullEditPerm && hasPermittedEditPerm) {
+		// Check if user is a teacher of this course
+		const teacherEnrollment = await locals.db
+			.select()
+			.from(enrollments)
+			.where(
+				and(
+					eq(enrollments.courseId, id),
+					eq(enrollments.userId, locals.user.id),
+					eq(enrollments.role, 'teacher'),
+					eq(enrollments.isDeleted, false)
+				)
+			)
+			.get();
+
+		if (!teacherEnrollment) {
+			throw fail(403, { error: 'You do not have permission to edit this course.' });
+		}
+	} else if (!hasFullEditPerm && !hasPermittedEditPerm) {
+		throw fail(403, { error: 'You do not have permission to edit courses.' });
+	}
 	// Get all problems and users
 	const allProblems = await locals.db.select().from(problems).all();
 	const allUsers = await locals.db.select().from(users).all();
@@ -48,10 +81,41 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 
 export const actions = {
 	default: async ({ locals, params, request }) => {
-		if (!locals.user?.perms || !hasPermission(locals.user.perms, UserPermissions.EDIT_COURSE))
-			return fail(403, { error: 'You do not have permission to perform this action.' });
+		if (!locals.user?.id || !locals.user?.perms) {
+			return fail(401, { error: 'Unauthorized' });
+		}
+
 		const id = params.id;
 		if (!id) return fail(404, { error: 'Course not found' });
+
+		// Check permission: if user has EDIT_PERMITTED_COURSE but not EDIT_COURSE, verify they're a teacher
+		const hasFullEditPerm = hasPermission(locals.user.perms, UserPermissions.EDIT_COURSE);
+		const hasPermittedEditPerm = hasPermission(
+			locals.user.perms,
+			UserPermissions.EDIT_PERMITTED_COURSE
+		);
+
+		if (!hasFullEditPerm && hasPermittedEditPerm) {
+			// Check if user is a teacher of this course
+			const teacherEnrollment = await locals.db
+				.select()
+				.from(enrollments)
+				.where(
+					and(
+						eq(enrollments.courseId, id),
+						eq(enrollments.userId, locals.user.id),
+						eq(enrollments.role, 'teacher'),
+						eq(enrollments.isDeleted, false)
+					)
+				)
+				.get();
+
+			if (!teacherEnrollment) {
+				return fail(403, { error: 'You do not have permission to edit this course.' });
+			}
+		} else if (!hasFullEditPerm && !hasPermittedEditPerm) {
+			return fail(403, { error: 'You do not have permission to edit courses.' });
+		}
 		const data = await request.formData();
 		const title = data.get('title') as string;
 		const isPublished = data.get('isPublished') === 'on';

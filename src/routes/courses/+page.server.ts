@@ -1,7 +1,7 @@
 import type { Actions, PageServerLoad } from './$types.js';
 import { courses, enrollments, enrollmentRequests } from '$lib/server/db/schema.js';
-import { and, eq, isNull, or } from 'drizzle-orm';
-import { fail, redirect } from '@sveltejs/kit';
+import { and, eq } from 'drizzle-orm';
+import { fail } from '@sveltejs/kit';
 import { hasPermission, UserPermissions } from '$lib/permissions.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
