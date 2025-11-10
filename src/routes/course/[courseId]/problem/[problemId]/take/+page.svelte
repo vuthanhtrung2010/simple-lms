@@ -44,6 +44,27 @@
 	let singleChoiceAnswers = $state<Record<string, number>>({});
 	let multipleChoiceAnswers = $state<Record<string, Set<number>>>({});
 
+	// Audio player state
+	let audioElement = $state<HTMLAudioElement | null>(null);
+	let isPlaying = $state(false);
+	let currentAudioTime = $state(0);
+	let audioDuration = $state(0);
+
+	function toggleAudio() {
+		if (!audioElement) return;
+		if (isPlaying) {
+			audioElement.pause();
+		} else {
+			audioElement.play();
+		}
+	}
+
+	function formatAudioTime(seconds: number): string {
+		const mins = Math.floor(seconds / 60);
+		const secs = Math.floor(seconds % 60);
+		return `${mins}:${secs.toString().padStart(2, '0')}`;
+	}
+
 	// Timer state
 	let currentTime = $state(Date.now());
 	let timerId: ReturnType<typeof setInterval> | null = null;
@@ -339,6 +360,21 @@
 				</Resizable.Pane>
 			</Resizable.PaneGroup>
 		</div>
+
+		<!-- Fixed Audio Player for single audio file -->
+		{#if data.problem.singleAudioUrl}
+			<div
+				class="fixed right-0 bottom-0 left-0 z-50 border-t bg-background/95 px-4 py-3 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/80"
+			>
+				<div class="mx-auto flex max-w-4xl items-center gap-3">
+					<span class="text-sm font-medium text-muted-foreground">Audio:</span>
+					<audio controls class="flex-1" style="max-height: 40px;">
+						<source src={data.problem.singleAudioUrl} type="audio/mpeg" />
+						Your browser does not support the audio element.
+					</audio>
+				</div>
+			</div>
+		{/if}
 	</form>
 {:else}
 	<!-- Normal Layout (no split screen) -->
@@ -540,5 +576,80 @@
 				{isSubmitting ? 'Submitting...' : 'Submit Answers'}
 			</Button>
 		</div>
+
+		<!-- Fixed Audio Player for single audio file -->
+		{#if data.problem.singleAudioUrl}
+			<div
+				class="fixed bottom-4 left-1/2 z-50 w-full max-w-md -translate-x-1/2 rounded-lg border bg-background/95 px-4 py-3 shadow-xl backdrop-blur supports-[backdrop-filter]:bg-background/90"
+			>
+				<audio
+					bind:this={audioElement}
+					src={data.problem.singleAudioUrl}
+					onplay={() => (isPlaying = true)}
+					onpause={() => (isPlaying = false)}
+					ontimeupdate={() => {
+						if (audioElement) currentAudioTime = audioElement.currentTime;
+					}}
+					onloadedmetadata={() => {
+						if (audioElement) audioDuration = audioElement.duration;
+					}}
+				>
+					<source src={data.problem.singleAudioUrl} type="audio/mpeg" />
+				</audio>
+
+				<div class="flex items-center gap-3">
+					<!-- Play/Pause Button -->
+					<button
+						type="button"
+						onclick={toggleAudio}
+						class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground transition hover:bg-primary/90"
+					>
+						{#if isPlaying}
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+							>
+								<rect x="6" y="4" width="4" height="16" rx="1" />
+								<rect x="14" y="4" width="4" height="16" rx="1" />
+							</svg>
+						{:else}
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+							>
+								<path d="M8 5v14l11-7z" />
+							</svg>
+						{/if}
+					</button>
+
+					<!-- Time Display -->
+					<div class="flex-1">
+						<div class="mb-1 flex items-center justify-between text-xs text-muted-foreground">
+							<span>{formatAudioTime(currentAudioTime)}</span>
+							<span>{formatAudioTime(audioDuration)}</span>
+						</div>
+						<!-- Progress Bar -->
+						<input
+							type="range"
+							min="0"
+							max={audioDuration || 100}
+							value={currentAudioTime}
+							oninput={(e) => {
+								if (audioElement) {
+									audioElement.currentTime = parseFloat(e.currentTarget.value);
+								}
+							}}
+							class="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-secondary accent-primary"
+						/>
+					</div>
+				</div>
+			</div>
+		{/if}
 	</form>
 {/if}

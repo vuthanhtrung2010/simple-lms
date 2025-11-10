@@ -121,10 +121,14 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 				typeof m === 'string' ? m : typeof m === 'object' && 'url' in m ? (m as any).url : null;
 			if (!url || typeof url !== 'string') continue;
 
+			// Check if URL is already a full URL
+			const fullUrl =
+				url.startsWith('http://') || url.startsWith('https://') ? url : `${baseFileUrl}/${url}`;
+
 			const lower = url.toLowerCase();
 			if (lower.endsWith('.mp3') || lower.endsWith('.wav')) {
 				// Append audio player HTML
-				result += `\n\n<audio controls>\n  <source src="${baseFileUrl}/${url}" type="audio/mpeg" />\n  Your browser does not support the audio element.\n</audio>`;
+				result += `\n\n<audio controls>\n  <source src="${fullUrl}" type="audio/mpeg" />\n  Your browser does not support the audio element.\n</audio>`;
 			} else if (
 				lower.endsWith('.jpg') ||
 				lower.endsWith('.jpeg') ||
@@ -132,7 +136,7 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 				lower.endsWith('.gif')
 			) {
 				// Append markdown image
-				result += `\n\n![](${baseFileUrl}/${url})`;
+				result += `\n\n![](${fullUrl})`;
 			}
 		}
 		return result;
@@ -274,33 +278,83 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 
 	// Process description with media
 	let descriptionHtml = '';
+	let singleAudioUrl: string | null = null;
+
+	// Parse media if it's a JSON string (regardless of description)
+	let parsedMedia: unknown[] = [];
+	if (problem.media) {
+		if (typeof problem.media === 'string') {
+			try {
+				parsedMedia = JSON.parse(problem.media);
+			} catch (e) {
+				console.error('Failed to parse problem.media:', e);
+				parsedMedia = [];
+			}
+		} else if (Array.isArray(problem.media)) {
+			parsedMedia = problem.media;
+		}
+	}
+
+	// Process audio files for fixed player (even without description)
+	if (parsedMedia.length > 0) {
+		const mediaArray = parsedMedia as unknown[];
+		const audioFiles = mediaArray.filter((m: any) => {
+			const url = typeof m === 'string' ? m : m?.url;
+			if (!url) return false;
+			const lower = String(url).toLowerCase();
+			return lower.endsWith('.mp3') || lower.endsWith('.wav');
+		});
+
+		const audioCount = audioFiles.length;
+
+		// If exactly 1 audio, extract it for fixed player
+		if (audioCount === 1) {
+			const firstAudio = audioFiles[0];
+			const url = typeof firstAudio === 'string' ? firstAudio : (firstAudio as any)?.url;
+			if (url) {
+				// Check if URL is already a full URL (starts with http/https)
+				singleAudioUrl =
+					url.startsWith('http://') || url.startsWith('https://') ? url : `${baseFileUrl}/${url}`;
+			}
+		}
+	}
+
 	if (problem.description) {
 		let descWithMedia = problem.description;
 
 		// Append media if present (>= 2 audios or any images)
-		if (problem.media && Array.isArray(problem.media) && problem.media.length > 0) {
-			const mediaArray = problem.media as unknown[];
-			const audioCount = mediaArray.filter((m: any) => {
+		if (parsedMedia.length > 0) {
+			const mediaArray = parsedMedia as unknown[];
+			const audioFiles = mediaArray.filter((m: any) => {
 				const url = typeof m === 'string' ? m : m?.url;
 				if (!url) return false;
 				const lower = String(url).toLowerCase();
 				return lower.endsWith('.mp3') || lower.endsWith('.wav');
-			}).length;
+			});
 
-			// Only append if >= 2 audios
-			if (audioCount >= 2) {
-				descWithMedia = appendMediaToText(descWithMedia, mediaArray);
-			} else {
-				// Append non-audio media (images)
-				const nonAudioMedia = mediaArray.filter((m: any) => {
-					const url = typeof m === 'string' ? m : m?.url;
-					if (!url) return false;
-					const lower = String(url).toLowerCase();
-					return !(lower.endsWith('.mp3') || lower.endsWith('.wav'));
-				});
-				if (nonAudioMedia.length > 0) {
-					descWithMedia = appendMediaToText(descWithMedia, nonAudioMedia);
+			const audioCount = audioFiles.length;
+
+			// If exactly 1 audio, extract it for fixed player
+			if (audioCount === 1) {
+				const firstAudio = audioFiles[0];
+				const url = typeof firstAudio === 'string' ? firstAudio : (firstAudio as any)?.url;
+				if (url) {
+					singleAudioUrl = `${baseFileUrl}/${url}`;
 				}
+			} else if (audioCount >= 2) {
+				// Append if >= 2 audios
+				descWithMedia = appendMediaToText(descWithMedia, mediaArray);
+			}
+
+			// Always append non-audio media (images)
+			const nonAudioMedia = mediaArray.filter((m: any) => {
+				const url = typeof m === 'string' ? m : m?.url;
+				if (!url) return false;
+				const lower = String(url).toLowerCase();
+				return !(lower.endsWith('.mp3') || lower.endsWith('.wav'));
+			});
+			if (nonAudioMedia.length > 0) {
+				descWithMedia = appendMediaToText(descWithMedia, nonAudioMedia);
 			}
 		}
 
@@ -318,7 +372,8 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 			title: problem.title,
 			timeLimit: problem.timeLimit,
 			descriptionHtml,
-			splitScreen: problem.splitScreen ?? false
+			splitScreen: problem.splitScreen ?? false,
+			singleAudioUrl
 		},
 		questions: questionsHtml,
 		textOnlyQuestions,
