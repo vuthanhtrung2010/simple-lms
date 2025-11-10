@@ -165,18 +165,18 @@
 		<input type="hidden" name="submissionId" value={data.submission.id} />
 
 		<!-- Fixed Header with Timer -->
-		<header class="border-b bg-background px-4 py-3">
+		<header class="bg-background border-b px-4 py-3">
 			<div class="flex items-center justify-between">
 				<div>
-					<h1 class="text-xl font-semibold text-foreground">{data.problem.title}</h1>
-					<p class="text-xs text-muted-foreground">
+					<h1 class="text-foreground text-xl font-semibold">{data.problem.title}</h1>
+					<p class="text-muted-foreground text-xs">
 						{data.course.title}
 					</p>
 				</div>
 				<div class="flex items-center gap-4 text-sm">
 					<div>
 						<span class="text-muted-foreground">Elapsed:</span>
-						<span class="font-medium text-foreground">{formatTime(elapsedSeconds)}</span>
+						<span class="text-foreground font-medium">{formatTime(elapsedSeconds)}</span>
 					</div>
 					{#if timeLeftSeconds !== null}
 						<div class:text-destructive={timeLeftSeconds < 60}>
@@ -203,7 +203,7 @@
 					<div class="h-full overflow-y-auto p-4">
 						<div class="space-y-4">
 							{#each data.textOnlyQuestions as q, i}
-								<Card.Root class="border bg-card/70">
+								<Card.Root class="bg-card/70 border">
 									<Card.Header class="pb-2">
 										<Card.Title class="text-base font-semibold">
 											Reference {i + 1}
@@ -226,13 +226,13 @@
 					<div class="h-full overflow-y-auto p-4">
 						<div class="space-y-4">
 							{#each data.interactiveQuestions as q, i}
-								<Card.Root class="border bg-card/70">
+								<Card.Root class="bg-card/70 border">
 									<Card.Header class="pb-2">
 										<div class="flex items-baseline justify-between gap-2">
 											<Card.Title class="text-base font-semibold">
 												Question {i + 1}
 												{#if q.points != null}
-													<span class="ml-2 text-xs font-normal text-muted-foreground">
+													<span class="text-muted-foreground ml-2 text-xs font-normal">
 														({q.points} pts)
 													</span>
 												{/if}
@@ -254,7 +254,7 @@
 											<div class="mt-3 space-y-2">
 												{#each q.config.options as opt, idx}
 													<label
-														class="flex cursor-pointer items-start gap-3 rounded-md border p-3 transition hover:bg-accent"
+														class="hover:bg-accent flex cursor-pointer items-start gap-3 rounded-md border p-3 transition"
 													>
 														<input
 															type="radio"
@@ -279,7 +279,7 @@
 											<div class="mt-3 space-y-2">
 												{#each q.config.options as opt, idx}
 													<label
-														class="flex cursor-pointer items-start gap-3 rounded-md border p-3 transition hover:bg-accent"
+														class="hover:bg-accent flex cursor-pointer items-start gap-3 rounded-md border p-3 transition"
 													>
 														<input
 															type="checkbox"
@@ -364,14 +364,68 @@
 		<!-- Fixed Audio Player for single audio file -->
 		{#if data.problem.singleAudioUrl}
 			<div
-				class="fixed right-0 bottom-0 left-0 z-50 border-t bg-background/95 px-4 py-3 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/80"
+				class="bg-background/95 supports-[backdrop-filter]:bg-background/90 fixed bottom-4 left-1/2 z-50 w-full max-w-md -translate-x-1/2 rounded-lg border px-4 py-3 shadow-xl backdrop-blur"
 			>
-				<div class="mx-auto flex max-w-4xl items-center gap-3">
-					<span class="text-sm font-medium text-muted-foreground">Audio:</span>
-					<audio controls class="flex-1" style="max-height: 40px;">
-						<source src={data.problem.singleAudioUrl} type="audio/mpeg" />
-						Your browser does not support the audio element.
-					</audio>
+				<audio
+					bind:this={audioElement}
+					src={data.problem.singleAudioUrl}
+					onplay={() => (isPlaying = true)}
+					onpause={() => (isPlaying = false)}
+					ontimeupdate={() => {
+						if (audioElement) currentAudioTime = audioElement.currentTime;
+					}}
+					onloadedmetadata={() => {
+						if (audioElement) audioDuration = audioElement.duration;
+					}}
+				>
+					<source src={data.problem.singleAudioUrl} type="audio/mpeg" />
+				</audio>
+
+				<div class="flex items-center gap-3">
+					<!-- Play/Pause Button -->
+					<button
+						type="button"
+						onclick={toggleAudio}
+						class="bg-primary text-primary-foreground hover:bg-primary/90 flex h-10 w-10 items-center justify-center rounded-full transition"
+					>
+						{#if isPlaying}
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+							>
+								<rect x="6" y="4" width="4" height="16" rx="1" />
+								<rect x="14" y="4" width="4" height="16" rx="1" />
+							</svg>
+						{:else}
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="currentColor"
+							>
+								<path d="M8 5v14l11-7z" />
+							</svg>
+						{/if}
+					</button>
+
+					<!-- Time Display -->
+					<div class="flex-1">
+						<div class="text-muted-foreground mb-1 flex items-center justify-between text-xs">
+							<span>{formatAudioTime(currentAudioTime)}</span>
+							<span>{formatAudioTime(audioDuration)}</span>
+						</div>
+						<!-- Progress Bar (non-seekable) -->
+						<div class="bg-secondary relative h-1.5 w-full overflow-hidden rounded-lg">
+							<div
+								class="bg-primary h-full transition-all duration-100"
+								style={`width: ${audioDuration > 0 ? (currentAudioTime / audioDuration) * 100 : 0}%`}
+							></div>
+						</div>
+					</div>
 				</div>
 			</div>
 		{/if}
@@ -401,22 +455,22 @@
 
 		<!-- Header -->
 		<header class="mb-2 flex flex-col gap-2">
-			<h1 class="text-3xl font-semibold tracking-tight text-foreground">{data.problem.title}</h1>
-			<p class="text-sm text-muted-foreground">
-				In course <span class="font-medium text-foreground">{data.course.title}</span>
+			<h1 class="text-foreground text-3xl font-semibold tracking-tight">{data.problem.title}</h1>
+			<p class="text-muted-foreground text-sm">
+				In course <span class="text-foreground font-medium">{data.course.title}</span>
 			</p>
 		</header>
 
 		<!-- Timer Info -->
 		<section
-			class="flex flex-wrap gap-4 rounded-lg border bg-card/60 p-4 text-sm text-muted-foreground"
+			class="bg-card/60 text-muted-foreground flex flex-wrap gap-4 rounded-lg border p-4 text-sm"
 		>
 			<div>
-				<span class="font-semibold text-foreground">Started:</span>
+				<span class="text-foreground font-semibold">Started:</span>
 				<span>{formatDateTime(data.submission.startedAt)}</span>
 			</div>
 			<div>
-				<span class="font-semibold text-foreground">Elapsed:</span>
+				<span class="text-foreground font-semibold">Elapsed:</span>
 				<span>{formatTime(elapsedSeconds)}</span>
 			</div>
 			{#if timeLeftSeconds !== null}
@@ -440,13 +494,13 @@
 		<!-- Questions -->
 		<div class="space-y-4">
 			{#each questions as q, i}
-				<Card.Root class="border bg-card/70">
+				<Card.Root class="bg-card/70 border">
 					<Card.Header class="pb-2">
 						<div class="flex items-baseline justify-between gap-2">
 							<Card.Title class="text-base font-semibold">
 								Question {i + 1}
 								{#if q.points != null}
-									<span class="ml-2 text-xs font-normal text-muted-foreground">
+									<span class="text-muted-foreground ml-2 text-xs font-normal">
 										({q.points} pts)
 									</span>
 								{/if}
@@ -468,7 +522,7 @@
 							<div class="mt-3 space-y-2">
 								{#each q.config.options as opt, idx}
 									<label
-										class="flex cursor-pointer items-start gap-3 rounded-md border p-3 transition hover:bg-accent"
+										class="hover:bg-accent flex cursor-pointer items-start gap-3 rounded-md border p-3 transition"
 									>
 										<input
 											type="radio"
@@ -493,7 +547,7 @@
 							<div class="mt-3 space-y-2">
 								{#each q.config.options as opt, idx}
 									<label
-										class="flex cursor-pointer items-start gap-3 rounded-md border p-3 transition hover:bg-accent"
+										class="hover:bg-accent flex cursor-pointer items-start gap-3 rounded-md border p-3 transition"
 									>
 										<input
 											type="checkbox"
@@ -580,7 +634,7 @@
 		<!-- Fixed Audio Player for single audio file -->
 		{#if data.problem.singleAudioUrl}
 			<div
-				class="fixed bottom-4 left-1/2 z-50 w-full max-w-md -translate-x-1/2 rounded-lg border bg-background/95 px-4 py-3 shadow-xl backdrop-blur supports-[backdrop-filter]:bg-background/90"
+				class="bg-background/95 supports-[backdrop-filter]:bg-background/90 fixed bottom-4 left-1/2 z-50 w-full max-w-md -translate-x-1/2 rounded-lg border px-4 py-3 shadow-xl backdrop-blur"
 			>
 				<audio
 					bind:this={audioElement}
@@ -602,7 +656,7 @@
 					<button
 						type="button"
 						onclick={toggleAudio}
-						class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground transition hover:bg-primary/90"
+						class="bg-primary text-primary-foreground hover:bg-primary/90 flex h-10 w-10 items-center justify-center rounded-full transition"
 					>
 						{#if isPlaying}
 							<svg
@@ -630,23 +684,17 @@
 
 					<!-- Time Display -->
 					<div class="flex-1">
-						<div class="mb-1 flex items-center justify-between text-xs text-muted-foreground">
+						<div class="text-muted-foreground mb-1 flex items-center justify-between text-xs">
 							<span>{formatAudioTime(currentAudioTime)}</span>
 							<span>{formatAudioTime(audioDuration)}</span>
 						</div>
-						<!-- Progress Bar -->
-						<input
-							type="range"
-							min="0"
-							max={audioDuration || 100}
-							value={currentAudioTime}
-							oninput={(e) => {
-								if (audioElement) {
-									audioElement.currentTime = parseFloat(e.currentTarget.value);
-								}
-							}}
-							class="h-1.5 w-full cursor-pointer appearance-none rounded-lg bg-secondary accent-primary"
-						/>
+						<!-- Progress Bar (non-seekable) -->
+						<div class="bg-secondary relative h-1.5 w-full overflow-hidden rounded-lg">
+							<div
+								class="bg-primary h-full transition-all duration-100"
+								style={`width: ${audioDuration > 0 ? (currentAudioTime / audioDuration) * 100 : 0}%`}
+							></div>
+						</div>
 					</div>
 				</div>
 			</div>
