@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { PageProps } from './$types.js';
+	import type { MatchingConfig, FillBlankConfig } from '$lib/../types.js';
 	import * as Card from '$lib/components/ui/card/index.js';
 	import { Badge } from '$lib/components/ui/badge/index.js';
 	import { CheckCircle2, XCircle, AlertCircle, CircleDashed } from '@lucide/svelte';
@@ -105,11 +106,11 @@
 	<header class="space-y-2">
 		<div class="flex items-center justify-between">
 			<div>
-				<h1 class="text-3xl font-semibold tracking-tight text-foreground">
+				<h1 class="text-foreground text-3xl font-semibold tracking-tight">
 					{data.problem.title}
 				</h1>
-				<p class="text-sm text-muted-foreground">
-					In course <span class="font-medium text-foreground">{data.course.title}</span>
+				<p class="text-muted-foreground text-sm">
+					In course <span class="text-foreground font-medium">{data.course.title}</span>
 				</p>
 			</div>
 			<Badge variant="outline">Attempt {data.submission.attemptNumber}</Badge>
@@ -119,20 +120,20 @@
 	<hr class="border-border/70" />
 
 	<!-- Score Summary -->
-	<Card.Root class="border-2 bg-card/70">
+	<Card.Root class="bg-card/70 border-2">
 		<Card.Header>
 			<Card.Title>Submission Summary</Card.Title>
 		</Card.Header>
 		<Card.Content class="space-y-4">
 			<div class="grid gap-4 sm:grid-cols-2">
 				<div>
-					<p class="text-sm text-muted-foreground">Started</p>
-					<p class="font-medium text-foreground">{formatDateTime(data.submission.startedAt)}</p>
+					<p class="text-muted-foreground text-sm">Started</p>
+					<p class="text-foreground font-medium">{formatDateTime(data.submission.startedAt)}</p>
 				</div>
 				{#if data.submission.submittedAt}
 					<div>
-						<p class="text-sm text-muted-foreground">Submitted</p>
-						<p class="font-medium text-foreground">
+						<p class="text-muted-foreground text-sm">Submitted</p>
+						<p class="text-foreground font-medium">
 							{formatDateTime(data.submission.submittedAt)}
 						</p>
 					</div>
@@ -142,12 +143,12 @@
 			<hr class="border-border/50" />
 
 			<div>
-				<p class="mb-2 text-sm text-muted-foreground">Your Score</p>
+				<p class="text-muted-foreground mb-2 text-sm">Your Score</p>
 				<div class="flex items-baseline gap-3">
 					<span class={`text-4xl font-bold ${getScoreColor(data.grading.percentage)}`}>
 						{data.grading.earnedPoints.toFixed(2)}
 					</span>
-					<span class="text-xl text-muted-foreground">/ {data.grading.totalPoints}</span>
+					<span class="text-muted-foreground text-xl">/ {data.grading.totalPoints}</span>
 					<span class={`text-2xl font-semibold ${getScoreColor(data.grading.percentage)}`}>
 						({data.grading.percentage.toFixed(1)}%)
 					</span>
@@ -160,13 +161,13 @@
 
 	<!-- Question Results -->
 	<div class="space-y-4">
-		<h2 class="text-xl font-semibold text-foreground">Question Feedback</h2>
+		<h2 class="text-foreground text-xl font-semibold">Question Feedback</h2>
 
 		{#each data.questions as question, i}
 			{@const result = getGradeResult(question.id)}
 			{@const userAnswer = getUserAnswer(question.id)}
 
-			<Card.Root class="border bg-card/70">
+			<Card.Root class="bg-card/70 border">
 				<Card.Header class="pb-3">
 					<div class="flex items-start justify-between gap-4">
 						<div class="flex-1">
@@ -184,16 +185,16 @@
 									<XCircle class="h-5 w-5 text-red-600 dark:text-red-400" />
 								{/if}
 							</div>
-							<p class="mt-2 text-sm whitespace-pre-wrap text-muted-foreground">
+							<p class="text-muted-foreground mt-2 whitespace-pre-wrap text-sm">
 								{question.questionText}
 							</p>
 						</div>
 						{#if result}
 							<div class="text-right">
-								<p class="text-lg font-semibold text-foreground">
+								<p class="text-foreground text-lg font-semibold">
 									{result.pointsEarned.toFixed(2)} / {result.pointsPossible}
 								</p>
-								<p class="text-xs text-muted-foreground">points</p>
+								<p class="text-muted-foreground text-xs">points</p>
 							</div>
 						{/if}
 					</div>
@@ -201,7 +202,7 @@
 				<Card.Content class="space-y-3 pt-0">
 					<!-- User's Answer Display -->
 					{#if userAnswer !== undefined && userAnswer !== null}
-						<div class="rounded-lg border bg-muted/30 p-3">
+						<div class="bg-muted/30 rounded-lg border p-3">
 							<p class="mb-2 text-sm font-medium">Your Answer:</p>
 							<div class="text-sm">
 								{#if question.questionType === 'single_choice' || question.questionType === 'true_false'}
@@ -214,7 +215,7 @@
 									{/if}
 								{:else if question.questionType === 'multiple_choice'}
 									{#if Array.isArray(userAnswer) && userAnswer.length > 0}
-										<ul class="list-inside list-disc space-y-1 text-muted-foreground">
+										<ul class="text-muted-foreground list-inside list-disc space-y-1">
 											{#each userAnswer as idx}
 												<li>{getOptionText(question.config, idx)}</li>
 											{/each}
@@ -224,13 +225,13 @@
 									{/if}
 								{:else if question.questionType === 'short_answer'}
 									{#if typeof userAnswer === 'string'}
-										<p class="font-mono text-muted-foreground">{userAnswer}</p>
+										<p class="text-muted-foreground font-mono">{userAnswer}</p>
 									{:else}
 										<p class="text-muted-foreground italic">No answer provided</p>
 									{/if}
 								{:else if question.questionType === 'numeric'}
 									{#if typeof userAnswer === 'number' || typeof userAnswer === 'string'}
-										<p class="font-mono text-muted-foreground">{userAnswer}</p>
+										<p class="text-muted-foreground font-mono">{userAnswer}</p>
 									{:else}
 										<p class="text-muted-foreground italic">No answer provided</p>
 									{/if}
@@ -239,8 +240,8 @@
 										<div class="space-y-2">
 											{#each Object.entries(userAnswer) as [index, value]}
 												<div>
-													<p class="font-medium text-foreground">Blank {index}:</p>
-													<p class="ml-3 font-mono text-muted-foreground">{value}</p>
+													<p class="text-foreground font-medium">Blank {index}:</p>
+													<p class="text-muted-foreground ml-3 font-mono">{value}</p>
 												</div>
 											{/each}
 										</div>
@@ -266,7 +267,7 @@
 					{/if}
 
 					<!-- Feedback Box -->
-					{#if result && (result.feedback || result.explanation || question.questionType === 'text_only')}
+					{#if result}
 						{@const feedbackClass = result.isCorrect
 							? 'bg-green-50 dark:bg-green-950/20 border-green-200 dark:border-green-800'
 							: result.pointsEarned > 0
@@ -289,9 +290,9 @@
 								</p>
 							{/if}
 							{#if result.feedback}
-								<p class="mt-1 text-sm text-muted-foreground">{result.feedback}</p>
-							{:else if result.explanation}
-								<p class="mt-1 text-sm text-muted-foreground">{result.explanation}</p>
+								<p class="text-muted-foreground mt-1 text-sm">{result.feedback}</p>
+							{:else if question.explanation}
+								<p class="text-muted-foreground mt-1 text-sm">{question.explanation}</p>
 							{/if}
 						</div>
 					{/if}
@@ -314,7 +315,7 @@
 												<p class="text-sm font-medium text-blue-800 dark:text-blue-200">
 													{blankLabel}:
 												</p>
-												<ul class="mt-1 ml-4 space-y-0.5">
+												<ul class="ml-4 mt-1 space-y-0.5">
 													{#each acceptedAnswers.split(' or ') as acceptedAnswer}
 														<li class="font-mono text-sm text-blue-700 dark:text-blue-300">
 															• {acceptedAnswer}
@@ -345,29 +346,58 @@
 
 					<!-- Details for specific question types -->
 					{#if result && result.details}
-						<div class="rounded-lg bg-muted/50 p-3 text-sm">
+						<div class="bg-muted/50 rounded-lg p-3 text-sm">
 							{#if question.questionType === 'fill_blank' && result.details.blankResults}
 								<p class="font-medium">Blank Results:</p>
-								<ul class="mt-2 space-y-1">
+								<ul class="mt-2 space-y-2">
 									{#each Object.entries(result.details.blankResults) as [index, correct]}
-										<li class="flex items-center gap-2">
-											{#if correct}
-												<CheckCircle2 class="h-4 w-4 text-green-600 dark:text-green-400" />
-											{:else}
-												<XCircle class="h-4 w-4 text-red-600 dark:text-red-400" />
+										{@const fillBlankConfig = question.config as FillBlankConfig | undefined}
+										{@const blankConfig = fillBlankConfig?.blanks?.find(
+											(b: any) => String(b.index) === String(index)
+										)}
+										{@const explanationText = blankConfig?.explanation || question.explanation}
+										<li class="space-y-1">
+											<div class="flex items-center gap-2">
+												{#if correct}
+													<CheckCircle2 class="h-4 w-4 text-green-600 dark:text-green-400" />
+												{:else}
+													<XCircle class="h-4 w-4 text-red-600 dark:text-red-400" />
+												{/if}
+												<span>Blank {index}: {correct ? 'Correct' : 'Incorrect'}</span>
+											</div>
+											{#if explanationText}
+												<p class="text-muted-foreground ml-6 text-xs italic">{explanationText}</p>
 											{/if}
-											<span>Blank {index}: {correct ? 'Correct' : 'Incorrect'}</span>
 										</li>
 									{/each}
 								</ul>
 							{:else if question.questionType === 'matching' && result.details.itemResults}
 								<p class="font-medium">Matching Results:</p>
-								<p class="mt-1 text-muted-foreground">
-									{result.details.correctMatches} / {result.details.totalItems} correct matches
-								</p>
+								<ul class="mt-2 space-y-2">
+									{#each Object.entries(result.details.itemResults) as [itemText, correct]}
+										{@const matchingConfig = question.config as MatchingConfig | undefined}
+										{@const itemConfig = matchingConfig?.items?.find(
+											(item: any) => item.text === itemText
+										)}
+										{@const explanationText = itemConfig?.explanation || question.explanation}
+										<li class="space-y-1">
+											<div class="flex items-center gap-2">
+												{#if correct}
+													<CheckCircle2 class="h-4 w-4 text-green-600 dark:text-green-400" />
+												{:else}
+													<XCircle class="h-4 w-4 text-red-600 dark:text-red-400" />
+												{/if}
+												<span>{itemText}: {correct ? 'Correct' : 'Incorrect'}</span>
+											</div>
+											{#if explanationText}
+												<p class="text-muted-foreground ml-6 text-xs italic">{explanationText}</p>
+											{/if}
+										</li>
+									{/each}
+								</ul>
 							{:else if question.questionType === 'multiple_choice' && result.details.correctCount !== undefined}
 								<p class="font-medium">Selection Results:</p>
-								<p class="mt-1 text-muted-foreground">
+								<p class="text-muted-foreground mt-1">
 									{result.details.correctCount} / {result.details.totalCorrect} correct selections
 								</p>
 							{/if}
