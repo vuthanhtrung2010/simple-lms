@@ -105,6 +105,8 @@
 	);
 
 	function renderFillBlankQuestion(qId: string, html: string): string {
+		const classes =
+			'h-9 w-[120px] rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 mx-1';
 		return html.replace(/\{\{blank:(\d+)\}\}/g, (_, num) => {
 			const blankIdx = Number(num);
 			const inputId = `blank-${qId}-${blankIdx}`;
@@ -114,7 +116,7 @@
 				name="blank-${qId}-${blankIdx}"
 				data-question-id="${qId}"
 				data-blank-index="${blankIdx}"
-				class="inline-input mx-1 rounded border border-input bg-background px-2 py-1 text-sm focus:border-ring focus:outline-none focus:ring-1 focus:ring-ring"
+				class="${classes}"
 				placeholder="..."
 				style="width: 120px;"
 			/>`;
