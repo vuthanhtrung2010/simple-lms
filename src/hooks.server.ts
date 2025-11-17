@@ -1,4 +1,4 @@
-import type { Handle } from '@sveltejs/kit';
+import { error, json, text, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
 import { paraglideMiddleware } from '$lib/paraglide/server.js';
 import { drizzle } from 'drizzle-orm/d1';
@@ -105,4 +105,63 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-export const handle: Handle = sequence(handleParaglide, handleDB, handleR2, handleAuth);
+/**
+ * CSRF protection with ability to exclude specific routes.
+ * Supports wildcard (*) patterns for path matching.
+ */
+const csrf =
+	(allowedPaths: string[]): Handle =>
+	async ({ event, resolve }) => {
+		const { request, url } = event;
+
+		// Check if path matches any allowed pattern
+		const isAllowed = allowedPaths.some((pattern) => {
+			if (pattern.includes('*')) {
+				// Convert wildcard pattern to regex
+				const regexPattern = pattern.replace(/\*/g, '.*').replace(/\//g, '\\/');
+				return new RegExp(`^${regexPattern}$`).test(url.pathname);
+			}
+			return pattern === url.pathname;
+		});
+
+		const forbidden =
+			isFormContentType(request) &&
+			(request.method === 'POST' ||
+				request.method === 'PUT' ||
+				request.method === 'PATCH' ||
+				request.method === 'DELETE') &&
+			request.headers.get('origin') !== url.origin &&
+			!isAllowed;
+
+		if (forbidden) {
+			const message = `Cross-site ${request.method} form submissions are forbidden`;
+			if (request.headers.get('accept') === 'application/json') {
+				return json({ message }, { status: 403 });
+			}
+			return text(message, { status: 403 });
+		}
+
+		return resolve(event);
+	};
+
+function isContentType(request: Request, ...types: string[]) {
+	const type = request.headers.get('content-type')?.split(';', 1)[0].trim() ?? '';
+	return types.includes(type.toLowerCase());
+}
+
+function isFormContentType(request: Request) {
+	return isContentType(
+		request,
+		'application/x-www-form-urlencoded',
+		'multipart/form-data',
+		'text/plain'
+	);
+}
+
+export const handle: Handle = sequence(
+	csrf(['/api/*']),
+	handleParaglide,
+	handleDB,
+	handleR2,
+	handleAuth
+);

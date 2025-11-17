@@ -36,12 +36,14 @@ export interface FillBlankConfig {
         answers: string[];
         caseSensitive: boolean;
         isRegex: boolean;
+        explanation?: string | null;
     }[];
 }
 export interface MatchingConfig {
     items: {
         text: string;
         correctAnswer: string;
+        explanation?: string | null;
     }[];
     choices: {
         id: string;
