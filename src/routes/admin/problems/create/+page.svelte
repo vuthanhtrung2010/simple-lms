@@ -8,11 +8,14 @@
 	import { MultiSelect } from '$lib/components/ui/multi-select/index.js';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
-	import type { PageData } from './$types.js';
+	import type { PageProps } from './$types.js';
+	import OverType from 'overtype';
+	import { onMount, onDestroy } from 'svelte';
 
-	let { data }: { data: PageData } = $props();
+	let { data }: PageProps = $props();
 
 	let title = $state('');
+	let description = $state('');
 	let categoryId = $state<number | undefined>(undefined);
 	let categoryValue = $state<string>('');
 	let selectedTypes = $state<number[]>([]);
@@ -23,6 +26,10 @@
 	let timeLimit = $state(0);
 	let questionFile = $state<File | null>(null);
 	let loading = $state(false);
+
+	// OverType editor for description
+	let descriptionEditorRef = $state<HTMLDivElement | undefined>();
+	let descriptionEditorInstance: any = null;
 
 	let fileInput: HTMLInputElement;
 
@@ -48,6 +55,27 @@
 			questionFile = target.files[0];
 		}
 	}
+
+	// Initialize OverType editor for description
+	onMount(() => {
+		if (descriptionEditorRef) {
+			const [instance] = OverType.init(descriptionEditorRef, {
+				toolbar: true,
+				theme: 'dark',
+				value: description,
+				onChange: (value: string) => {
+					description = value;
+				}
+			});
+			descriptionEditorInstance = instance;
+		}
+	});
+
+	onDestroy(() => {
+		if (descriptionEditorInstance) {
+			descriptionEditorInstance.destroy();
+		}
+	});
 </script>
 
 <div class="container mx-auto max-w-4xl py-8">
@@ -126,6 +154,23 @@
 							<input type="hidden" name="types" value={typeId} />
 						{/each}
 						<p class="text-sm text-muted-foreground">Select one or more types for this problem.</p>
+					</div>
+				</CardContent>
+			</Card>
+
+			<!-- Description -->
+			<Card>
+				<CardHeader>
+					<CardTitle>Description</CardTitle>
+				</CardHeader>
+				<CardContent class="space-y-4">
+					<div class="space-y-2">
+						<Label for="description">Problem Description</Label>
+						<div bind:this={descriptionEditorRef} style="height: 200px;"></div>
+						<input type="hidden" name="description" value={description} />
+						<p class="text-sm text-muted-foreground">
+							Provide a detailed description of the problem. Supports Markdown & LaTeX formatting.
+						</p>
 					</div>
 				</CardContent>
 			</Card>

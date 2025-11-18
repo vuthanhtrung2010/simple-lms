@@ -22,9 +22,124 @@
 		FillBlankConfig,
 		MatchingConfig,
 		NumericConfig
-	} from '../../../../../types.js';
+	} from '$lib/../types.js';
+
+	import OverType from 'overtype';
+	import { onMount, onDestroy } from 'svelte';
 
 	let { data, form }: PageProps = $props();
+
+	let descEditorRef: HTMLDivElement;
+	let descEditorInstance: any = null;
+	let descriptionValue = $state(data.problem.description || '');
+
+	let instructionsEditorRef: HTMLDivElement;
+	let instructionsEditorInstance: any = null;
+	let instructionsValue = $state(data.problem.instructions || '');
+
+	let questionTextEditorRef = $state<HTMLDivElement | undefined>();
+	let questionTextEditorInstance: any = null;
+
+	let explanationEditorRef = $state<HTMLDivElement | undefined>();
+	let explanationEditorInstance: any = null;
+
+	onMount(() => {
+		if (descEditorRef) {
+			const [instance] = OverType.init(descEditorRef, {
+				toolbar: true,
+				theme: 'dark',
+				value: descriptionValue,
+				onChange: (value: string) => {
+					descriptionValue = value;
+				}
+			});
+			descEditorInstance = instance;
+		}
+
+		if (instructionsEditorRef) {
+			const [instance] = OverType.init(instructionsEditorRef, {
+				toolbar: true,
+				theme: 'dark',
+				value: instructionsValue,
+				onChange: (value: string) => {
+					instructionsValue = value;
+				}
+			});
+			instructionsEditorInstance = instance;
+		}
+	});
+
+	onDestroy(() => {
+		if (descEditorInstance) {
+			descEditorInstance.destroy();
+		}
+		if (instructionsEditorInstance) {
+			instructionsEditorInstance.destroy();
+		}
+		if (questionTextEditorInstance) {
+			questionTextEditorInstance.destroy();
+		}
+		if (explanationEditorInstance) {
+			explanationEditorInstance.destroy();
+		}
+	});
+
+	$effect(() => {
+		if (descEditorInstance && descriptionValue !== descEditorInstance.getValue()) {
+			descEditorInstance.setValue(descriptionValue);
+		}
+	});
+
+	$effect(() => {
+		if (instructionsEditorInstance && instructionsValue !== instructionsEditorInstance.getValue()) {
+			instructionsEditorInstance.setValue(instructionsValue);
+		}
+	});
+
+	// Initialize question text and explanation editors when dialog opens
+	$effect(() => {
+		if (dialogOpen && editingQuestion) {
+			const currentQuestion = editingQuestion;
+			setTimeout(() => {
+				if (questionTextEditorRef && !questionTextEditorInstance) {
+					const [instance] = OverType.init(questionTextEditorRef, {
+						toolbar: true,
+						theme: 'dark',
+						value: currentQuestion.questionText || '',
+						onChange: (value: string) => {
+							if (editingQuestion) {
+								editingQuestion.questionText = value;
+							}
+						}
+					});
+					questionTextEditorInstance = instance;
+				}
+
+				if (explanationEditorRef && !explanationEditorInstance) {
+					const [instance] = OverType.init(explanationEditorRef, {
+						toolbar: true,
+						theme: 'dark',
+						value: currentQuestion.explanation || '',
+						onChange: (value: string) => {
+							if (editingQuestion) {
+								editingQuestion.explanation = value;
+							}
+						}
+					});
+					explanationEditorInstance = instance;
+				}
+			}, 100);
+		} else if (!dialogOpen) {
+			if (questionTextEditorInstance) {
+				questionTextEditorInstance.destroy();
+				questionTextEditorInstance = null;
+			}
+			if (explanationEditorInstance) {
+				explanationEditorInstance.destroy();
+				explanationEditorInstance = null;
+			}
+		}
+	});
 
 	let isSubmittingMetadata = $state(false);
 	let isSubmittingQuestion = $state(false);
@@ -363,29 +478,19 @@
 								<Input id="title" name="title" value={data.problem.title} required />
 							</div>
 
-							<!-- Description -->
-							<div class="space-y-2">
-								<Label for="description">Description</Label>
-								<Textarea
-									id="description"
-									name="description"
-									value={data.problem.description}
-									rows={4}
-								/>
-							</div>
+					<!-- Description -->
+					<div class="space-y-2">
+						<Label for="description">Description</Label>
+						<div bind:this={descEditorRef} style="height: 200px; border: 1px solid hsl(var(--border)); border-radius: var(--radius);"></div>
+						<input type="hidden" name="description" value={descriptionValue} />
+					</div>
 
-							<!-- Instructions -->
-							<div class="space-y-2">
-								<Label for="instructions">Instructions (optional)</Label>
-								<Textarea
-									id="instructions"
-									name="instructions"
-									value={data.problem.instructions || ''}
-									rows={3}
-								/>
-							</div>
-
-							<!-- Category -->
+					<!-- Instructions -->
+						<div class="space-y-2">
+							<Label for="instructions">Instructions (optional)</Label>
+							<div bind:this={instructionsEditorRef} style="height: 150px; border: 1px solid hsl(var(--border)); border-radius: var(--radius);"></div>
+							<input type="hidden" name="instructions" value={instructionsValue} />
+						</div>							<!-- Category -->
 							<div class="space-y-2">
 								<Label for="categoryId">Category</Label>
 								<Select.Root type="single" name="categoryId" bind:value={selectedCategory}>
@@ -617,7 +722,7 @@
 				<!-- Question Text -->
 				<div class="space-y-2">
 					<Label for="questionText">Question Text (Markdown supported)</Label>
-					<Textarea id="questionText" bind:value={editingQuestion.questionText} rows={4} required />
+					<div bind:this={questionTextEditorRef} style="height: 200px; border: 1px solid hsl(var(--border)); border-radius: var(--radius);"></div>
 				</div>
 
 				<!-- Points -->
@@ -637,7 +742,7 @@
 				<!-- Explanation -->
 				<div class="space-y-2">
 					<Label for="explanation">Explanation (shown after answering)</Label>
-					<Textarea id="explanation" bind:value={editingQuestion.explanation} rows={3} />
+					<div bind:this={explanationEditorRef} style="height: 150px; border: 1px solid hsl(var(--border)); border-radius: var(--radius);"></div>
 				</div>
 
 				<!-- Config based on question type -->
