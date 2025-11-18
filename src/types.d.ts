@@ -50,12 +50,16 @@ export interface MatchingConfig {
         text: string;
     }[];
 }
+export interface NumericConfig {
+    answer: number;
+    tolerance: number;
+}
 export interface BaseQuestion {
     questionType: QuestionType;
     questionText: string;
     explanation?: string;
     points?: number;
     orderIndex: number;
-    config?: SingleChoiceConfig | MultipleChoiceConfig | TrueFalseConfig | ShortAnswerConfig | FillBlankConfig | MatchingConfig;
+    config?: SingleChoiceConfig | MultipleChoiceConfig | TrueFalseConfig | ShortAnswerConfig | FillBlankConfig | MatchingConfig | NumericConfig;
     media?: MediaUrl[];
 }

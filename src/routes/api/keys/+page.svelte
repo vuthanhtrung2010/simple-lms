@@ -137,7 +137,8 @@
 								required
 							/>
 							<p class="text-xs text-muted-foreground">
-								The key will expire after this many days (0 = no expiration, 1-365 = days until expiration)
+								The key will expire after this many days (0 = no expiration, 1-365 = days until
+								expiration)
 							</p>
 						</div>
 
@@ -241,12 +242,7 @@
 								}}
 							>
 								<input type="hidden" name="keyId" value={key.id} />
-								<Button
-									type="submit"
-									variant="ghost"
-									size="sm"
-									disabled={isDeletingId === key.id}
-								>
+								<Button type="submit" variant="ghost" size="sm" disabled={isDeletingId === key.id}>
 									<Trash2 class="h-4 w-4 text-destructive" />
 								</Button>
 							</form>

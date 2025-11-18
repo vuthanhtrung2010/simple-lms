@@ -45,6 +45,15 @@
 					<Table.Cell>{problem.title}</Table.Cell>
 					<Table.Cell class="text-right">
 						<div class="flex justify-end gap-2">
+							<!-- Edit Button -->
+							{#if data.canEdit}
+								<a
+									href="/admin/problems/manage/{problem.id}"
+									class={buttonVariants({ variant: 'outline', size: 'sm' })}
+								>
+									Edit
+								</a>
+							{/if}
 							<!-- Delete Button -->
 							<Button
 								variant="destructive"

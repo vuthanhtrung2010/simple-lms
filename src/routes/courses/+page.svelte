@@ -77,7 +77,7 @@
 <div class="container mx-auto px-4 py-8">
 	<div class="mb-8">
 		<h1 class="text-3xl font-bold">Courses</h1>
-		<p class="text-muted-foreground mt-2">Browse and join available courses</p>
+		<p class="mt-2 text-muted-foreground">Browse and join available courses</p>
 	</div>
 
 	<!-- Active Courses Section -->
@@ -110,15 +110,15 @@
 						</CardHeader>
 						<CardContent class="flex flex-grow flex-col gap-4">
 							{#if course.quote}
-								<div class="border-primary border-l-4 py-2 pl-4">
-									<p class="text-muted-foreground text-sm italic">{course.quote}</p>
+								<div class="border-l-4 border-primary py-2 pl-4">
+									<p class="text-sm text-muted-foreground italic">{course.quote}</p>
 									{#if course.quoteAuthor}
-										<p class="text-muted-foreground mt-1 text-xs">— {course.quoteAuthor}</p>
+										<p class="mt-1 text-xs text-muted-foreground">— {course.quoteAuthor}</p>
 									{/if}
 								</div>
 							{/if}
 
-							<div class="text-muted-foreground flex items-center gap-2 text-sm">
+							<div class="flex items-center gap-2 text-sm text-muted-foreground">
 								{#if course.isPublished}
 									<Badge variant="outline" class="text-green-600">Published</Badge>
 								{:else}
@@ -174,15 +174,15 @@
 						</CardHeader>
 						<CardContent class="flex flex-grow flex-col gap-4">
 							{#if course.quote}
-								<div class="border-primary border-l-4 py-2 pl-4">
-									<p class="text-muted-foreground text-sm italic">{course.quote}</p>
+								<div class="border-l-4 border-primary py-2 pl-4">
+									<p class="text-sm text-muted-foreground italic">{course.quote}</p>
 									{#if course.quoteAuthor}
-										<p class="text-muted-foreground mt-1 text-xs">— {course.quoteAuthor}</p>
+										<p class="mt-1 text-xs text-muted-foreground">— {course.quoteAuthor}</p>
 									{/if}
 								</div>
 							{/if}
 
-							<div class="text-muted-foreground flex items-center gap-2 text-sm">
+							<div class="flex items-center gap-2 text-sm text-muted-foreground">
 								{#if course.isPublished}
 									<Badge variant="outline" class="text-green-600">Published</Badge>
 								{:else}
@@ -239,15 +239,15 @@
 							</CardHeader>
 							<CardContent class="flex flex-grow flex-col gap-4">
 								{#if course.quote}
-									<div class="border-primary border-l-4 py-2 pl-4">
-										<p class="text-muted-foreground text-sm italic">{course.quote}</p>
+									<div class="border-l-4 border-primary py-2 pl-4">
+										<p class="text-sm text-muted-foreground italic">{course.quote}</p>
 										{#if course.quoteAuthor}
-											<p class="text-muted-foreground mt-1 text-xs">— {course.quoteAuthor}</p>
+											<p class="mt-1 text-xs text-muted-foreground">— {course.quoteAuthor}</p>
 										{/if}
 									</div>
 								{/if}
 
-								<div class="text-muted-foreground flex items-center gap-2 text-sm">
+								<div class="flex items-center gap-2 text-sm text-muted-foreground">
 									{#if course.isPublished}
 										<Badge variant="outline" class="text-green-600">Published</Badge>
 									{:else}

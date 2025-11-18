@@ -7,7 +7,10 @@ import { hasPermission, UserPermissions } from '$lib/permissions.js';
 export const load: PageServerLoad = async ({ params, locals }) => {
 	const allProblems = await locals.db.select().from(problems).all();
 	return {
-		problems: allProblems
+		problems: allProblems,
+		canEdit: locals.user?.perms
+			? hasPermission(locals.user.perms, UserPermissions.EDIT_PROBLEM)
+			: false
 	};
 };
 

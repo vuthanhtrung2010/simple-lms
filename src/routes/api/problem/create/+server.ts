@@ -12,7 +12,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 
 		// Parse multipart form data
 		const formData = await request.formData();
-		
+
 		const title = formData.get('title') as string;
 		const categoryId = formData.get('categoryId') as string;
 		const typeIds = formData.getAll('types') as string[];
@@ -44,10 +44,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		const zip = await JSZip.loadAsync(await questionsFile.arrayBuffer());
 		const questionsJsonFile = zip.file('questions.json');
 		if (!questionsJsonFile) {
-			return json(
-				{ success: false, error: 'questions.json not found in ZIP' },
-				{ status: 400 }
-			);
+			return json({ success: false, error: 'questions.json not found in ZIP' }, { status: 400 });
 		}
 
 		const questionsJsonStr = await questionsJsonFile.async('string');
@@ -55,10 +52,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		try {
 			parsed = JSON.parse(questionsJsonStr);
 		} catch (e) {
-			return json(
-				{ success: false, error: 'Invalid questions.json: ' + e },
-				{ status: 400 }
-			);
+			return json({ success: false, error: 'Invalid questions.json: ' + e }, { status: 400 });
 		}
 
 		const questionsArr = parsed.questions;
@@ -106,12 +100,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 						await locals.r2.put(filename, fileData);
 						problemMedia.push(`${domain}/file/${filename}`);
 					}
-				} else if (
-					typeof m === 'object' &&
-					m !== null &&
-					'url' in m &&
-					typeof m.url === 'string'
-				) {
+				} else if (typeof m === 'object' && m !== null && 'url' in m && typeof m.url === 'string') {
 					if (m.url.startsWith('http')) {
 						problemMedia.push(m.url);
 					} else {
@@ -141,10 +130,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		});
 
 		if (!valid) {
-			return json(
-				{ success: false, error: 'Validation failed', details: errors },
-				{ status: 400 }
-			);
+			return json({ success: false, error: 'Validation failed', details: errors }, { status: 400 });
 		}
 
 		// 4. Create the problem

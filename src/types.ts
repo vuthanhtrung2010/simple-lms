@@ -67,6 +67,11 @@ export interface MatchingConfig {
 	}[];
 }
 
+export interface NumericConfig {
+	answer: number;
+	tolerance: number;
+}
+
 export interface BaseQuestion {
 	questionType: QuestionType;
 	questionText: string;
@@ -79,6 +84,7 @@ export interface BaseQuestion {
 		| TrueFalseConfig
 		| ShortAnswerConfig
 		| FillBlankConfig
-		| MatchingConfig;
+		| MatchingConfig
+		| NumericConfig;
 	media?: MediaUrl[];
 }
