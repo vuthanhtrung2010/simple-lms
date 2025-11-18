@@ -22,6 +22,7 @@ export const actions = {
 
 		const data = await request.formData();
 		const title = data.get('title') as string;
+		const description = data.get('description') as string;
 		const categoryId = data.get('categoryId') as string;
 		const typeIds = data.getAll('types') as string[];
 		const attemptsAllowed = data.get('attemptsAllowed') as string;
@@ -139,7 +140,7 @@ export const actions = {
 				.insert(problems)
 				.values({
 					title: title.trim(),
-					description: '',
+					description: description?.trim() || '',
 					media: problemMedia.length > 0 ? JSON.stringify(problemMedia) : null,
 					attemptsAllowed: parseInt(attemptsAllowed) || -1,
 					showAnswers: showAnswers || 'after_submission',
