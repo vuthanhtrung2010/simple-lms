@@ -433,24 +433,28 @@ export const announcements = sqliteTable(
 );
 
 // API KEY
-export const apiKeys = sqliteTable('api_keys', {
-	id: text('id')
-		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID()),
-	userId: text('user_id')
-		.notNull()
-		.references(() => users.id, { onDelete: 'cascade' }),
-	name: text('name').notNull(),
-	key: text('key').notNull().unique(),
-	createdAt: integer('created_at')
-		.notNull()
-		.$defaultFn(() => Date.now()),
-	updatedAt: integer('updated_at')
-		.notNull()
-		.$defaultFn(() => Date.now())
-		.$onUpdate(() => Date.now()),
-	expiresAt: integer('expires_at')
-		.notNull()
-		.$defaultFn(() => Date.now())
-		.$onUpdate(() => Date.now())
-});
+export const apiKeys = sqliteTable(
+	'api_keys',
+	{
+		id: text('id')
+			.primaryKey()
+			.$defaultFn(() => crypto.randomUUID()),
+		userId: text('user_id')
+			.notNull()
+			.references(() => users.id, { onDelete: 'cascade' }),
+		name: text('name').notNull(),
+		key: text('key').notNull().unique(),
+		createdAt: integer('created_at')
+			.notNull()
+			.$defaultFn(() => Date.now()),
+		updatedAt: integer('updated_at')
+			.notNull()
+			.$defaultFn(() => Date.now())
+			.$onUpdate(() => Date.now()),
+		expiresAt: integer('expires_at')
+			.notNull()
+			.$defaultFn(() => Date.now())
+			.$onUpdate(() => Date.now())
+	},
+	(table) => [index('api_keys_user_idx').on(table.userId)]
+);
