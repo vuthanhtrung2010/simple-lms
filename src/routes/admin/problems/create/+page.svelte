@@ -11,8 +11,10 @@
 	import type { PageProps } from './$types.js';
 	import OverType from 'overtype';
 	import { onMount, onDestroy } from 'svelte';
+	import { useTheme } from 'svelte-themes';
 
 	let { data }: PageProps = $props();
+	const theme = useTheme();
 
 	let title = $state('');
 	let description = $state('');
@@ -61,7 +63,7 @@
 		if (descriptionEditorRef) {
 			const [instance] = OverType.init(descriptionEditorRef, {
 				toolbar: true,
-				theme: 'dark',
+				theme: theme.resolvedTheme === 'dark' ? 'dark' : 'light',
 				value: description,
 				onChange: (value: string) => {
 					description = value;

@@ -9,7 +9,6 @@
 	import Label from '$lib/components/ui/label/label.svelte';
 	import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 	import { MultiSelect } from '$lib/components/ui/multi-select/index.js';
-	import { Textarea } from '$lib/components/ui/textarea/index.js';
 	import { enhance } from '$app/forms';
 	import { toast } from 'svelte-sonner';
 	import type {
@@ -23,11 +22,13 @@
 		MatchingConfig,
 		NumericConfig
 	} from '$lib/../types.js';
+	import { useTheme } from 'svelte-themes';
 
 	import OverType from 'overtype';
 	import { onMount, onDestroy } from 'svelte';
 
 	let { data, form }: PageProps = $props();
+	const theme = useTheme();
 
 	let descEditorRef: HTMLDivElement;
 	let descEditorInstance: any = null;
@@ -47,7 +48,7 @@
 		if (descEditorRef) {
 			const [instance] = OverType.init(descEditorRef, {
 				toolbar: true,
-				theme: 'dark',
+				theme: theme.resolvedTheme === 'dark' ? 'dark' : 'light',
 				value: descriptionValue,
 				onChange: (value: string) => {
 					descriptionValue = value;
@@ -59,7 +60,7 @@
 		if (instructionsEditorRef) {
 			const [instance] = OverType.init(instructionsEditorRef, {
 				toolbar: true,
-				theme: 'dark',
+				theme: theme.resolvedTheme === 'dark' ? 'dark' : 'light',
 				value: instructionsValue,
 				onChange: (value: string) => {
 					instructionsValue = value;
@@ -104,7 +105,7 @@
 				if (questionTextEditorRef && !questionTextEditorInstance) {
 					const [instance] = OverType.init(questionTextEditorRef, {
 						toolbar: true,
-						theme: 'dark',
+						theme: theme.resolvedTheme === 'dark' ? 'dark' : 'light',
 						value: currentQuestion.questionText || '',
 						onChange: (value: string) => {
 							if (editingQuestion) {
@@ -118,7 +119,7 @@
 				if (explanationEditorRef && !explanationEditorInstance) {
 					const [instance] = OverType.init(explanationEditorRef, {
 						toolbar: true,
-						theme: 'dark',
+						theme: theme.resolvedTheme === 'dark' ? 'dark' : 'light',
 						value: currentQuestion.explanation || '',
 						onChange: (value: string) => {
 							if (editingQuestion) {
