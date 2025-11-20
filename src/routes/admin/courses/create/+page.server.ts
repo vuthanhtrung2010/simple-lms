@@ -4,9 +4,23 @@ import { fail } from '@sveltejs/kit';
 import { hasPermission, UserPermissions } from '$lib/permissions.js';
 
 export const load: PageServerLoad = async ({ locals }) => {
-	// Get all problems and users for multi-selects
-	const allProblems = await locals.db.select().from(problems).all();
+	// Try to get problems from KV cache
+	const cacheKey = 'adminProblems';
+	const cached = await locals.kv.get(cacheKey);
+	
+	let allProblems;
+	if (cached) {
+		allProblems = JSON.parse(cached);
+	} else {
+		allProblems = await locals.db.select().from(problems).all();
+		await locals.kv.put(cacheKey, JSON.stringify(allProblems), {
+			expirationTtl: 300
+		});
+	}
+	
+	// Get all users for multi-selects
 	const allUsers = await locals.db.select().from(users).all();
+	
 	// Get DB defaults for quote/author
 	const defaults = {
 		quote: courses.quote.default ?? 'Thi đua là yêu nước, yêu nước phải thi đua',
@@ -63,25 +77,43 @@ export const actions = {
 				})
 				.returning();
 
-			// Add problems to course
+			// Prepare batch operations
+			const batchOperations = [];
+
+			// Add problems to course using batch inserts
+			// SQLite has a limit of 999 params per statement, so batch smaller
 			if (problemIds.length > 0) {
-				await locals.db.insert(courseProblems).values(
-					problemIds.map((pid, idx) => ({
-						courseId: newCourse.id,
-						problemId: pid,
-						orderIndex: idx
-					}))
-				);
+				const BATCH_SIZE = 10; // 10 rows × 3 params = 30 params (safe limit)
+				const courseProblemRows = problemIds.map((pid, idx) => ({
+					courseId: newCourse.id,
+					problemId: pid,
+					orderIndex: idx
+				}));
+
+				for (let i = 0; i < courseProblemRows.length; i += BATCH_SIZE) {
+					const batch = courseProblemRows.slice(i, i + BATCH_SIZE);
+					batchOperations.push(locals.db.insert(courseProblems).values(batch));
+				}
 			}
 
-			// Add enrollments for each role
+			// Add enrollments for each role using batch inserts
 			const enrollmentRows = [
 				...studentIds.map((uid) => ({ userId: uid, courseId: newCourse.id, role: 'student' })),
 				...teacherIds.map((uid) => ({ userId: uid, courseId: newCourse.id, role: 'teacher' })),
 				...supervisorIds.map((uid) => ({ userId: uid, courseId: newCourse.id, role: 'supervisor' }))
 			];
+
 			if (enrollmentRows.length > 0) {
-				await locals.db.insert(enrollments).values(enrollmentRows);
+				const BATCH_SIZE = 10; // 10 rows × 3 params = 30 params (safe limit)
+
+				for (let i = 0; i < enrollmentRows.length; i += BATCH_SIZE) {
+					const batch = enrollmentRows.slice(i, i + BATCH_SIZE);
+					batchOperations.push(locals.db.insert(enrollments).values(batch));
+				}
+			}
+
+			if (batchOperations.length > 0) {
+				await locals.db.batch(batchOperations as any); // Typing is stupid, anyways let's use any?
 			}
 
 			return {};

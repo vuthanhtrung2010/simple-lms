@@ -2,7 +2,7 @@ import { hasPermission, UserPermissions } from '$lib/permissions.js';
 import { error, fail } from '@sveltejs/kit';
 import type { Actions, PageServerLoad } from './$types.js';
 import { problems, questions, categories, types, problemTypes } from '$lib/server/db/schema.js';
-import { eq } from 'drizzle-orm';
+import { eq, sql } from 'drizzle-orm';
 import type { BaseQuestion } from '$lib/../types.js';
 
 export const load: PageServerLoad = async ({ locals, params }) => {
@@ -187,6 +187,9 @@ export const actions = {
 					.run();
 			}
 
+			// Invalidate KV caches
+			await locals.kv.delete('adminProblems');
+
 			return { success: true, message: 'Problem metadata updated successfully' };
 		} catch (e) {
 			console.error('Error updating problem metadata:', e);
@@ -247,6 +250,19 @@ export const actions = {
 					media: parsedQuestion.media as any
 				})
 				.where(eq(questions.id, questionId))
+				.run();
+
+			// Recalculate problem points
+			const totalPoints = await db
+				.select({ total: sql<number>`SUM(${questions.points})` })
+				.from(questions)
+				.where(eq(questions.problemId, problemId))
+				.get();
+
+			await db
+				.update(problems)
+				.set({ points: totalPoints?.total || 0 })
+				.where(eq(problems.id, Number(problemId)))
 				.run();
 
 			return { success: true, message: 'Question updated successfully' };
@@ -311,6 +327,19 @@ export const actions = {
 				})
 				.run();
 
+			// Recalculate problem points
+			const totalPoints = await db
+				.select({ total: sql<number>`SUM(${questions.points})` })
+				.from(questions)
+				.where(eq(questions.problemId, problemId))
+				.get();
+
+			await db
+				.update(problems)
+				.set({ points: totalPoints?.total || 0 })
+				.where(eq(problems.id, Number(problemId)))
+				.run();
+
 			return { success: true, message: 'Question added successfully' };
 		} catch (e) {
 			console.error('Error adding question:', e);
@@ -352,6 +381,19 @@ export const actions = {
 		try {
 			// Delete question
 			await db.delete(questions).where(eq(questions.id, questionId)).run();
+
+			// Recalculate problem points
+			const totalPoints = await db
+				.select({ total: sql<number>`SUM(${questions.points})` })
+				.from(questions)
+				.where(eq(questions.problemId, problemId))
+				.get();
+
+			await db
+				.update(problems)
+				.set({ points: totalPoints?.total || 0 })
+				.where(eq(problems.id, Number(problemId)))
+				.run();
 
 			return { success: true, message: 'Question deleted successfully' };
 		} catch (e) {

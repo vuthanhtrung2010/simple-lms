@@ -176,6 +176,7 @@ export const problems = sqliteTable('problems', {
 	shuffleQuestions: integer('shuffle_questions', { mode: 'boolean' }).notNull().default(false),
 	splitScreen: integer('split_screen', { mode: 'boolean' }).notNull().default(false), // Split screen view, show text_only questions on left side, real questions on right side
 	rating: real('rating').notNull().default(1500), // ELO-style rating
+	points: integer('points').notNull().default(0), // Cached total points from questions
 	createdBy: text('created_by')
 		.notNull()
 		.references(() => users.id, { onDelete: 'cascade' }),

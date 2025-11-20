@@ -1,0 +1,1 @@
+ALTER TABLE `problems` ADD `points` integer DEFAULT 0 NOT NULL;

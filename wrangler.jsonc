@@ -7,7 +7,9 @@
 		"binding": "ASSETS"
 	},
 	"compatibility_date": "2025-10-23",
-	"compatibility_flags": ["nodejs_compat"],
+	"compatibility_flags": [
+		"nodejs_compat"
+	],
 	"d1_databases": [
 		{
 			"binding": "DB",
@@ -28,6 +30,12 @@
 			"bucket_name": "simple-lms",
 			"binding": "R2"
 			// "preview_bucket_name": "simple-lms-test"
+		}
+	],
+	"kv_namespaces": [
+		{
+			"binding": "KV",
+			"id": "e5ea49c6f4b34f47b49d57d67475e5a0"
 		}
 	]
 }

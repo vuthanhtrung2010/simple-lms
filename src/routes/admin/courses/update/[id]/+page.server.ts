@@ -47,8 +47,22 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	} else if (!hasFullEditPerm && !hasPermittedEditPerm) {
 		throw fail(403, { error: 'You do not have permission to edit courses.' });
 	}
-	// Get all problems and users
-	const allProblems = await locals.db.select().from(problems).all();
+	
+	// Try to get problems from KV cache
+	const cacheKey = 'adminProblems';
+	const cached = await locals.kv.get(cacheKey);
+	
+	let allProblems;
+	if (cached) {
+		allProblems = JSON.parse(cached);
+	} else {
+		allProblems = await locals.db.select().from(problems).all();
+		await locals.kv.put(cacheKey, JSON.stringify(allProblems), {
+			expirationTtl: 300
+		});
+	}
+	
+	// Get all users
 	const allUsers = await locals.db.select().from(users).all();
 	// Get selected problems for this course
 	const courseProblemsRows = await locals.db
@@ -153,14 +167,23 @@ export const actions = {
 
 			// Update problems: hard-reset mapping (no soft-delete needed here)
 			await locals.db.delete(courseProblems).where(eq(courseProblems.courseId, id));
+			
+			// Insert problems in batches to avoid SQLite param limit
 			if (problemIds.length > 0) {
-				await locals.db.insert(courseProblems).values(
-					problemIds.map((pid, idx) => ({
-						courseId: id,
-						problemId: pid,
-						orderIndex: idx
-					}))
-				);
+				const BATCH_SIZE = 10; // 10 rows × 3 params = 30 params (safe limit)
+				const batchOperations = [];
+				const courseProblemRows = problemIds.map((pid, idx) => ({
+					courseId: id,
+					problemId: pid,
+					orderIndex: idx
+				}));
+
+				for (let i = 0; i < courseProblemRows.length; i += BATCH_SIZE) {
+					const batch = courseProblemRows.slice(i, i + BATCH_SIZE);
+					batchOperations.push(locals.db.insert(courseProblems).values(batch));
+				}
+
+				await locals.db.batch(batchOperations as any);
 			}
 
 			// --- Enrollment soft-delete / restore logic ---
@@ -183,8 +206,12 @@ export const actions = {
 				}
 			}
 
-			// Helper to upsert (reactivate or create) enrollment with role
-			async function upsertEnrollment(userId: string, role: 'student' | 'teacher' | 'supervisor') {
+			// 3) Process enrollments and batch new inserts
+			const updatesToExecute: any[] = [];
+			const newEnrollments: any[] = [];
+
+			// Helper to process enrollment (update existing or prepare for batch insert)
+			function processEnrollment(userId: string, role: 'student' | 'teacher' | 'supervisor') {
 				const existing = existingEnrollments.filter((e) => e.userId === userId);
 				const active = existing.find((e) => !e.isDeleted);
 				const deleted = existing.find((e) => e.isDeleted);
@@ -192,35 +219,55 @@ export const actions = {
 				if (active) {
 					// Just update role if needed
 					if (active.role !== role) {
-						await locals.db.update(enrollments).set({ role }).where(eq(enrollments.id, active.id));
+						updatesToExecute.push(
+							locals.db.update(enrollments).set({ role }).where(eq(enrollments.id, active.id))
+						);
 					}
 					return;
 				}
 
 				if (deleted) {
 					// Reactivate soft-deleted enrollment with new role
-					await locals.db
-						.update(enrollments)
-						.set({ isDeleted: false, role })
-						.where(eq(enrollments.id, deleted.id));
+					updatesToExecute.push(
+						locals.db
+							.update(enrollments)
+							.set({ isDeleted: false, role })
+							.where(eq(enrollments.id, deleted.id))
+					);
 					return;
 				}
 
-				// No existing record: create new active enrollment
-				await locals.db
-					.insert(enrollments)
-					.values({ userId, courseId: id, role, isDeleted: false });
+				// No existing record: prepare for batch insert
+				newEnrollments.push({ userId, courseId: id, role, isDeleted: false });
 			}
 
-			// 3) Apply upserts for all selected roles
+			// Process all roles
 			for (const uid of studentIds) {
-				await upsertEnrollment(uid, 'student');
+				processEnrollment(uid, 'student');
 			}
 			for (const uid of teacherIds) {
-				await upsertEnrollment(uid, 'teacher');
+				processEnrollment(uid, 'teacher');
 			}
 			for (const uid of supervisorIds) {
-				await upsertEnrollment(uid, 'supervisor');
+				processEnrollment(uid, 'supervisor');
+			}
+
+			// Execute all updates in batch
+			if (updatesToExecute.length > 0) {
+				await locals.db.batch(updatesToExecute as any);
+			}
+
+			// Batch insert new enrollments
+			if (newEnrollments.length > 0) {
+				const BATCH_SIZE = 10; // 10 rows × 4 params = 40 params (safe limit)
+				const insertOperations = [];
+
+				for (let i = 0; i < newEnrollments.length; i += BATCH_SIZE) {
+					const batch = newEnrollments.slice(i, i + BATCH_SIZE);
+					insertOperations.push(locals.db.insert(enrollments).values(batch));
+				}
+
+				await locals.db.batch(insertOperations as any);
 			}
 
 			return {};

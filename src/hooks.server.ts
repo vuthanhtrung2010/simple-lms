@@ -80,6 +80,17 @@ const handleR2: Handle = async ({ event, resolve }) => {
 	return response;
 };
 
+const handleKV: Handle = async ({ event, resolve }) => {
+	if (event.platform?.env.KV) {
+		event.locals.kv = event.platform.env.KV;
+	} else {
+		throw new Error('KV binding "KV" is not found in the environment.');
+	}
+
+	const response = await resolve(event);
+	return response;
+};
+
 const handleAuth: Handle = async ({ event, resolve }) => {
 	const session = await getAuthSession(event.cookies);
 	if (session) {
@@ -163,5 +174,6 @@ export const handle: Handle = sequence(
 	handleParaglide,
 	handleDB,
 	handleR2,
+	handleKV,
 	handleAuth
 );

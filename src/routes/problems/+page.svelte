@@ -18,23 +18,76 @@
 
 	let { data }: PageProps = $props();
 
-	const PROBLEMS_PER_PAGE = 50;
-
 	type SortField = 'name' | 'category' | 'rating' | 'course' | 'points';
 	type SortOrder = 'asc' | 'desc' | null;
 
-	// State
-	let filteredProblems = $state<typeof data.problems>(data.problems);
-	let searchTerm = $state('');
-	let types = $state<string[]>([]);
-	let chosenCategory = $state('');
-	let currentPage = $state(
-		page.url.searchParams.get('page') ? parseInt(page.url.searchParams.get('page')!) : 1
-	);
-	let hideSolved = $state(false);
+	// State - initialize from URL params
+	let searchTerm = $state(data.filters.search);
+	let types = $state<string[]>(data.filters.types);
+	let chosenCategory = $state(data.filters.category);
+	let currentPage = $state(data.pagination.currentPage);
+	let hideSolved = $state(data.filters.hideSolved);
 	let showTypes = $state(false);
-	let sortField = $state<SortField | null>(null);
-	let sortOrder = $state<SortOrder>(null);
+	let sortField = $state<SortField | null>((data.filters.sortField as SortField) || null);
+	let sortOrder = $state<SortOrder>((data.filters.sortOrder as SortOrder) || null);
+
+	// Debounce timer
+	let searchDebounceTimer: any = null;
+
+	// Function to update URL and trigger server-side fetch
+	function updateFilters(resetPage = true) {
+		const url = new URL(window.location.href);
+
+		if (resetPage) {
+			url.searchParams.set('page', '1');
+		} else {
+			url.searchParams.set('page', String(currentPage));
+		}
+
+		if (searchTerm) {
+			url.searchParams.set('search', searchTerm);
+		} else {
+			url.searchParams.delete('search');
+		}
+
+		if (chosenCategory) {
+			url.searchParams.set('category', chosenCategory);
+		} else {
+			url.searchParams.delete('category');
+		}
+
+		if (types.length > 0) {
+			url.searchParams.set('types', types.join(','));
+		} else {
+			url.searchParams.delete('types');
+		}
+
+		if (hideSolved) {
+			url.searchParams.set('hideSolved', 'true');
+		} else {
+			url.searchParams.delete('hideSolved');
+		}
+
+		if (sortField && sortOrder) {
+			url.searchParams.set('sortField', sortField);
+			url.searchParams.set('sortOrder', sortOrder);
+		} else {
+			url.searchParams.delete('sortField');
+			url.searchParams.delete('sortOrder');
+		}
+
+		goto(url.toString(), { keepFocus: true, noScroll: true });
+	}
+
+	// Debounced search
+	function handleSearchInput() {
+		if (searchDebounceTimer) {
+			clearTimeout(searchDebounceTimer);
+		}
+		searchDebounceTimer = setTimeout(() => {
+			updateFilters();
+		}, 400);
+	}
 
 	function handleSort(field: SortField) {
 		if (sortField === field) {
@@ -50,6 +103,7 @@
 			sortField = field;
 			sortOrder = 'asc';
 		}
+		updateFilters();
 	}
 
 	function getSortIcon(field: SortField) {
@@ -66,98 +120,15 @@
 		return { icon: '', color: 'text-muted-foreground' };
 	}
 
-	$effect(() => {
-		let filtered = data.problems;
-
-		// Search filter
-		if (searchTerm) {
-			filtered = filtered.filter((problem: (typeof data.problems)[0]) =>
-				problem.name.toLowerCase().includes(searchTerm.toLowerCase())
-			);
-		}
-
-		// Hide solved problems filter
-		if (hideSolved) {
-			filtered = filtered.filter((problem: (typeof data.problems)[0]) => !problem.status?.solved);
-		}
-
-		// Category filter
-		if (chosenCategory) {
-			filtered = filtered.filter(
-				(problem: (typeof data.problems)[0]) =>
-					problem.category.toLowerCase() === chosenCategory.toLowerCase()
-			);
-		}
-
-		// Types filter
-		if (types.length > 0) {
-			filtered = filtered.filter((problem: (typeof data.problems)[0]) =>
-				problem.type.some((type: string) => types.includes(type))
-			);
-		}
-
-		// Apply sorting
-		if (sortField && sortOrder) {
-			filtered = [...filtered].sort((a, b) => {
-				let aValue: string | number;
-				let bValue: string | number;
-
-				switch (sortField) {
-					case 'name':
-						aValue = a.name.toLowerCase();
-						bValue = b.name.toLowerCase();
-						break;
-					case 'category':
-						aValue = a.category.toLowerCase();
-						bValue = b.category.toLowerCase();
-						break;
-					case 'rating':
-						aValue = Math.round(a.rating ?? 0);
-						bValue = Math.round(b.rating ?? 0);
-						break;
-					case 'course':
-						aValue = a.courseTitle?.toLowerCase() || '';
-						bValue = b.courseTitle?.toLowerCase() || '';
-						break;
-					case 'points':
-						aValue = a.points;
-						bValue = b.points;
-						break;
-					default:
-						return 0;
-				}
-
-				if (typeof aValue === 'string' && typeof bValue === 'string') {
-					const comparison = aValue.localeCompare(bValue);
-					return sortOrder === 'asc' ? comparison : -comparison;
-				}
-
-				if (typeof aValue === 'number' && typeof bValue === 'number') {
-					const comparison = aValue - bValue;
-					return sortOrder === 'asc' ? comparison : -comparison;
-				}
-
-				return 0;
-			});
-		}
-
-		filteredProblems = filtered;
-	});
-
-	let totalPages = $derived(Math.ceil(filteredProblems.length / PROBLEMS_PER_PAGE));
-	let startIndex = $derived((currentPage - 1) * PROBLEMS_PER_PAGE);
-	let endIndex = $derived(startIndex + PROBLEMS_PER_PAGE);
-	let currentProblems = $derived(filteredProblems.slice(startIndex, endIndex));
-
 	function getTypeDisplay(types: string[]) {
 		if (types.length === 0) return '-';
 		return types.join(', ');
 	}
 
 	function handleRandomProblem() {
-		if (filteredProblems.length === 0) return;
-		const randomIndex = Math.floor(Math.random() * filteredProblems.length);
-		const randomProblem = filteredProblems[randomIndex];
+		if (data.problems.length === 0) return;
+		const randomIndex = Math.floor(Math.random() * data.problems.length);
+		const randomProblem = data.problems[randomIndex];
 		window.open(`/course/${randomProblem.courseId}/problem/${randomProblem.id}`, '_blank');
 	}
 
@@ -168,7 +139,13 @@
 		} else {
 			url.searchParams.set('course', courseId);
 		}
+		url.searchParams.set('page', '1'); // Reset to page 1 on course change
 		goto(url.toString());
+	}
+
+	function goToPage(newPage: number) {
+		currentPage = newPage;
+		updateFilters(false);
 	}
 </script>
 
@@ -180,14 +157,14 @@
 		<hr class="mb-6" />
 
 		<!-- Filters -->
-		<Card class="mb-8 rounded-2xl border border-border bg-card shadow-sm">
+		<Card class="border-border bg-card mb-8 rounded-2xl border shadow-sm">
 			<CardHeader class="border-b pb-5">
 				<div class="flex flex-col gap-1">
 					<CardTitle class="flex items-center gap-2 text-lg font-semibold">
-						<Filter class="h-5 w-5 text-primary" />
+						<Filter class="text-primary h-5 w-5" />
 						{m['problemsPage.filters.title']()}
 					</CardTitle>
-					<p class="text-sm text-muted-foreground">{m['problemsPage.filters.description']()}</p>
+					<p class="text-muted-foreground text-sm">{m['problemsPage.filters.description']()}</p>
 				</div>
 			</CardHeader>
 
@@ -205,6 +182,7 @@
 								type="text"
 								placeholder={m['problemsPage.search.placeholder']()}
 								bind:value={searchTerm}
+								oninput={handleSearchInput}
 							/>
 						</div>
 					</div>
@@ -220,12 +198,20 @@
 									{chosenCategory || m['problemsPage.filters.category.placeholder']()}
 								</Select.Trigger>
 								<Select.Content>
-									<Select.Item value="" onclick={() => (chosenCategory = '')}
-										>{m['problemsPage.filters.category.all']()}</Select.Item
+									<Select.Item
+										value=""
+										onclick={() => {
+											chosenCategory = '';
+											updateFilters();
+										}}>{m['problemsPage.filters.category.all']()}</Select.Item
 									>
 									{#each data.categories as category}
-										<Select.Item value={category} onclick={() => (chosenCategory = category)}
-											>{category}</Select.Item
+										<Select.Item
+											value={category}
+											onclick={() => {
+												chosenCategory = category;
+												updateFilters();
+											}}>{category}</Select.Item
 										>
 									{/each}
 								</Select.Content>
@@ -243,7 +229,10 @@
 							options={data.types
 								? data.types.map((type: string) => ({ label: type, value: type }))
 								: []}
-							onValueChange={(values: string[]) => (types = values)}
+							onValueChange={(values: string[]) => {
+								types = values;
+								updateFilters();
+							}}
 							defaultValue={types}
 							hideSelectAll
 							searchable
@@ -277,7 +266,10 @@
 						<button
 							type="button"
 							aria-label="Toggle hide solved"
-							onclick={() => (hideSolved = !hideSolved)}
+							onclick={() => {
+								hideSolved = !hideSolved;
+								updateFilters();
+							}}
 							class="relative inline-flex h-6 w-11 items-center rounded-full transition-colors {hideSolved
 								? 'bg-primary'
 								: 'bg-muted'}"
@@ -315,16 +307,16 @@
 				<div class="border-t pt-4">
 					<Button
 						onclick={handleRandomProblem}
-						disabled={filteredProblems.length === 0}
+						disabled={data.problems.length === 0}
 						class="w-full"
 						variant="outline"
 					>
 						<Shuffle class="mr-2 h-4 w-4" />
 						{m['problemsPage.actions.randomProblem']()}
-						{#if filteredProblems.length > 0}
-							<span class="ml-2 text-xs text-muted-foreground">
-								({filteredProblems.length}
-								{filteredProblems.length === 1 ? 'problem' : 'problems'})
+						{#if data.pagination.totalProblems > 0}
+							<span class="text-muted-foreground ml-2 text-xs">
+								({data.pagination.totalProblems}
+								{data.pagination.totalProblems === 1 ? 'problem' : 'problems'})
 							</span>
 						{/if}
 					</Button>
@@ -402,7 +394,7 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#if currentProblems.length === 0}
+					{#if data.problems.length === 0}
 						<tr>
 							<td
 								colspan={5 +
@@ -411,14 +403,14 @@
 								class="px-4 py-8 text-center"
 							>
 								<p class="text-muted-foreground">{m['problemsPage.table.noProblems']()}</p>
-								<p class="text-sm text-muted-foreground">
+								<p class="text-muted-foreground text-sm">
 									{m['problemsPage.table.tryAdjustingFilters']()}
 								</p>
 							</td>
 						</tr>
 					{:else}
-						{#each currentProblems as problem}
-							<tr class="border-b hover:bg-muted/50">
+						{#each data.problems as problem}
+							<tr class="hover:bg-muted/50 border-b">
 								<td class="px-4 py-3 text-center">
 									{#if problem.status}
 										{@const statusInfo = getStatusIcon(problem.status)}
@@ -443,7 +435,7 @@
 									<td class="px-4 py-3">{problem.courseTitle}</td>
 								{/if}
 								{#if showTypes}
-									<td class="px-4 py-3 text-sm text-muted-foreground">
+									<td class="text-muted-foreground px-4 py-3 text-sm">
 										{getTypeDisplay(problem.type)}
 									</td>
 								{/if}
@@ -457,9 +449,13 @@
 	</div>
 
 	<!-- Pagination -->
-	{#if totalPages > 1}
+	{#if data.pagination.totalPages > 1}
 		<div class="mt-6 flex items-center justify-center gap-2">
-			<Button variant="outline" disabled={currentPage === 1} onclick={() => (currentPage -= 1)}>
+			<Button
+				variant="outline"
+				disabled={data.pagination.currentPage === 1}
+				onclick={() => goToPage(data.pagination.currentPage - 1)}
+			>
 				<ChevronLeft class="mr-2 h-4 w-4" />
 				Previous
 			</Button>
@@ -467,34 +463,45 @@
 			<div class="flex items-center gap-2">
 				<span>Page</span>
 				<Input
-					type="text"
+					type="number"
 					class="w-16 text-center"
-					bind:value={currentPage}
+					value={data.pagination.currentPage}
+					min="1"
+					max={data.pagination.totalPages}
 					oninput={(e) => {
 						const target = e.target as HTMLInputElement;
 						const val = parseInt(target.value);
-						if (!isNaN(val) && val >= 1 && val <= totalPages) {
-							currentPage = val;
+						if (!isNaN(val) && val >= 1 && val <= data.pagination.totalPages) {
+							goToPage(val);
 						}
 					}}
 				/>
-				<span>of {totalPages}</span>
+				<span>of {data.pagination.totalPages}</span>
 			</div>
 
 			<Button
 				variant="outline"
-				disabled={currentPage === totalPages}
-				onclick={() => (currentPage += 1)}
+				disabled={data.pagination.currentPage === data.pagination.totalPages}
+				onclick={() => goToPage(data.pagination.currentPage + 1)}
 			>
 				Next
 				<ChevronRight class="ml-2 h-4 w-4" />
 			</Button>
 		</div>
+
+		<div class="text-muted-foreground mt-2 text-center text-sm">
+			Showing {data.pagination.perPage * (data.pagination.currentPage - 1) + 1} -
+			{Math.min(
+				data.pagination.perPage * data.pagination.currentPage,
+				data.pagination.totalProblems
+			)}
+			of {data.pagination.totalProblems} problems
+		</div>
 	{/if}
 
 	<!-- Additional Info -->
-	{#if currentProblems.length > 0}
-		<div class="mt-6 text-sm text-muted-foreground">
+	{#if data.problems.length > 0}
+		<div class="text-muted-foreground mt-6 text-sm">
 			<p>{m['problemsPage.results.clickForStatement']()}</p>
 		</div>
 	{/if}

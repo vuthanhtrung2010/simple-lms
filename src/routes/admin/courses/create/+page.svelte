@@ -5,7 +5,6 @@
 	import { Card, CardContent, CardHeader, CardTitle } from '$lib/components/ui/card/index.js';
 	import { Checkbox } from '$lib/components/ui/checkbox/index.js';
 	import { MultiSelect } from '$lib/components/ui/multi-select/index.js';
-	import * as Select from '$lib/components/ui/select/index.js';
 	import { enhance } from '$app/forms';
 	import { goto } from '$app/navigation';
 	import type { PageProps } from './$types.js';
@@ -123,11 +122,11 @@
 				<CardHeader>
 					<CardTitle>Problems</CardTitle>
 				</CardHeader>
-				<CardContent>
-					<MultiSelect
-						placeholder="Select problems"
-						options={data.problems.map((p) => ({ value: String(p.id), label: p.title }))}
-						defaultValue={selectedProblems}
+			<CardContent>
+				<MultiSelect
+					placeholder="Select problems"
+					options={data.problems.map((p: any) => ({ value: String(p.id), label: p.title }))}
+					defaultValue={selectedProblems}
 						onValueChange={(vals: string[]) => {
 							selectedProblems = vals;
 						}}
