@@ -442,7 +442,7 @@
 <div class="container mx-auto max-w-7xl px-4 py-8">
 	<div class="mb-6">
 		<h1 class="text-3xl font-bold tracking-tight">Manage Problem</h1>
-		<p class="text-muted-foreground mt-2">Edit problem metadata and manage questions</p>
+		<p class="mt-2 text-muted-foreground">Edit problem metadata and manage questions</p>
 	</div>
 
 	<Tabs.Root value="metadata" class="w-full">
@@ -479,19 +479,26 @@
 								<Input id="title" name="title" value={data.problem.title} required />
 							</div>
 
-					<!-- Description -->
-					<div class="space-y-2">
-						<Label for="description">Description</Label>
-						<div bind:this={descEditorRef} style="height: 200px; border: 1px solid hsl(var(--border)); border-radius: var(--radius);"></div>
-						<input type="hidden" name="description" value={descriptionValue} />
-					</div>
+							<!-- Description -->
+							<div class="space-y-2">
+								<Label for="description">Description</Label>
+								<div
+									bind:this={descEditorRef}
+									style="height: 200px; border: 1px solid hsl(var(--border)); border-radius: var(--radius);"
+								></div>
+								<input type="hidden" name="description" value={descriptionValue} />
+							</div>
 
-					<!-- Instructions -->
-						<div class="space-y-2">
-							<Label for="instructions">Instructions (optional)</Label>
-							<div bind:this={instructionsEditorRef} style="height: 150px; border: 1px solid hsl(var(--border)); border-radius: var(--radius);"></div>
-							<input type="hidden" name="instructions" value={instructionsValue} />
-						</div>							<!-- Category -->
+							<!-- Instructions -->
+							<div class="space-y-2">
+								<Label for="instructions">Instructions (optional)</Label>
+								<div
+									bind:this={instructionsEditorRef}
+									style="height: 150px; border: 1px solid hsl(var(--border)); border-radius: var(--radius);"
+								></div>
+								<input type="hidden" name="instructions" value={instructionsValue} />
+							</div>
+							<!-- Category -->
 							<div class="space-y-2">
 								<Label for="categoryId">Category</Label>
 								<Select.Root type="single" name="categoryId" bind:value={selectedCategory}>
@@ -527,7 +534,7 @@
 								{#each selectedTypes as typeId}
 									<input type="hidden" name="types" value={typeId} />
 								{/each}
-								<p class="text-muted-foreground text-sm">
+								<p class="text-sm text-muted-foreground">
 									Select one or more types for this problem.
 								</p>
 							</div>
@@ -620,19 +627,19 @@
 				<Card.Content>
 					<div class="space-y-4">
 						{#if data.questions.length === 0}
-							<p class="text-muted-foreground py-8 text-center">
+							<p class="py-8 text-center text-muted-foreground">
 								No questions yet. Click "Add Question" to create one.
 							</p>
 						{:else}
 							{#each data.questions as question, i}
-								<Card.Root class="border-l-primary/50 border-l-4">
+								<Card.Root class="border-l-4 border-l-primary/50">
 									<Card.Header>
 										<div class="flex items-start justify-between">
 											<div>
 												<Card.Title class="text-base">
 													Question {i + 1} - {question.questionType}
 													{#if question.points != null}
-														<span class="text-muted-foreground text-sm font-normal">
+														<span class="text-sm font-normal text-muted-foreground">
 															({question.points} pts)
 														</span>
 													{/if}
@@ -723,7 +730,10 @@
 				<!-- Question Text -->
 				<div class="space-y-2">
 					<Label for="questionText">Question Text (Markdown supported)</Label>
-					<div bind:this={questionTextEditorRef} style="height: 200px; border: 1px solid hsl(var(--border)); border-radius: var(--radius);"></div>
+					<div
+						bind:this={questionTextEditorRef}
+						style="height: 200px; border: 1px solid hsl(var(--border)); border-radius: var(--radius);"
+					></div>
 				</div>
 
 				<!-- Points -->
@@ -743,7 +753,10 @@
 				<!-- Explanation -->
 				<div class="space-y-2">
 					<Label for="explanation">Explanation (shown after answering)</Label>
-					<div bind:this={explanationEditorRef} style="height: 150px; border: 1px solid hsl(var(--border)); border-radius: var(--radius);"></div>
+					<div
+						bind:this={explanationEditorRef}
+						style="height: 150px; border: 1px solid hsl(var(--border)); border-radius: var(--radius);"
+					></div>
 				</div>
 
 				<!-- Config based on question type -->
@@ -935,7 +948,7 @@
 									placeholder="0"
 									min="0"
 								/>
-								<p class="text-muted-foreground text-sm">Acceptable range: answer ± tolerance</p>
+								<p class="text-sm text-muted-foreground">Acceptable range: answer ± tolerance</p>
 							</div>
 						</div>
 					</div>

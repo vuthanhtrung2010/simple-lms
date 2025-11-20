@@ -47,11 +47,11 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	} else if (!hasFullEditPerm && !hasPermittedEditPerm) {
 		throw fail(403, { error: 'You do not have permission to edit courses.' });
 	}
-	
+
 	// Try to get problems from KV cache
 	const cacheKey = 'adminProblems';
 	const cached = await locals.kv.get(cacheKey);
-	
+
 	let allProblems;
 	if (cached) {
 		allProblems = JSON.parse(cached);
@@ -61,7 +61,7 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 			expirationTtl: 300
 		});
 	}
-	
+
 	// Get all users
 	const allUsers = await locals.db.select().from(users).all();
 	// Get selected problems for this course
@@ -167,7 +167,7 @@ export const actions = {
 
 			// Update problems: hard-reset mapping (no soft-delete needed here)
 			await locals.db.delete(courseProblems).where(eq(courseProblems.courseId, id));
-			
+
 			// Insert problems in batches to avoid SQLite param limit
 			if (problemIds.length > 0) {
 				const BATCH_SIZE = 10; // 10 rows × 3 params = 30 params (safe limit)

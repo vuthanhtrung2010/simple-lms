@@ -8,20 +8,20 @@ export const load: PageServerLoad = async ({ params, locals }) => {
 	// Try to get from KV cache
 	const cacheKey = 'adminProblems';
 	const cached = await locals.kv.get(cacheKey);
-	
+
 	let allProblems;
 	if (cached) {
 		allProblems = JSON.parse(cached);
 	} else {
 		// Fetch from database
 		allProblems = await locals.db.select().from(problems).all();
-		
+
 		// Cache for 5 minutes (300 seconds)
 		await locals.kv.put(cacheKey, JSON.stringify(allProblems), {
 			expirationTtl: 300
 		});
 	}
-	
+
 	return {
 		problems: allProblems,
 		canEdit: locals.user?.perms
@@ -44,11 +44,11 @@ export const actions = {
 
 		try {
 			await locals.db.delete(problems).where(eq(problems.id, Number(id)));
-			
+
 			// Invalidate caches
 			await locals.kv.delete('adminProblems');
 			await locals.kv.delete(`${id}:points`);
-			
+
 			return { success: true };
 		} catch (error) {
 			console.error('Failed to delete problem:', error);

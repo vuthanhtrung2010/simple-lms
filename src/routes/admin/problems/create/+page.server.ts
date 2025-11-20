@@ -174,10 +174,10 @@ export const actions = {
 					media: q.media ? JSON.stringify(q.media) : null
 				});
 			}
-			
+
 			// Invalidate KV cache
 			await locals.kv.delete('adminProblems');
-			
+
 			return {
 				success: true
 			};

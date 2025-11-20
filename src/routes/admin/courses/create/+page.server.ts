@@ -7,7 +7,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	// Try to get problems from KV cache
 	const cacheKey = 'adminProblems';
 	const cached = await locals.kv.get(cacheKey);
-	
+
 	let allProblems;
 	if (cached) {
 		allProblems = JSON.parse(cached);
@@ -17,10 +17,10 @@ export const load: PageServerLoad = async ({ locals }) => {
 			expirationTtl: 300
 		});
 	}
-	
+
 	// Get all users for multi-selects
 	const allUsers = await locals.db.select().from(users).all();
-	
+
 	// Get DB defaults for quote/author
 	const defaults = {
 		quote: courses.quote.default ?? 'Thi đua là yêu nước, yêu nước phải thi đua',

@@ -157,14 +157,14 @@
 		<hr class="mb-6" />
 
 		<!-- Filters -->
-		<Card class="border-border bg-card mb-8 rounded-2xl border shadow-sm">
+		<Card class="mb-8 rounded-2xl border border-border bg-card shadow-sm">
 			<CardHeader class="border-b pb-5">
 				<div class="flex flex-col gap-1">
 					<CardTitle class="flex items-center gap-2 text-lg font-semibold">
-						<Filter class="text-primary h-5 w-5" />
+						<Filter class="h-5 w-5 text-primary" />
 						{m['problemsPage.filters.title']()}
 					</CardTitle>
-					<p class="text-muted-foreground text-sm">{m['problemsPage.filters.description']()}</p>
+					<p class="text-sm text-muted-foreground">{m['problemsPage.filters.description']()}</p>
 				</div>
 			</CardHeader>
 
@@ -314,7 +314,7 @@
 						<Shuffle class="mr-2 h-4 w-4" />
 						{m['problemsPage.actions.randomProblem']()}
 						{#if data.pagination.totalProblems > 0}
-							<span class="text-muted-foreground ml-2 text-xs">
+							<span class="ml-2 text-xs text-muted-foreground">
 								({data.pagination.totalProblems}
 								{data.pagination.totalProblems === 1 ? 'problem' : 'problems'})
 							</span>
@@ -403,14 +403,14 @@
 								class="px-4 py-8 text-center"
 							>
 								<p class="text-muted-foreground">{m['problemsPage.table.noProblems']()}</p>
-								<p class="text-muted-foreground text-sm">
+								<p class="text-sm text-muted-foreground">
 									{m['problemsPage.table.tryAdjustingFilters']()}
 								</p>
 							</td>
 						</tr>
 					{:else}
 						{#each data.problems as problem}
-							<tr class="hover:bg-muted/50 border-b">
+							<tr class="border-b hover:bg-muted/50">
 								<td class="px-4 py-3 text-center">
 									{#if problem.status}
 										{@const statusInfo = getStatusIcon(problem.status)}
@@ -435,7 +435,7 @@
 									<td class="px-4 py-3">{problem.courseTitle}</td>
 								{/if}
 								{#if showTypes}
-									<td class="text-muted-foreground px-4 py-3 text-sm">
+									<td class="px-4 py-3 text-sm text-muted-foreground">
 										{getTypeDisplay(problem.type)}
 									</td>
 								{/if}
@@ -489,7 +489,7 @@
 			</Button>
 		</div>
 
-		<div class="text-muted-foreground mt-2 text-center text-sm">
+		<div class="mt-2 text-center text-sm text-muted-foreground">
 			Showing {data.pagination.perPage * (data.pagination.currentPage - 1) + 1} -
 			{Math.min(
 				data.pagination.perPage * data.pagination.currentPage,
@@ -501,7 +501,7 @@
 
 	<!-- Additional Info -->
 	{#if data.problems.length > 0}
-		<div class="text-muted-foreground mt-6 text-sm">
+		<div class="mt-6 text-sm text-muted-foreground">
 			<p>{m['problemsPage.results.clickForStatement']()}</p>
 		</div>
 	{/if}

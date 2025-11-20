@@ -122,11 +122,11 @@
 				<CardHeader>
 					<CardTitle>Problems</CardTitle>
 				</CardHeader>
-			<CardContent>
-				<MultiSelect
-					placeholder="Select problems"
-					options={data.problems.map((p: any) => ({ value: String(p.id), label: p.title }))}
-					defaultValue={selectedProblems}
+				<CardContent>
+					<MultiSelect
+						placeholder="Select problems"
+						options={data.problems.map((p: any) => ({ value: String(p.id), label: p.title }))}
+						defaultValue={selectedProblems}
 						onValueChange={(vals: string[]) => {
 							selectedProblems = vals;
 						}}
