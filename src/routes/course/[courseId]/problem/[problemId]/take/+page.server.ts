@@ -239,12 +239,36 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 	let submissionId: string;
 	let startedAt: number;
 	let elapsedSeconds: number;
+	let savedAnswers: Record<string, any> = {};
 
 	if (existing) {
 		// Resume existing attempt
 		submissionId = existing.id;
 		startedAt = existing.startedAt;
 		elapsedSeconds = Math.max(0, Math.floor((now - startedAt) / 1000));
+
+		// Load saved answers from questionAnswers
+		const existingAnswers = await db
+			.select({
+				questionId: questionAnswers.questionId,
+				answerData: questionAnswers.answerData
+			})
+			.from(questionAnswers)
+			.where(eq(questionAnswers.submissionId, submissionId))
+			.all();
+
+		// Parse and store answers
+		for (const ans of existingAnswers) {
+			let parsedAnswer = ans.answerData;
+			if (typeof ans.answerData === 'string') {
+				try {
+					parsedAnswer = JSON.parse(ans.answerData);
+				} catch (e) {
+					parsedAnswer = ans.answerData;
+				}
+			}
+			savedAnswers[ans.questionId] = parsedAnswer;
+		}
 	} else {
 		// Compute next attempt number
 		const lastAttempt = await db
@@ -384,11 +408,103 @@ export const load: PageServerLoad = async ({ params, locals, url }) => {
 			elapsedSeconds,
 			// Expose time limit (in minutes) for client timer; 0/undefined means unlimited
 			timeLimit: problem.timeLimit ?? null
-		}
+		},
+		savedAnswers
 	};
 };
 
 export const actions: Actions = {
+	autosave: async ({ request, locals }) => {
+		// Require authentication
+		if (!locals.user) {
+			return { success: false, error: 'Unauthorized' };
+		}
+
+		const db = locals.db;
+		const formData = await request.formData();
+
+		const submissionId = formData.get('submissionId') as string;
+		const questionId = formData.get('questionId') as string;
+		const answerData = formData.get('answerData') as string;
+
+		if (!submissionId || !questionId) {
+			return { success: false, error: 'Missing required fields' };
+		}
+
+		try {
+			// Verify submission belongs to user
+			const submission = await db
+				.select({ userId: submissions.userId, status: submissions.status })
+				.from(submissions)
+				.where(eq(submissions.id, submissionId))
+				.get();
+
+			if (!submission || submission.userId !== locals.user.id) {
+				return { success: false, error: 'Invalid submission' };
+			}
+
+			if (submission.status !== 'in_progress') {
+				return { success: false, error: 'Submission already submitted' };
+			}
+
+			// Parse answer data
+			let parsedAnswer: any = null;
+			if (answerData) {
+				try {
+					parsedAnswer = JSON.parse(answerData);
+				} catch (e) {
+					parsedAnswer = answerData;
+				}
+			}
+
+			// Check if answer already exists
+			const existingAnswer = await db
+				.select({ id: questionAnswers.id })
+				.from(questionAnswers)
+				.where(
+					and(
+						eq(questionAnswers.submissionId, submissionId),
+						eq(questionAnswers.questionId, questionId)
+					)
+				)
+				.get();
+
+			if (existingAnswer) {
+				// Update existing answer
+				await db
+					.update(questionAnswers)
+					.set({
+						answerData: parsedAnswer,
+						answeredAt: Date.now()
+					})
+					.where(eq(questionAnswers.id, existingAnswer.id));
+			} else {
+				// Get question to determine points
+				const question = await db
+					.select({ points: questions.points })
+					.from(questions)
+					.where(eq(questions.id, questionId))
+					.get();
+
+				// Insert new answer (not graded yet)
+				await db.insert(questionAnswers).values({
+					submissionId,
+					questionId,
+					answerData: parsedAnswer,
+					isCorrect: null,
+					pointsEarned: 0,
+					pointsPossible: question?.points ?? 0,
+					autoGraded: false
+				});
+			}
+
+			return { success: true };
+		} catch (e) {
+			console.error('Autosave error:', e);
+			return { success: false, error: 'Failed to save answer' };
+		}
+	},
+
 	submit: async ({ params, request, locals }) => {
 		const { courseId, problemId } = params;
 

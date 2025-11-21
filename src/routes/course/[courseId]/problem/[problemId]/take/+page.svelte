@@ -13,6 +13,8 @@
 	let { data }: PageProps = $props();
 
 	let isSubmitting = $state(false);
+	let isSaving = $state(false);
+	let lastSavedTime = $state<number | null>(null);
 
 	type TakeQuestion = {
 		id: string;
@@ -28,21 +30,108 @@
 	// Local state for matching answers: q.id -> item.text -> selected choice id
 	let matchingAnswers = $state<Record<string, Record<string, string>>>({});
 
+	// Initialize from saved answers
+	$effect(() => {
+		if (data.savedAnswers) {
+			for (const [qId, answer] of Object.entries(data.savedAnswers)) {
+				const question = questions.find((q) => q.id === qId);
+				if (!question) continue;
+
+				if (question.questionType === 'single_choice' || question.questionType === 'true_false') {
+					if (typeof answer === 'number') {
+						singleChoiceAnswers[qId] = answer;
+					}
+				} else if (question.questionType === 'multiple_choice') {
+					if (Array.isArray(answer)) {
+						multipleChoiceAnswers[qId] = new Set(answer);
+					}
+				} else if (question.questionType === 'matching') {
+					if (typeof answer === 'object' && answer !== null) {
+						matchingAnswers[qId] = answer;
+					}
+				} else if (question.questionType === 'short_answer') {
+					if (typeof answer === 'string') {
+						shortAnswers[qId] = answer;
+					}
+				} else if (question.questionType === 'numeric') {
+					if (typeof answer === 'string' || typeof answer === 'number') {
+						numericAnswers[qId] = String(answer);
+					}
+				} else if (question.questionType === 'fill_blank') {
+					if (typeof answer === 'object' && answer !== null) {
+						fillBlankAnswers[qId] = answer;
+					}
+				}
+			}
+		}
+	});
+
 	function getMatchingValue(qId: string, itemText: string): string {
 		return matchingAnswers[qId]?.[itemText] ?? '';
 	}
 
 	function setMatchingValue(qId: string, itemText: string, value: string) {
 		const byQuestion = matchingAnswers[qId] ?? {};
+		const updated = { ...byQuestion, [itemText]: value };
 		matchingAnswers = {
 			...matchingAnswers,
-			[qId]: { ...byQuestion, [itemText]: value }
+			[qId]: updated
 		};
+		debouncedAutosave(qId, updated);
 	}
 
-	// Local state for answers
+	// Local answer state - initialize text inputs with empty strings for controlled inputs
 	let singleChoiceAnswers = $state<Record<string, number>>({});
 	let multipleChoiceAnswers = $state<Record<string, Set<number>>>({});
+	let shortAnswers = $state<Record<string, string>>(
+		Object.fromEntries(
+			questions.filter((q) => q.questionType === 'short_answer').map((q) => [q.id, ''])
+		)
+	);
+	let numericAnswers = $state<Record<string, string>>(
+		Object.fromEntries(questions.filter((q) => q.questionType === 'numeric').map((q) => [q.id, '']))
+	);
+	let fillBlankAnswers = $state<Record<string, Record<string, string>>>({});
+
+	// Autosave functionality - 1000ms debounce per question
+	let autosaveTimers = new Map<string, ReturnType<typeof setTimeout>>();
+
+	async function autosave(questionId: string, answer: any) {
+		if (isSaving || isSubmitting) return;
+
+		try {
+			isSaving = true;
+			const formData = new FormData();
+			formData.append('submissionId', data.submission.id);
+			formData.append('questionId', questionId);
+			formData.append('answerData', JSON.stringify(answer));
+
+			const response = await fetch('?/autosave', {
+				method: 'POST',
+				body: formData
+			});
+
+			if (response.ok) {
+				lastSavedTime = Date.now();
+			}
+		} catch (e) {
+			console.error('Autosave failed:', e);
+		} finally {
+			isSaving = false;
+		}
+	}
+
+	function debouncedAutosave(questionId: string, answer: any) {
+		const existingTimer = autosaveTimers.get(questionId);
+		if (existingTimer) clearTimeout(existingTimer);
+
+		const timer = setTimeout(() => {
+			autosave(questionId, answer);
+			autosaveTimers.delete(questionId);
+		}, 1000);
+
+		autosaveTimers.set(questionId, timer);
+	}
 
 	// Audio player state
 	let audioElement = $state<HTMLAudioElement | null>(null);
@@ -70,11 +159,7 @@
 	let timerId: ReturnType<typeof setInterval> | null = null;
 
 	$effect(() => {
-		// Update current time every second
-		timerId = setInterval(() => {
-			currentTime = Date.now();
-		}, 1000);
-
+		timerId = setInterval(() => (currentTime = Date.now()), 1000);
 		return () => {
 			if (timerId) clearInterval(timerId);
 		};
@@ -84,14 +169,9 @@
 		const hrs = Math.floor(seconds / 3600);
 		const mins = Math.floor((seconds % 3600) / 60);
 		const secs = seconds % 60;
-
-		if (hrs > 0) {
-			return `${hrs}h ${mins}m ${secs}s`;
-		} else if (mins > 0) {
-			return `${mins}m ${secs}s`;
-		} else {
-			return `${secs}s`;
-		}
+		if (hrs > 0) return `${hrs}h ${mins}m ${secs}s`;
+		if (mins > 0) return `${mins}m ${secs}s`;
+		return `${secs}s`;
 	}
 
 	function formatDateTime(timestamp: number): string {
@@ -108,7 +188,7 @@
 		const classes =
 			'h-9 w-[120px] rounded-md border border-input bg-background px-3 py-1 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 mx-1';
 		return html.replace(/\{\{blank:(\d+)\}\}/g, (_, num) => {
-			const blankIdx = Number(num);
+			const blankIdx = String(num);
 			const inputId = `blank-${qId}-${blankIdx}`;
 			return `<input
 				type="text"
@@ -119,6 +199,7 @@
 				class="${classes}"
 				placeholder="..."
 				style="width: 120px;"
+				oninput="this.dispatchEvent(new CustomEvent('blank-input', { detail: { qId: '${qId}' }, bubbles: true }))"
 			/>`;
 		});
 	}
@@ -132,11 +213,74 @@
 			newSet.add(optIdx);
 		}
 		multipleChoiceAnswers = { ...multipleChoiceAnswers, [qId]: newSet };
+		debouncedAutosave(qId, Array.from(newSet));
 	}
 
 	function isMultipleChoiceChecked(qId: string, optIdx: number): boolean {
 		return multipleChoiceAnswers[qId]?.has(optIdx) ?? false;
 	}
+
+	function handleTextInput(event: Event, qId: string, inputType: 'short' | 'numeric' | 'blank') {
+		const target = event.target as HTMLInputElement;
+		const value = target.value;
+
+		if (inputType === 'blank') {
+			const blankIndex = target.dataset.blankIndex;
+			if (!blankIndex) return;
+
+			const form = target.closest('form');
+			if (!form) return;
+
+			const allBlanks: Record<string, string> = {};
+			const blankInputs = form.querySelectorAll(`input[data-question-id="${qId}"]`);
+			blankInputs.forEach((input) => {
+				const idx = (input as HTMLInputElement).dataset.blankIndex;
+				const val = (input as HTMLInputElement).value;
+				if (idx) allBlanks[idx] = val;
+			});
+
+			// Only update state if values actually changed
+			const currentBlanks = fillBlankAnswers[qId] || {};
+			const hasChanges =
+				Object.keys(allBlanks).some((key) => allBlanks[key] !== currentBlanks[key]) ||
+				Object.keys(currentBlanks).length !== Object.keys(allBlanks).length;
+
+			if (hasChanges) {
+				fillBlankAnswers = { ...fillBlankAnswers, [qId]: allBlanks };
+				debouncedAutosave(qId, allBlanks);
+			}
+		} else if (inputType === 'short') {
+			shortAnswers[qId] = value;
+			debouncedAutosave(qId, value);
+		} else {
+			numericAnswers[qId] = value;
+			debouncedAutosave(qId, value);
+		}
+	}
+
+	// Setup fill-blank input event handlers
+	$effect(() => {
+		const handleBlankInput = (e: Event) => {
+			const customEvent = e as CustomEvent;
+			handleTextInput(e, customEvent.detail.qId, 'blank');
+		};
+
+		document.addEventListener('blank-input', handleBlankInput);
+		return () => document.removeEventListener('blank-input', handleBlankInput);
+	});
+
+	// Populate fill-blank inputs with saved values on initial load only
+	$effect(() => {
+		// Wait for DOM to be ready
+		setTimeout(() => {
+			for (const [qId, blanks] of Object.entries(fillBlankAnswers)) {
+				for (const [blankIdx, value] of Object.entries(blanks)) {
+					const input = document.getElementById(`blank-${qId}-${blankIdx}`) as HTMLInputElement;
+					if (input) input.value = value;
+				}
+			}
+		}, 0);
+	});
 </script>
 
 <svelte:head>
@@ -167,18 +311,27 @@
 		<input type="hidden" name="submissionId" value={data.submission.id} />
 
 		<!-- Fixed Header with Timer -->
-		<header class="border-b bg-background px-4 py-3">
+		<header class="bg-background border-b px-4 py-3">
 			<div class="flex items-center justify-between">
 				<div>
-					<h1 class="text-xl font-semibold text-foreground">{data.problem.title}</h1>
-					<p class="text-xs text-muted-foreground">
+					<h1 class="text-foreground text-xl font-semibold">{data.problem.title}</h1>
+					<p class="text-muted-foreground text-xs">
 						{data.course.title}
 					</p>
 				</div>
 				<div class="flex items-center gap-4 text-sm">
+					{#if isSaving}
+						<div class="text-muted-foreground">
+							<span>💾 Saving...</span>
+						</div>
+					{:else if lastSavedTime}
+						<div class="text-muted-foreground text-xs">
+							<span>✓ Saved at {new Date(lastSavedTime).toLocaleTimeString()}</span>
+						</div>
+					{/if}
 					<div>
 						<span class="text-muted-foreground">Elapsed:</span>
-						<span class="font-medium text-foreground">{formatTime(elapsedSeconds)}</span>
+						<span class="text-foreground font-medium">{formatTime(elapsedSeconds)}</span>
 					</div>
 					{#if timeLeftSeconds !== null}
 						<div class:text-destructive={timeLeftSeconds < 60}>
@@ -205,7 +358,7 @@
 					<div class="h-full overflow-y-auto p-4">
 						<div class="space-y-4">
 							{#each data.textOnlyQuestions as q, i}
-								<Card.Root class="border bg-card/70">
+								<Card.Root class="bg-card/70 border">
 									<Card.Header class="pb-2">
 										<Card.Title class="text-base font-semibold">
 											Reference {i + 1}
@@ -228,13 +381,13 @@
 					<div class="h-full overflow-y-auto p-4">
 						<div class="space-y-4">
 							{#each data.interactiveQuestions as q, i}
-								<Card.Root class="border bg-card/70">
+								<Card.Root class="bg-card/70 border">
 									<Card.Header class="pb-2">
 										<div class="flex items-baseline justify-between gap-2">
 											<Card.Title class="text-base font-semibold">
 												Question {i + 1}
 												{#if q.points != null}
-													<span class="ml-2 text-xs font-normal text-muted-foreground">
+													<span class="text-muted-foreground ml-2 text-xs font-normal">
 														({q.points} pts)
 													</span>
 												{/if}
@@ -256,7 +409,7 @@
 											<div class="mt-3 space-y-2">
 												{#each q.config.options as opt, idx}
 													<label
-														class="flex cursor-pointer items-start gap-3 rounded-md border p-3 transition hover:bg-accent"
+														class="hover:bg-accent flex cursor-pointer items-start gap-3 rounded-md border p-3 transition"
 													>
 														<input
 															type="radio"
@@ -265,6 +418,7 @@
 															checked={singleChoiceAnswers[q.id] === idx}
 															onchange={() => {
 																singleChoiceAnswers = { ...singleChoiceAnswers, [q.id]: idx };
+																debouncedAutosave(q.id, idx);
 															}}
 															class="mt-1"
 														/>
@@ -281,7 +435,7 @@
 											<div class="mt-3 space-y-2">
 												{#each q.config.options as opt, idx}
 													<label
-														class="flex cursor-pointer items-start gap-3 rounded-md border p-3 transition hover:bg-accent"
+														class="hover:bg-accent flex cursor-pointer items-start gap-3 rounded-md border p-3 transition"
 													>
 														<input
 															type="checkbox"
@@ -338,6 +492,8 @@
 													name={`short-${q.id}`}
 													placeholder="Enter your answer"
 													class="w-full"
+													value={shortAnswers[q.id] ?? ''}
+													oninput={(e) => handleTextInput(e, q.id, 'short')}
 												/>
 											</div>
 										{/if}
@@ -351,6 +507,8 @@
 													name={`numeric-${q.id}`}
 													placeholder="Enter numeric answer (e.g., 3.14)"
 													class="w-full"
+													value={numericAnswers[q.id] ?? ''}
+													oninput={(e) => handleTextInput(e, q.id, 'numeric')}
 												/>
 											</div>
 										{/if}
@@ -366,7 +524,7 @@
 		<!-- Fixed Audio Player for single audio file -->
 		{#if data.problem.singleAudioUrl}
 			<div
-				class="fixed bottom-4 left-1/2 z-50 w-full max-w-md -translate-x-1/2 rounded-lg border bg-background/95 px-4 py-3 shadow-xl backdrop-blur supports-[backdrop-filter]:bg-background/90"
+				class="bg-background/95 supports-[backdrop-filter]:bg-background/90 fixed bottom-4 left-1/2 z-50 w-full max-w-md -translate-x-1/2 rounded-lg border px-4 py-3 shadow-xl backdrop-blur"
 			>
 				<audio
 					bind:this={audioElement}
@@ -388,7 +546,7 @@
 					<button
 						type="button"
 						onclick={toggleAudio}
-						class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground transition hover:bg-primary/90"
+						class="bg-primary text-primary-foreground hover:bg-primary/90 flex h-10 w-10 items-center justify-center rounded-full transition"
 					>
 						{#if isPlaying}
 							<svg
@@ -416,14 +574,14 @@
 
 					<!-- Time Display -->
 					<div class="flex-1">
-						<div class="mb-1 flex items-center justify-between text-xs text-muted-foreground">
+						<div class="text-muted-foreground mb-1 flex items-center justify-between text-xs">
 							<span>{formatAudioTime(currentAudioTime)}</span>
 							<span>{formatAudioTime(audioDuration)}</span>
 						</div>
 						<!-- Progress Bar (non-seekable) -->
-						<div class="relative h-1.5 w-full overflow-hidden rounded-lg bg-secondary">
+						<div class="bg-secondary relative h-1.5 w-full overflow-hidden rounded-lg">
 							<div
-								class="h-full bg-primary transition-all duration-100"
+								class="bg-primary h-full transition-all duration-100"
 								style={`width: ${audioDuration > 0 ? (currentAudioTime / audioDuration) * 100 : 0}%`}
 							></div>
 						</div>
@@ -457,22 +615,32 @@
 
 		<!-- Header -->
 		<header class="mb-2 flex flex-col gap-2">
-			<h1 class="text-3xl font-semibold tracking-tight text-foreground">{data.problem.title}</h1>
-			<p class="text-sm text-muted-foreground">
-				In course <span class="font-medium text-foreground">{data.course.title}</span>
+			<h1 class="text-foreground text-3xl font-semibold tracking-tight">{data.problem.title}</h1>
+			<p class="text-muted-foreground text-sm">
+				In course <span class="text-foreground font-medium">{data.course.title}</span>
 			</p>
 		</header>
 
 		<!-- Timer Info -->
 		<section
-			class="flex flex-wrap gap-4 rounded-lg border bg-card/60 p-4 text-sm text-muted-foreground"
+			class="bg-card/60 text-muted-foreground flex flex-wrap gap-4 rounded-lg border p-4 text-sm"
 		>
+			{#if isSaving}
+				<div>
+					<span class="text-foreground font-semibold">💾 Saving...</span>
+				</div>
+			{:else if lastSavedTime}
+				<div>
+					<span class="text-foreground font-semibold">✓ Saved at</span>
+					<span>{new Date(lastSavedTime).toLocaleTimeString()}</span>
+				</div>
+			{/if}
 			<div>
-				<span class="font-semibold text-foreground">Started:</span>
+				<span class="text-foreground font-semibold">Started:</span>
 				<span>{formatDateTime(data.submission.startedAt)}</span>
 			</div>
 			<div>
-				<span class="font-semibold text-foreground">Elapsed:</span>
+				<span class="text-foreground font-semibold">Elapsed:</span>
 				<span>{formatTime(elapsedSeconds)}</span>
 			</div>
 			{#if timeLeftSeconds !== null}
@@ -496,13 +664,13 @@
 		<!-- Questions -->
 		<div class="space-y-4">
 			{#each questions as q, i}
-				<Card.Root class="border bg-card/70">
+				<Card.Root class="bg-card/70 border">
 					<Card.Header class="pb-2">
 						<div class="flex items-baseline justify-between gap-2">
 							<Card.Title class="text-base font-semibold">
 								Question {i + 1}
 								{#if q.points != null}
-									<span class="ml-2 text-xs font-normal text-muted-foreground">
+									<span class="text-muted-foreground ml-2 text-xs font-normal">
 										({q.points} pts)
 									</span>
 								{/if}
@@ -524,7 +692,7 @@
 							<div class="mt-3 space-y-2">
 								{#each q.config.options as opt, idx}
 									<label
-										class="flex cursor-pointer items-start gap-3 rounded-md border p-3 transition hover:bg-accent"
+										class="hover:bg-accent flex cursor-pointer items-start gap-3 rounded-md border p-3 transition"
 									>
 										<input
 											type="radio"
@@ -533,6 +701,7 @@
 											checked={singleChoiceAnswers[q.id] === idx}
 											onchange={() => {
 												singleChoiceAnswers = { ...singleChoiceAnswers, [q.id]: idx };
+												debouncedAutosave(q.id, idx);
 											}}
 											class="mt-1"
 										/>
@@ -549,7 +718,7 @@
 							<div class="mt-3 space-y-2">
 								{#each q.config.options as opt, idx}
 									<label
-										class="flex cursor-pointer items-start gap-3 rounded-md border p-3 transition hover:bg-accent"
+										class="hover:bg-accent flex cursor-pointer items-start gap-3 rounded-md border p-3 transition"
 									>
 										<input
 											type="checkbox"
@@ -602,7 +771,13 @@
 						<!-- Short Answer -->
 						{#if q.questionType === 'short_answer'}
 							<div class="mt-3">
-								<Input name={`short-${q.id}`} placeholder="Enter your answer" class="w-full" />
+								<Input
+									name={`short-${q.id}`}
+									placeholder="Enter your answer"
+									class="w-full"
+									value={shortAnswers[q.id]}
+									oninput={(e) => handleTextInput(e, q.id, 'short')}
+								/>
 							</div>
 						{/if}
 
@@ -610,10 +785,13 @@
 						{#if q.questionType === 'numeric'}
 							<div class="mt-3">
 								<Input
-									type="number"
+									type="text"
+									inputmode="decimal"
 									name={`numeric-${q.id}`}
 									placeholder="Enter numeric answer"
 									class="w-full"
+									value={numericAnswers[q.id] ?? ''}
+									oninput={(e) => handleTextInput(e, q.id, 'numeric')}
 								/>
 							</div>
 						{/if}
@@ -636,7 +814,7 @@
 		<!-- Fixed Audio Player for single audio file -->
 		{#if data.problem.singleAudioUrl}
 			<div
-				class="fixed bottom-4 left-1/2 z-50 w-full max-w-md -translate-x-1/2 rounded-lg border bg-background/95 px-4 py-3 shadow-xl backdrop-blur supports-[backdrop-filter]:bg-background/90"
+				class="bg-background/95 supports-[backdrop-filter]:bg-background/90 fixed bottom-4 left-1/2 z-50 w-full max-w-md -translate-x-1/2 rounded-lg border px-4 py-3 shadow-xl backdrop-blur"
 			>
 				<audio
 					bind:this={audioElement}
@@ -658,7 +836,7 @@
 					<button
 						type="button"
 						onclick={toggleAudio}
-						class="flex h-10 w-10 items-center justify-center rounded-full bg-primary text-primary-foreground transition hover:bg-primary/90"
+						class="bg-primary text-primary-foreground hover:bg-primary/90 flex h-10 w-10 items-center justify-center rounded-full transition"
 					>
 						{#if isPlaying}
 							<svg
@@ -686,14 +864,14 @@
 
 					<!-- Time Display -->
 					<div class="flex-1">
-						<div class="mb-1 flex items-center justify-between text-xs text-muted-foreground">
+						<div class="text-muted-foreground mb-1 flex items-center justify-between text-xs">
 							<span>{formatAudioTime(currentAudioTime)}</span>
 							<span>{formatAudioTime(audioDuration)}</span>
 						</div>
 						<!-- Progress Bar (non-seekable) -->
-						<div class="relative h-1.5 w-full overflow-hidden rounded-lg bg-secondary">
+						<div class="bg-secondary relative h-1.5 w-full overflow-hidden rounded-lg">
 							<div
-								class="h-full bg-primary transition-all duration-100"
+								class="bg-primary h-full transition-all duration-100"
 								style={`width: ${audioDuration > 0 ? (currentAudioTime / audioDuration) * 100 : 0}%`}
 							></div>
 						</div>
