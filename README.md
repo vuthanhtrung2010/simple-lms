@@ -1,58 +1,51 @@
-# Svelte library
+# Note
+Github is a read-only mirror of the main repository hosted at Codeberg.
 
-Everything you need to build a Svelte library, powered by [`sv`](https://npmjs.com/package/sv).
+# Simple Learning Management System
+## Installation
+Before you install make sure you have [Bun](https://bun.sh/) installed on your machine.
 
-Read more about creating a library [in the docs](https://svelte.dev/docs/kit/packaging).
+1. Clone the repository:
+   ```bash
+   git clone https://codeberg.org/devtrung/simple-lms.git
+   ```
+2. Navigate to the project directory:
+   ```bash
+    cd simple-lms
+    ```
+3. Install dependencies using Bun:
+    ```bash
+    bun install
+    ```
+4. Create the D1 Database using wrangler:
+    ```bash
+    bun x wrangler d1 create simple_lms_db
+    ```
+5. Replace the database ID & Name in the `wrangler.jsonc` and `drizzle.config.ts` files with your created database ID & Name.
+6. Fill the rest of the environment variables in the `.env.example` file and rename it to `.env`.
+7. Run the migrations to set up the database schema:
+    ```bash
+    bun run db:migrate-production
+    ```
+8. Deploy it to Cloudflare Workers:
+    ```bash
+    bun run deploy
+    ```
 
-## Creating a project
+## Features
+- Fully running in Cloudflare Infrastructure.
+- Secure user authentication with JWT and encrypted sessions.
+- Course management with lessons and quizzes.
+- Interactive quizzes with multiple-choice questions.
+- User progress tracking and analytics with debt.
+- Responsive design for accessibility on various devices.
+- Easy deployment and scalability using Cloudflare Workers and D1 database.
+- Open-source and customizable to fit specific educational needs.
+- Comprehensive documentation for easy setup and usage.
+- Regular updates and community support.
 
-If you're seeing this, you've probably already done this step. Congrats!
+## Contributing
+Contributions are welcome! Please fork the repository and submit a pull request with your changes at https://codeberg.org/devtrung/simple-lms.
 
-```sh
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
-
-## Building
-
-To build your library:
-
-```sh
-npm pack
-```
-
-To create a production version of your showcase app:
-
-```sh
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
-
-## Publishing
-
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
-
-To publish your library to [npm](https://www.npmjs.com):
-
-```sh
-npm publish
-```
+## License
+The project is licensed under the GNU Affero General Public License v3.0. See the [LICENSE](./LICENSE) file for details.
