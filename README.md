@@ -17,11 +17,12 @@ Before you install make sure you have [Bun](https://bun.sh/) installed on your m
     ```bash
     bun install
     ```
-4. Create the D1 Database using wrangler:
+4. Create the D1 Database & R2 Bucket using wrangler:
     ```bash
     bun x wrangler d1 create simple_lms_db
+    bun x wrangler r2 create simple-lms
     ```
-5. Replace the database ID & Name in the `wrangler.jsonc` and `drizzle.config.ts` files with your created database ID & Name.
+5. Replace the database ID & Name and R2 bucket name in the `wrangler.jsonc` and `drizzle.config.ts` files with your created database ID & Name and R2 bucket name.
 6. Fill the rest of the environment variables in the `.env.example` file and rename it to `.env`.
 7. Run the migrations to set up the database schema:
     ```bash
