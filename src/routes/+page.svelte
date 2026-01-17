@@ -96,7 +96,7 @@
 				<div class="flex flex-wrap justify-center gap-4">
 					<a
 						href="/problems"
-						class="inline-flex items-center rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+						class="inline-flex items-center rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground clay-btn transition-colors hover:bg-primary/90"
 					>
 						Browse Problems
 					</a>
@@ -117,7 +117,7 @@
 		<div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
 			{#each features as feature}
 				<div
-					class="relative rounded-lg border border-border bg-card p-6 transition-shadow hover:shadow-lg"
+					class="relative rounded-lg border border-border bg-card p-6 transition-transform hover:-translate-y-2 duration-300 clay-card"
 				>
 					{#if feature.badge}
 						<span
@@ -145,7 +145,7 @@
 			</p>
 			<a
 				href="/problems"
-				class="inline-flex items-center rounded-lg bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+				class="inline-flex items-center rounded-lg bg-primary px-8 py-4 text-lg font-semibold text-primary-foreground clay-btn transition-colors hover:bg-primary/90"
 			>
 				Explore Problems Now
 			</a>

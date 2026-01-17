@@ -19,7 +19,7 @@
 	} from '$lib/components/ui/card/index.js';
 	import { Input } from '$lib/components/ui/input/index.js';
 	import { Label } from '$lib/components/ui/label/index.js';
-	import MagicCard from '$lib/components/magicui/MagicCard.svelte';
+	// MagicCard removed
 	import { goto } from '$app/navigation';
 	import type { PageProps } from './$types.js';
 
@@ -50,118 +50,120 @@
 	<title>{m['loginPage.title']({})}</title>
 </svelte:head>
 
-<div class="flex min-h-screen items-center justify-center">
-	<Card class="w-full max-w-sm border-none p-0 shadow-none">
-		<MagicCard gradientColor={theme.resolvedTheme === 'dark' ? '#262626' : '#D9D9D955'} class="p-0">
-			<CardHeader class="border-b border-border p-4 [.border-b]:pb-4">
-				<CardTitle>{m['loginPage.title']({})}</CardTitle>
-				<CardDescription>{m['loginPage.description']({})}</CardDescription>
-				<CardAction>
-					<a href="/accounts/signup" class={buttonVariants({ variant: 'link' })}>
-						{m['loginPage.signUpLink']({})}
-					</a>
-				</CardAction>
-			</CardHeader>
-			<CardContent class="p-4">
-				<form
-					method="POST"
-					use:enhance={() => {
-						isLoading = true;
-						error = '';
-						return async ({ update, result }) => {
-							if (result.type === 'redirect') {
-								goto(result.location);
-							}
+<div class="flex min-h-screen items-center justify-center bg-secondary/30">
+	<div class="w-full max-w-sm clay-card p-0 overflow-hidden">
+		<CardHeader class="border-b border-border/50 bg-primary/5 p-6">
+			<CardTitle class="text-center text-2xl text-primary">{m['loginPage.title']({})}</CardTitle>
+			<CardDescription class="text-center text-base">
+				{m['loginPage.description']({})}
+			</CardDescription>
+			<CardAction>
+				<a href="/accounts/signup" class={buttonVariants({ variant: 'link' })}>
+					{m['loginPage.signUpLink']({})}
+				</a>
+			</CardAction>
+		</CardHeader>
+		<CardContent class="p-6">
+			<form
+				method="POST"
+				use:enhance={() => {
+					isLoading = true;
+					error = '';
+					return async ({ update, result }) => {
+						if (result.type === 'redirect') {
+							goto(result.location);
+						}
 
-							if (result.type === 'success') {
-								const callbackUrl =
-									new URL(window.location.href).searchParams.get('callbackUrl') || '/';
-								goto(callbackUrl);
-							}
-							await update();
-							isLoading = false;
-						};
-					}}
-				>
-					<div class="flex flex-col gap-6">
-						{#if error || form?.error}
-							<div
-								class="flex items-center gap-2 rounded border border-red-400 bg-red-100 px-4 py-2 text-red-700"
-							>
-								<AlertCircle size={16} />
-								<span>{error || form?.error}</span>
-							</div>
-						{/if}
-						<div class="grid gap-2">
-							<Label for="email">{m['loginPage.form.email']({})}</Label>
-							<Input
-								id="email"
-								name="email"
-								type="email"
-								placeholder={m['loginPage.form.emailPlaceholder']({})}
-								required
-								bind:value={email}
-								disabled={isLoading}
-							/>
-						</div>
-						<div class="grid gap-2">
-							<div class="flex items-center">
-								<Label for="password">{m['loginPage.form.password']({})}</Label>
-								<a
-									href="/accounts/forgot-password"
-									class="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-									tabindex="-1"
-								>
-									{m['loginPage.forgotPassword']({})}
-								</a>
-							</div>
-							<Input
-								id="password"
-								name="password"
-								type="password"
-								required
-								bind:value={password}
-								disabled={isLoading}
-							/>
-						</div>
-
-						<!-- Turnstile -->
-						<div class="grid gap-2">
-							<Turnstile
-								theme={theme.resolvedTheme === 'dark' ? 'dark' : 'light'}
-								on:error={() => {
-									turnstileStatus = 'error';
-									error = m['loginPage.errors.turnstileFailed']({});
-								}}
-								on:expired={() => {
-									turnstileStatus = 'expired';
-									error = m['loginPage.errors.turnstileExpired']({});
-								}}
-								on:before-interactive={() => {
-									turnstileStatus = 'required';
-								}}
-								on:callback={() => {
-									turnstileStatus = 'success';
-								}}
-								on:error={() => {
-									turnstileStatus = 'error';
-									error = m['loginPage.errors.turnstileFailed']({});
-								}}
-								siteKey={PUBLIC_TURNSTILE_SITE_KEY}
-							/>
-						</div>
-					</div>
-					<CardFooter class="mt-6 flex-col gap-2 p-0">
-						<Button
-							type="submit"
-							class="w-full"
-							disabled={isLoading || turnstileStatus !== 'success'}
+						if (result.type === 'success') {
+							const callbackUrl =
+								new URL(window.location.href).searchParams.get('callbackUrl') || '/';
+							goto(callbackUrl);
+						}
+						await update();
+						isLoading = false;
+					};
+				}}
+			>
+				<div class="flex flex-col gap-6">
+					{#if error || form?.error}
+						<div
+							class="flex items-center gap-2 rounded-xl border border-destructive/20 bg-destructive/10 px-4 py-3 text-destructive"
 						>
-							{isLoading ? m['loginPage.form.loggingIn']({}) : m['loginPage.form.loginButton']({})}
-						</Button>
-					</CardFooter>
-				</form>
-			</CardContent>
-		</MagicCard>
-	</Card>
+							<AlertCircle size={20} />
+							<span class="font-medium">{error || form?.error}</span>
+						</div>
+					{/if}
+					<div class="grid gap-2">
+						<Label for="email" class="ml-1 text-base">{m['loginPage.form.email']({})}</Label>
+						<Input
+							id="email"
+							name="email"
+							type="email"
+							placeholder={m['loginPage.form.emailPlaceholder']({})}
+							required
+							bind:value={email}
+							disabled={isLoading}
+							class="h-10 border-2 px-4 rounded-xl focus-visible:ring-primary/50"
+						/>
+					</div>
+					<div class="grid gap-2">
+						<div class="flex items-center justify-between">
+							<Label for="password" class="ml-1 text-base">{m['loginPage.form.password']({})}</Label>
+							<a
+								href="/accounts/forgot-password"
+								class="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+								tabindex="-1"
+							>
+								{m['loginPage.forgotPassword']({})}
+							</a>
+						</div>
+						<Input
+							id="password"
+							name="password"
+							type="password"
+							required
+							bind:value={password}
+							disabled={isLoading}
+							class="h-10 border-2 px-4 rounded-xl focus-visible:ring-primary/50"
+						/>
+					</div>
+
+					<!-- Turnstile -->
+					<div class="grid gap-2">
+						<Turnstile
+							theme={theme.resolvedTheme === 'dark' ? 'dark' : 'light'}
+							on:error={() => {
+								turnstileStatus = 'error';
+								error = m['loginPage.errors.turnstileFailed']({});
+							}}
+							on:expired={() => {
+								turnstileStatus = 'expired';
+								error = m['loginPage.errors.turnstileExpired']({});
+							}}
+							on:before-interactive={() => {
+								turnstileStatus = 'required';
+							}}
+							on:callback={() => {
+								turnstileStatus = 'success';
+							}}
+							on:error={() => {
+								turnstileStatus = 'error';
+								error = m['loginPage.errors.turnstileFailed']({});
+							}}
+							siteKey={PUBLIC_TURNSTILE_SITE_KEY}
+						/>
+					</div>
+				</div>
+				<CardFooter class="mt-8 flex-col gap-2 p-0">
+					<Button
+						type="submit"
+						class="w-full py-6 text-lg clay-btn hover:brightness-110"
+						disabled={isLoading || turnstileStatus !== 'success'}
+					>
+						{isLoading ? m['loginPage.form.loggingIn']({}) : m['loginPage.form.loginButton']({})}
+					</Button>
+				</CardFooter>
+			</form>
+		</CardContent>
+	</div>
 </div>
