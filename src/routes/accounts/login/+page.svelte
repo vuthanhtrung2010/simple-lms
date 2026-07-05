@@ -32,6 +32,12 @@
 	let isLoading = $state(false);
 	let error = $state('');
 	let turnstileStatus = $state<'success' | 'error' | 'expired' | 'required'>('required');
+	let resetTurnstile = $state<(() => void) | undefined>();
+
+	function resetTurnstileChallenge() {
+		resetTurnstile?.();
+		turnstileStatus = 'required';
+	}
 
 	// Reset form on successful navigation
 	$effect(() => {
@@ -72,13 +78,16 @@
 					return async ({ update, result }) => {
 						if (result.type === 'redirect') {
 							goto(result.location);
+							return;
 						}
 
 						if (result.type === 'success') {
 							const callbackUrl =
 								new URL(window.location.href).searchParams.get('callbackUrl') || '/';
 							goto(callbackUrl);
+							return;
 						}
+						resetTurnstileChallenge();
 						await update();
 						isLoading = false;
 					};
@@ -132,6 +141,7 @@
 					<div class="grid gap-2">
 						<Turnstile
 							theme={theme.resolvedTheme === 'dark' ? 'dark' : 'light'}
+							bind:reset={resetTurnstile}
 							on:error={() => {
 								turnstileStatus = 'error';
 								error = m['loginPage.errors.turnstileFailed']({});
@@ -145,10 +155,6 @@
 							}}
 							on:callback={() => {
 								turnstileStatus = 'success';
-							}}
-							on:error={() => {
-								turnstileStatus = 'error';
-								error = m['loginPage.errors.turnstileFailed']({});
 							}}
 							siteKey={PUBLIC_TURNSTILE_SITE_KEY}
 						/>

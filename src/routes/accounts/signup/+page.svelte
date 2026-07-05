@@ -40,6 +40,12 @@
 	let error = $state('');
 	let comboboxOpen = $state(false);
 	let turnstileStatus = $state<'success' | 'error' | 'expired' | 'required'>('required');
+	let resetTurnstile = $state<(() => void) | undefined>();
+
+	function resetTurnstileChallenge() {
+		resetTurnstile?.();
+		turnstileStatus = 'required';
+	}
 
 	// Reset form on successful navigation
 	$effect(() => {
@@ -153,13 +159,15 @@
 					method="POST"
 					use:enhance={() => {
 						handleSubmit();
-						return async ({ update, result }) => {
-							if (result.type === 'success') {
-								goto('/accounts/login');
-							}
-							await update();
-							isLoading = false;
-						};
+					return async ({ update, result }) => {
+						if (result.type === 'success') {
+							goto('/accounts/login');
+							return;
+						}
+						resetTurnstileChallenge();
+						await update();
+						isLoading = false;
+					};
 					}}
 				>
 					<div class="flex flex-col gap-4">
@@ -254,11 +262,12 @@
 						<!-- Turnstile widget -->
 						<div class="mt-2 flex justify-center">
 							{#if PUBLIC_TURNSTILE_SITE_KEY}
-								<Turnstile
-									theme={theme.resolvedTheme === 'dark' ? 'dark' : 'light'}
-									on:error={() => {
-										turnstileStatus = 'error';
-										error = m['loginPage.errors.turnstileFailed']({});
+							<Turnstile
+								theme={theme.resolvedTheme === 'dark' ? 'dark' : 'light'}
+								bind:reset={resetTurnstile}
+								on:error={() => {
+									turnstileStatus = 'error';
+									error = m['loginPage.errors.turnstileFailed']({});
 									}}
 									on:expired={() => {
 										turnstileStatus = 'expired';
@@ -270,12 +279,8 @@
 									on:callback={() => {
 										turnstileStatus = 'success';
 									}}
-									on:error={() => {
-										turnstileStatus = 'error';
-										error = m['loginPage.errors.turnstileFailed']({});
-									}}
-									siteKey={PUBLIC_TURNSTILE_SITE_KEY}
-								/>
+								siteKey={PUBLIC_TURNSTILE_SITE_KEY}
+							/>
 							{/if}
 						</div>
 					</div>
@@ -285,7 +290,7 @@
 				<Button
 					type="submit"
 					class="w-full"
-					disabled={isLoading}
+					disabled={isLoading || turnstileStatus !== 'success'}
 					onclick={() => document.querySelector('form')?.requestSubmit()}
 				>
 					{isLoading ? 'Creating account...' : 'Sign Up'}

@@ -31,6 +31,12 @@
 	let error = $state('');
 	let success = $state(false);
 	let turnstileStatus = $state<'success' | 'error' | 'expired' | 'required'>('required');
+	let resetTurnstile = $state<(() => void) | undefined>();
+
+	function resetTurnstileChallenge() {
+		resetTurnstile?.();
+		turnstileStatus = 'required';
+	}
 
 	// Reset form on successful navigation
 	$effect(() => {
@@ -68,13 +74,14 @@
 						error = '';
 						success = false;
 						return async ({ update, result }) => {
-							if (result.type === 'success' && result.data?.success) {
-								success = true;
-								email = '';
-							}
-							await update();
-							isLoading = false;
-						};
+						if (result.type === 'success' && result.data?.success) {
+							success = true;
+							email = '';
+						}
+						resetTurnstileChallenge();
+						await update();
+						isLoading = false;
+					};
 					}}
 				>
 					<div class="flex flex-col gap-6">
@@ -114,6 +121,7 @@
 							<div class="grid gap-2">
 								<Turnstile
 									theme={theme.resolvedTheme === 'dark' ? 'dark' : 'light'}
+									bind:reset={resetTurnstile}
 									on:error={() => {
 										turnstileStatus = 'error';
 										error = m['forgotPasswordPage.errors.turnstileFailed']({});
